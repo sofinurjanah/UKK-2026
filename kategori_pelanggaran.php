@@ -5,18 +5,13 @@ include "includes/cek_session.php";
 
 $role = $_SESSION['role'];
 
-
-/* =========================
-   TAMBAH KATEGORI
-========================= */
-
 if (isset($_POST['tambah']) && $role == "admin") {
 
     $nama = $_POST['nama'];
     $deskripsi = $_POST['deskripsi'];
     $status_aktif = $_POST['status_aktif'];
 
-    $query = mysqli_query($koneksi, "INSERT INTO t_kategori_pelanggaran
+    $query = mysqli_query($koneksi, "INSERT INTO t_pelanggran_kategori
         (nama, deskripsi, status_aktif)
         VALUES
         ('$nama', '$deskripsi', '$status_aktif')");
@@ -28,11 +23,6 @@ if (isset($_POST['tambah']) && $role == "admin") {
     }
 }
 
-
-/* =========================
-   UBAH KATEGORI
-========================= */
-
 if (isset($_POST['ubah']) && $role == "admin") {
 
     $id = $_POST['id'];
@@ -40,7 +30,7 @@ if (isset($_POST['ubah']) && $role == "admin") {
     $deskripsi = $_POST['deskripsi'];
     $status_aktif = $_POST['status_aktif'];
 
-    $query = mysqli_query($koneksi, "UPDATE t_kategori_pelanggaran SET
+    $query = mysqli_query($koneksi, "UPDATE t_pelanggaran_kategori SET
         nama = '$nama',
         deskripsi = '$deskripsi',
         status_aktif = '$status_aktif'
@@ -53,16 +43,11 @@ if (isset($_POST['ubah']) && $role == "admin") {
     }
 }
 
-
-/* =========================
-   HAPUS KATEGORI
-========================= */
-
 if (isset($_GET['hapus']) && $role == "admin") {
 
     $id = $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "DELETE FROM t_kategori_pelanggaran
+    $query = mysqli_query($koneksi, "DELETE FROM t_pelanggaran_kategori
         WHERE id = '$id'");
 
     if ($query) {
@@ -72,11 +57,6 @@ if (isset($_GET['hapus']) && $role == "admin") {
     }
 }
 
-
-/* =========================
-   DATA UNTUK EDIT
-========================= */
-
 $data_edit = null;
 
 if (isset($_GET['edit'])) {
@@ -84,7 +64,7 @@ if (isset($_GET['edit'])) {
     $id_edit = $_GET['edit'];
 
     $query_edit = mysqli_query($koneksi, "SELECT *
-        FROM t_kategori_pelanggaran
+        FROM t_pelanggaran_kategori
         WHERE id = '$id_edit'");
 
     $data_edit = mysqli_fetch_assoc($query_edit);
@@ -114,10 +94,6 @@ if (isset($_GET['edit'])) {
 
 
     <?php if ($data_edit != null) { ?>
-
-        <!-- =========================
-             FORM UBAH
-        ========================== -->
 
         <h2>Ubah Kategori Pelanggaran</h2>
 
@@ -188,11 +164,6 @@ if (isset($_GET['edit'])) {
 
     <?php } else { ?>
 
-
-        <!-- =========================
-             FORM TAMBAH
-        ========================== -->
-
         <h2>Tambah Kategori Pelanggaran</h2>
 
         <form method="POST">
@@ -247,10 +218,6 @@ if (isset($_GET['edit'])) {
 
 <?php } ?>
 
-
-<!-- =========================
-     DAFTAR KATEGORI
-========================== -->
 
 <h2>Daftar Kategori Pelanggaran</h2>
 

@@ -1,14 +1,36 @@
 
 <?php
+
 session_start();
 
+include "config/koneksi.php";
+
 if (!isset($_SESSION['role'])) {
+
     header("Location: ../login.php");
+
     exit;
+
 }
 
 $nama = $_SESSION['nama'];
+
 $role = strtolower($_SESSION['role']);
+
+$query_siswa = mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_siswa");
+$data_siswa = mysqli_fetch_assoc($query_siswa);
+$jumlah_siswa = $data_siswa['jumlah'];
+
+
+$query_guru = mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_guru");
+$data_guru = mysqli_fetch_assoc($query_guru);
+$jumlah_guru = $data_guru['jumlah'];
+
+
+$query_kelas = mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_kelas");
+$data_kelas = mysqli_fetch_assoc($query_kelas);
+$jumlah_kelas = $data_kelas['jumlah'];
+
 ?>
 
 <!DOCTYPE html>
@@ -106,9 +128,9 @@ $role = strtolower($_SESSION['role']);
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="cetak_export.php"
-                           class="nav-link text-white">
-                            Cetak / Export
+                        <a href="laporan.php"
+                            class="nav-link text-white">
+                            Laporan
                         </a>
                     </li>
 
@@ -146,32 +168,22 @@ $role = strtolower($_SESSION['role']);
 
                 <?php } ?>
 
-                <!-- ABOUT ME -->
-<li class="nav-item mb-3 mt-3">
-    <a href="about_me.php"
-       class="nav-link text-white rounded-3 p-3">
+                    <hr class="text-secondary">
 
-        <div class="d-flex align-items-center">
-            <div class="rounded-circle bg-white text-primary
-                        d-flex align-items-center justify-content-center me-3"
-                 style="width: 40px; height: 40px;">
-                <span class="fw-bold">A</span>
-            </div>
+        <li class="nav-item mb-2">
+            <a href="about_me.php"
+                 class="nav-link text-white">
+                    About Me
+            </a>
+        </li>
 
-            <span class="fw-semibold">About Me</span>
-
-            <span class="ms-auto fs-5">›</span>
-        </div>
-
-    </a>
-</li>
-
-                <!-- LOGOUT -->
-                <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
-                        Logout
-                    </a>
-                </li>
+        <!-- LOGOUT -->
+        <li class="nav-item">
+            <a href="logout.php"
+               class="nav-link text-danger">
+                Logout
+            </a>
+        </li>
 
             </ul>
         </div>
@@ -198,12 +210,16 @@ $role = strtolower($_SESSION['role']);
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    Data Siswa
-                                </h5>
+    Data Siswa
+</h5>
 
-                                <p class="card-text">
-                                    Kelola data siswa.
-                                </p>
+<h2 class="fw-bold">
+    <?= $jumlah_siswa; ?>
+</h2>
+
+<p class="card-text">
+    Jumlah seluruh siswa.
+</p>
 
                                 <a href="data_siswa.php"
                                    class="btn btn-primary">
@@ -217,12 +233,16 @@ $role = strtolower($_SESSION['role']);
                         <div class="card shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    Data Guru
-                                </h5>
+    Data Guru
+</h5>
 
-                                <p class="card-text">
-                                    Kelola data guru.
-                                </p>
+<h2 class="fw-bold">
+    <?= $jumlah_guru; ?>
+</h2>
+
+<p class="card-text">
+    Jumlah seluruh guru.
+</p>
 
                                 <a href="data_guru.php"
                                    class="btn btn-primary">

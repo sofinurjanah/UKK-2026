@@ -187,11 +187,13 @@ function e($teks) {
             </li>
 
             <li class="nav-item mb-2">
-                <a href="cetak_export.php"
-                   class="nav-link text-white">
-                    Cetak / Export
+                <a href="laporan.php"
+                    class="nav-link text-white">
+                    Laporan
                 </a>
             </li>
+
+
 
         <?php } elseif ($role == 'guru') { ?>
 
@@ -227,6 +229,13 @@ function e($teks) {
         <?php } ?>
 
         <hr class="text-secondary">
+
+        <li class="nav-item mb-2">
+            <a href="about_me.php"
+                 class="nav-link text-white">
+                    About Me
+            </a>
+        </li>
 
         <!-- LOGOUT -->
         <li class="nav-item">
