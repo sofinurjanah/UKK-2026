@@ -252,13 +252,13 @@ if ($siswa_id != '') {
         <!-- KONTEN -->
 
         <main class="col-md-9 col-lg-10 p-4">
+<!-- JUDUL HALAMAN -->
+<div class="d-flex justify-content-between
+            align-items-center mb-4">
 
-            <h2>Laporan Pelanggaran</h2>
+    <h3 class="fw-bold mb-0">Laporan Pelanggaran</h3>
 
-            <p>
-                Pilih siswa untuk melihat laporan pelanggarannya.
-            </p>
-
+</div>
 
             <!-- PILIH SISWA -->
 
@@ -529,7 +529,9 @@ if ($siswa_id != '') {
             <?php } ?>
 
         </main>
-
+<p class="text-center text-secondary small mt-4">
+                ©Sofinurjanah
+            </p>
     </div>
 
 </div>

@@ -1,9 +1,11 @@
+
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
 
 $role = $_SESSION['role'];
 
+/* TAMBAH DATA GURU */
 if (isset($_POST['tambah']) && $role == "admin") {
     $nip = $_POST['nip'];
     $nama = $_POST['nama'];
@@ -17,12 +19,14 @@ if (isset($_POST['tambah']) && $role == "admin") {
         ('$nip', '$nama', '$email', '$status_aktif', '$user_id')");
 
     if ($query) {
-        echo "Data guru berhasil ditambahkan.<br>";
+        header("Location: data_guru.php?pesan=tambah");
+        exit;
     } else {
         echo "Data guru gagal ditambahkan.<br>";
     }
 }
 
+/* UBAH DATA GURU */
 if (isset($_POST['ubah']) && $role == "admin") {
     $id = $_POST['id'];
     $nip = $_POST['nip'];
@@ -38,12 +42,14 @@ if (isset($_POST['ubah']) && $role == "admin") {
         WHERE id = '$id'");
 
     if ($query) {
-        echo "Data guru berhasil diubah.<br>";
+        header("Location: data_guru.php?pesan=ubah");
+        exit;
     } else {
         echo "Data guru gagal diubah.<br>";
     }
 }
 
+/* HAPUS DATA GURU */
 if (isset($_GET['hapus']) && $role == "admin") {
     $id = $_GET['hapus'];
 
@@ -51,15 +57,17 @@ if (isset($_GET['hapus']) && $role == "admin") {
         WHERE id = '$id'");
 
     if ($query) {
-        echo "Data guru berhasil dihapus.<br>";
+        header("Location: data_guru.php?pesan=hapus");
+        exit;
     } else {
         echo "Data guru gagal dihapus. Data mungkin masih digunakan.<br>";
     }
 }
 
+/* MENGAMBIL DATA GURU UNTUK DIUBAH */
 $data_edit = null;
 
-if (isset($_GET['edit'])) {
+if (isset($_GET['edit']) && $role == "admin") {
     $id_edit = $_GET['edit'];
 
     $query_edit = mysqli_query($koneksi, "SELECT * FROM t_guru
@@ -70,18 +78,26 @@ if (isset($_GET['edit'])) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
-    <title>Kelola Guru</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Data Guru</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+          rel="stylesheet">
 </head>
-<body>
+
+<body class="bg-light">
 
 <div class="container-fluid">
     <div class="row">
 
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 min-vh-100 p-3"
-            style="background-color: #30318B;">
+             style="background-color: #30318B;">
 
             <h4 class="text-white mb-4">
                 Sistem Pelanggaran
@@ -89,123 +105,104 @@ if (isset($_GET['edit'])) {
 
             <ul class="nav nav-pills flex-column">
 
-                <!-- DASHBOARD -->
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php"
-                       class="nav-link active">
+                    <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
 
                 <?php if ($role == 'admin') { ?>
 
-                    <!-- MENU ADMIN -->
-
                     <li class="nav-item mb-2">
-                        <a href="data_siswa.php"
-                           class="nav-link text-white">
+                        <a href="data_siswa.php" class="nav-link text-white">
                             Data Siswa
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_guru.php"
-                           class="nav-link text-white">
+                        <a href="data_guru.php" class="nav-link active">
                             Data Guru
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_kelas.php"
-                           class="nav-link text-white">
+                        <a href="data_kelas.php" class="nav-link text-white">
                             Kelas
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_tahun_ajaran.php"
-                           class="nav-link text-white">
+                        <a href="data_tahun_ajaran.php" class="nav-link text-white">
                             Tahun Ajaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="penempatan_siswa.php"
-                           class="nav-link text-white">
+                        <a href="penempatan_siswa.php" class="nav-link text-white">
                             Penempatan Siswa
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="wali_kelas.php"
-                           class="nav-link text-white">
+                        <a href="wali_kelas.php" class="nav-link text-white">
                             Wali Kelas
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="kategori_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="kategori_pelanggaran.php" class="nav-link text-white">
                             Kategori Pelanggaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="jenis_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="jenis_pelanggaran.php" class="nav-link text-white">
                             Jenis Pelanggaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="laporan.php"
-                            class="nav-link text-white">
+                        <a href="laporan.php" class="nav-link text-white">
                             Laporan
                         </a>
                     </li>
 
                 <?php } elseif ($role == 'guru') { ?>
 
-                    <!-- MENU GURU -->
-
                     <li class="nav-item mb-2">
-                        <a href="catat_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
                             Catat Pelanggaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="tindakan.php"
-                           class="nav-link text-white">
+                        <a href="tindakan.php" class="nav-link text-white">
                             Tindakan
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="riwayat_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="riwayat_pelanggaran.php" class="nav-link text-white">
                             Riwayat
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="rekap_poin.php"
-                           class="nav-link text-white">
+                        <a href="rekap_poin.php" class="nav-link text-white">
                             Rekap Poin
                         </a>
                     </li>
 
                 <?php } ?>
 
-                    <li class="nav-item mb-2">
-                        <a href="about_me.php"
-                            class="nav-link text-white">
-                            About Me
-                        </a>
-                    </li>
+                <hr class="text-secondary">
 
-                <!-- LOGOUT -->
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+
                 <li class="nav-item">
                     <a href="logout.php" class="nav-link text-danger">
                         Logout
@@ -215,189 +212,355 @@ if (isset($_GET['edit'])) {
             </ul>
         </div>
 
-<h1>Kelola Guru</h1>
+        <!-- KONTEN UTAMA -->
+        <main class="col-md-9 col-lg-10 p-4">
 
-<a href="dashboard.php">Kembali ke Dashboard</a>
+            <!-- JUDUL DAN TOMBOL TAMBAH -->
+            <div class="d-flex justify-content-between
+                        align-items-center mb-4">
 
-<?php if ($role == "admin") { ?>
+                <h3 class="fw-bold mb-0">Data Guru</h3>
 
-    <?php if ($data_edit != null) { ?>
+                <?php if ($role == "admin" && $data_edit == null) { ?>
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#modalTambah">
+                        Tambah Guru
+                    </button>
+                <?php } ?>
 
-        <h2>Ubah Data Guru</h2>
+            </div>
 
-        <form method="POST">
+            <!-- PESAN -->
+            <?php if (isset($_GET['pesan'])) { ?>
 
-            <input type="hidden" name="id"
-                value="<?php echo $data_edit['id']; ?>">
-
-            <p>
-                NIP:<br>
-                <input type="text" name="nip"
-                    value="<?php echo $data_edit['nip']; ?>" required>
-            </p>
-
-            <p>
-                Nama:<br>
-                <input type="text" name="nama"
-                    value="<?php echo $data_edit['nama']; ?>" required>
-            </p>
-
-            <p>
-                Email:<br>
-                <input type="email" name="email"
-                    value="<?php echo $data_edit['email']; ?>" required>
-            </p>
-
-            <p>
-                Status Aktif:<br>
-                <select name="status_aktif" required>
-                    <option value="1"
-                        <?php if ($data_edit['status_aktif'] == 1) echo "selected"; ?>>
-                        Aktif
-                    </option>
-
-                    <option value="0"
-                        <?php if ($data_edit['status_aktif'] == 0) echo "selected"; ?>>
-                        Tidak Aktif
-                    </option>
-                </select>
-            </p>
-
-            <button type="submit" name="ubah">
-                Simpan Perubahan
-            </button>
-
-            <a href="data_guru.php">Batal</a>
-
-        </form>
-
-    <?php } else { ?>
-
-        <h2>Tambah Data Guru</h2>
-
-        <form method="POST">
-
-            <p>
-                NIP:<br>
-                <input type="text" name="nip" required>
-            </p>
-
-            <p>
-                Nama:<br>
-                <input type="text" name="nama" required>
-            </p>
-
-            <p>
-                Email:<br>
-                <input type="email" name="email" required>
-            </p>
-
-            <p>
-                Akun Pengguna:<br>
-                <select name="user_id" required>
-                    <option value="">-- Pilih Akun Guru --</option>
+                <div class="alert alert-success alert-dismissible fade show"
+                     role="alert">
 
                     <?php
-                    $query_user = mysqli_query($koneksi,
-                        "SELECT * FROM t_user WHERE role = 'guru'");
-
-                    while ($user = mysqli_fetch_assoc($query_user)) {
+                    if ($_GET['pesan'] == 'tambah') {
+                        echo "Data guru berhasil ditambahkan.";
+                    } elseif ($_GET['pesan'] == 'ubah') {
+                        echo "Data guru berhasil diubah.";
+                    } elseif ($_GET['pesan'] == 'hapus') {
+                        echo "Data guru berhasil dihapus.";
+                    }
                     ?>
 
-                        <option value="<?php echo $user['id']; ?>">
-                            <?php echo $user['name']; ?>
-                            -
-                            <?php echo $user['email']; ?>
-                        </option>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Close">
+                    </button>
 
-                    <?php } ?>
-
-                </select>
-            </p>
-
-            <p>
-                Status Aktif:<br>
-                <select name="status_aktif" required>
-                    <option value="1">Aktif</option>
-                    <option value="0">Tidak Aktif</option>
-                </select>
-            </p>
-
-            <button type="submit" name="tambah">
-                Tambah Guru
-            </button>
-
-        </form>
-
-    <?php } ?>
-
-<?php } ?>
-
-<h2>Daftar Guru</h2>
-
-<table border="1" cellpadding="5" cellspacing="0">
-
-    <tr>
-        <th>No</th>
-        <th>NIP</th>
-        <th>Nama</th>
-        <th>Email</th>
-        <th>Status</th>
-
-        <?php if ($role == "admin") { ?>
-            <th>Aksi</th>
-        <?php } ?>
-    </tr>
-
-    <?php
-    $query_guru = mysqli_query($koneksi, "SELECT * FROM t_guru");
-
-    $no = 1;
-
-    while ($guru = mysqli_fetch_assoc($query_guru)) {
-    ?>
-
-        <tr>
-            <td><?php echo $no; ?></td>
-            <td><?php echo $guru['nip']; ?></td>
-            <td><?php echo $guru['nama']; ?></td>
-            <td><?php echo $guru['email']; ?></td>
-
-            <td>
-                <?php
-                if ($guru['status_aktif'] == 1) {
-                    echo "Aktif";
-                } else {
-                    echo "Tidak Aktif";
-                }
-                ?>
-            </td>
-
-            <?php if ($role == "admin") { ?>
-
-                <td>
-                    <a href="data_guru.php?edit=<?php echo $guru['id']; ?>">
-                        Ubah
-                    </a>
-
-                    |
-
-                    <a href="data_guru.php?hapus=<?php echo $guru['id']; ?>"
-                       onclick="return confirm('Yakin ingin menghapus data guru ini?')">
-                        Hapus
-                    </a>
-                </td>
+                </div>
 
             <?php } ?>
 
-        </tr>
+            <!-- FORM UBAH GURU -->
+            <?php if ($role == "admin" && $data_edit != null) { ?>
 
-    <?php
-        $no++;
-    }
-    ?>
+                <div class="card border-0 shadow-sm mb-4">
 
-</table>
+                    <div class="card-header bg-white py-3">
+                        <h5 class="mb-0">Ubah Data Guru</h5>
+                    </div>
+
+                    <div class="card-body">
+
+                        <form method="POST">
+
+                            <input type="hidden"
+                                   name="id"
+                                   value="<?php echo $data_edit['id']; ?>">
+
+                            <div class="row">
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">NIP</label>
+                                    <input type="text"
+                                           name="nip"
+                                           class="form-control"
+                                           value="<?php echo $data_edit['nip']; ?>"
+                                           required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Nama Guru</label>
+                                    <input type="text"
+                                           name="nama"
+                                           class="form-control"
+                                           value="<?php echo $data_edit['nama']; ?>"
+                                           required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Email</label>
+                                    <input type="email"
+                                           name="email"
+                                           class="form-control"
+                                           value="<?php echo $data_edit['email']; ?>"
+                                           required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Status Aktif</label>
+                                    <select name="status_aktif"
+                                            class="form-select"
+                                            required>
+
+                                        <option value="1"
+                                            <?php if ($data_edit['status_aktif'] == 1) echo "selected"; ?>>
+                                            Aktif
+                                        </option>
+
+                                        <option value="0"
+                                            <?php if ($data_edit['status_aktif'] == 0) echo "selected"; ?>>
+                                            Tidak Aktif
+                                        </option>
+
+                                    </select>
+                                </div>
+
+                            </div>
+
+                            <button type="submit"
+                                    name="ubah"
+                                    class="btn btn-success">
+                                Simpan Perubahan
+                            </button>
+
+                            <a href="data_guru.php" class="btn btn-danger">
+                                Batal
+                            </a>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            <?php } ?>
+
+            <!-- TABEL DAFTAR GURU -->
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">Daftar Guru</h5>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped table-hover align-middle">
+
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>No</th>
+                                    <th>NIP</th>
+                                    <th>Nama Guru</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+
+                                    <?php if ($role == "admin") { ?>
+                                        <th>Aksi</th>
+                                    <?php } ?>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                <?php
+                                $query_guru = mysqli_query($koneksi, "SELECT * FROM t_guru");
+                                $no = 1;
+
+                                while ($guru = mysqli_fetch_assoc($query_guru)) {
+                                ?>
+
+                                    <tr>
+                                        <td><?php echo $no; ?></td>
+                                        <td><?php echo $guru['nip']; ?></td>
+                                        <td><?php echo $guru['nama']; ?></td>
+                                        <td><?php echo $guru['email']; ?></td>
+
+                                        <td>
+                                            <?php if ($guru['status_aktif'] == 1) { ?>
+                                                <span class="badge bg-success">
+                                                    Aktif
+                                                </span>
+                                            <?php } else { ?>
+                                                <span class="badge bg-secondary">
+                                                    Tidak Aktif
+                                                </span>
+                                            <?php } ?>
+                                        </td>
+
+                                        <?php if ($role == "admin") { ?>
+                                            <td>
+                                                <a href="data_guru.php?edit=<?php echo $guru['id']; ?>"
+                                                   class="btn btn-warning btn-sm">
+                                                    Ubah
+                                                </a>
+
+                                                <a href="data_guru.php?hapus=<?php echo $guru['id']; ?>"
+                                                   class="btn btn-danger btn-sm"
+                                                   onclick="return confirm('Yakin ingin menghapus data guru ini?')">
+                                                    Hapus
+                                                </a>
+                                            </td>
+                                        <?php } ?>
+
+                                    </tr>
+
+                                <?php
+                                    $no++;
+                                }
+                                ?>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- COPYRIGHT -->
+            <p class="text-center text-secondary small mt-4">
+                ©Sofinurjanah
+            </p>
+
+        </main>
+    </div>
+</div>
+
+<!-- MODAL TAMBAH GURU -->
+<?php if ($role == "admin") { ?>
+
+    <div class="modal fade"
+         id="modalTambah"
+         tabindex="-1"
+         aria-labelledby="judulModalTambah"
+         aria-hidden="true">
+
+        <div class="modal-dialog modal-lg">
+
+            <div class="modal-content">
+
+                <form method="POST">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="judulModalTambah">
+                            Tambah Data Guru
+                        </h5>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
+                        </button>
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="row">
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">NIP</label>
+                                <input type="text"
+                                       name="nip"
+                                       class="form-control"
+                                       required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Nama Guru</label>
+                                <input type="text"
+                                       name="nama"
+                                       class="form-control"
+                                       required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email"
+                                       name="email"
+                                       class="form-control"
+                                       required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Akun Pengguna</label>
+
+                                <select name="user_id"
+                                        class="form-select"
+                                        required>
+
+                                    <option value="">
+                                        -- Pilih Akun Guru --
+                                    </option>
+
+                                    <?php
+                                    $query_user = mysqli_query(
+                                        $koneksi,
+                                        "SELECT * FROM t_user WHERE role = 'guru'"
+                                    );
+
+                                    while ($user = mysqli_fetch_assoc($query_user)) {
+                                    ?>
+
+                                        <option value="<?php echo $user['id']; ?>">
+                                            <?php echo $user['name']; ?>
+                                            -
+                                            <?php echo $user['email']; ?>
+                                        </option>
+
+                                    <?php } ?>
+
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Status Aktif</label>
+
+                                <select name="status_aktif"
+                                        class="form-select"
+                                        required>
+                                    <option value="1">Aktif</option>
+                                    <option value="0">Tidak Aktif</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn btn-danger"
+                                data-bs-dismiss="modal">
+                            Batal
+                        </button>
+
+                        <button type="submit"
+                                name="tambah"
+                                class="btn btn-success">
+                            Tambah
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+<?php } ?>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

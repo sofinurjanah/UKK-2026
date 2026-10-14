@@ -1,9 +1,11 @@
+
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
 
 $role = $_SESSION['role'];
 $pesan = "";
+$tipe_pesan = "";
 
 /* TAMBAH DATA SISWA */
 if (isset($_POST['tambah']) && $role == "admin") {
@@ -23,8 +25,10 @@ if (isset($_POST['tambah']) && $role == "admin") {
 
     if ($query) {
         $pesan = "Data siswa berhasil ditambahkan.";
+        $tipe_pesan = "success";
     } else {
         $pesan = "Data siswa gagal ditambahkan.";
+        $tipe_pesan = "danger";
     }
 }
 
@@ -51,8 +55,10 @@ if (isset($_POST['ubah']) && $role == "admin") {
 
     if ($query) {
         $pesan = "Data siswa berhasil diubah.";
+        $tipe_pesan = "success";
     } else {
         $pesan = "Data siswa gagal diubah.";
+        $tipe_pesan = "danger";
     }
 }
 
@@ -65,8 +71,10 @@ if (isset($_GET['hapus']) && $role == "admin") {
 
     if ($query) {
         $pesan = "Data siswa berhasil dihapus.";
+        $tipe_pesan = "success";
     } else {
         $pesan = "Data siswa gagal dihapus. Data mungkin masih digunakan.";
+        $tipe_pesan = "danger";
     }
 }
 
@@ -82,11 +90,12 @@ if (isset($_GET['edit']) && $role == "admin") {
     $data_edit = mysqli_fetch_assoc($query_edit);
 }
 
-/* FUNGSI UNTUK MENAMPILKAN TEKS DENGAN AMAN */
+/* MENAMPILKAN TEKS DENGAN AMAN */
 function e($teks) {
     return htmlspecialchars((string) $teks, ENT_QUOTES, 'UTF-8');
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="id">
@@ -270,20 +279,22 @@ function e($teks) {
 
             </div>
 
-            <!-- PESAN -->
-            <?php if ($pesan != "") { ?>
-                <div class="alert alert-info alert-dismissible fade show"
-                     role="alert">
+<!-- NOTIFIKASI -->
+<?php if ($pesan != "") { ?>
+    <div class="alert alert-<?php echo $tipe_pesan; ?> alert-dismissible fade show text-center mt-3 mb-3"
+         role="alert">
 
-                    <?= e($pesan); ?>
+        <?= e($pesan); ?>
 
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="alert"
-                            aria-label="Close">
-                    </button>
-                </div>
-            <?php } ?>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="alert"
+                aria-label="Tutup">
+        </button>
+
+    </div>
+<?php } ?>
+
 
             <!-- FORM UBAH DATA -->
             <?php if ($role == "admin" && $data_edit != null) { ?>
@@ -565,7 +576,9 @@ function e($teks) {
                     </div>
                 </div>
             </div>
-
+        <p class="text-center text-secondary small mt-4">
+                ©Sofinurjanah
+            </p>
         </main>
     </div>
 </div>

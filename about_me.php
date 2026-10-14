@@ -454,20 +454,6 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
                     </div>
 
-
-                    <div class="text-center mt-4">
-
-                        <a href="dashboard.php"
-                           class="btn text-white rounded-pill px-4"
-                           style="background-color: #30318B;">
-
-                            ← Kembali ke Dashboard
-
-                        </a>
-
-                    </div>
-
-
                 </div>
 
             </div>
