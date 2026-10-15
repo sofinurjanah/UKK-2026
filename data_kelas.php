@@ -1,4 +1,3 @@
-
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
@@ -89,8 +88,13 @@ if (isset($_GET['edit']) && $role == "admin") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Kelas</title>
 
+    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
+
+    <!-- CSS DATATABLES -->
+    <link rel="stylesheet"
+          href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
 </head>
 
 <body class="bg-light">
@@ -163,8 +167,7 @@ if (isset($_GET['edit']) && $role == "admin") {
         <main class="col-md-9 col-lg-10 p-4">
 
             <!-- JUDUL DAN TOMBOL TAMBAH -->
-                <div class="d-flex justify-content-between
-                        align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
 
                 <h3 class="fw-bold mb-0">Data Kelas</h3>
 
@@ -176,6 +179,7 @@ if (isset($_GET['edit']) && $role == "admin") {
                         Tambah Kelas
                     </button>
                 <?php } ?>
+
             </div>
 
             <!-- NOTIFIKASI -->
@@ -268,7 +272,9 @@ if (isset($_GET['edit']) && $role == "admin") {
                 <div class="card-body">
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped table-hover align-middle">
+                        <!-- TABEL DATATABLES -->
+                        <table id="example"
+                               class="table table-bordered table-striped table-hover align-middle">
 
                             <thead class="table-primary">
                                 <tr>
@@ -294,7 +300,7 @@ if (isset($_GET['edit']) && $role == "admin") {
                                 ?>
 
                                     <tr>
-                                        <td><?php echo $no; ?></td>
+                                        <td><?php echo $no++; ?></td>
 
                                         <td><?php echo htmlspecialchars($kelas['nama'], ENT_QUOTES, 'UTF-8'); ?></td>
 
@@ -324,13 +330,9 @@ if (isset($_GET['edit']) && $role == "admin") {
                                         <?php } ?>
                                     </tr>
 
-                                <?php
-                                    $no++;
-                                }
-                                ?>
+                                <?php } ?>
 
                             </tbody>
-
                         </table>
 
                     </div>
@@ -410,7 +412,28 @@ if (isset($_GET['edit']) && $role == "admin") {
 
 <?php } ?>
 
+<!-- BOOTSTRAP -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- JAVASCRIPT DATATABLES -->
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof DataTable !== 'undefined') {
+            new DataTable('#example', {
+                layout: {
+                    topStart: 'info',
+                    bottom: 'paging',
+                    bottomStart: null,
+                    bottomEnd: null
+                }
+            });
+        } else {
+            console.error('DataTables gagal dimuat. Periksa koneksi CDN.');
+        }
+    });
+</script>
 
 </body>
 </html>

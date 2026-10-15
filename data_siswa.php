@@ -66,16 +66,17 @@ if (isset($_POST['ubah']) && $role == "admin") {
 if (isset($_GET['hapus']) && $role == "admin") {
     $id = $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "
-    UPDATE t_siswa
-    SET status_aktif = 0
-    WHERE id = '$id'
-");
+    $query = mysqli_query($koneksi, "UPDATE t_siswa
+        SET status_aktif = 0
+        WHERE id = '$id'");
 
-if ($query) {
-    echo "Siswa berhasil dinonaktifkan.";
-} else {
-    echo "Siswa gagal dinonaktifkan.";
+    if ($query) {
+        $pesan = "Data siswa berhasil dihapus.";
+        $tipe_pesan = "success";
+    } else {
+        $pesan = "Data siswa gagal dihapus karena masih digunakan pada penempatan kelas.";
+        $tipe_pesan = "danger";
+    }
 }
 
 /* MENGAMBIL DATA SISWA UNTUK DIUBAH */
@@ -96,7 +97,6 @@ function e($teks) {
 }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -110,6 +110,12 @@ function e($teks) {
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
+
+    <!-- DataTables CSS -->
+    <link
+        href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+        rel="stylesheet"
+    >
 </head>
 
 <body class="bg-light">
@@ -118,145 +124,142 @@ function e($teks) {
     <div class="row">
 
         <!-- SIDEBAR -->
-<div class="col-md-3 col-lg-2 min-vh-100 p-3"
-     style="background-color: #30318B;">
+        <div class="col-md-3 col-lg-2 min-vh-100 p-3"
+             style="background-color: #30318B;">
 
-    <h4 class="text-white mb-4">
-        Sistem Pelanggaran
-    </h4>
+            <h4 class="text-white mb-4">
+                Sistem Pelanggaran
+            </h4>
 
-    <ul class="nav nav-pills flex-column">
+            <ul class="nav nav-pills flex-column">
 
-        <!-- DASHBOARD -->
-        <li class="nav-item mb-2">
-            <a href="dashboard.php"
-               class="nav-link text-white">
-                Dashboard
-            </a>
-        </li>
+                <!-- DASHBOARD -->
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php"
+                       class="nav-link text-white">
+                        Dashboard
+                    </a>
+                </li>
 
-        <?php if ($role == 'admin') { ?>
+                <?php if ($role == 'admin') { ?>
 
-            <!-- MENU ADMIN -->
-            <li class="nav-item mb-2">
-                <a href="data_siswa.php"
-                   class="nav-link active"
-                   aria-current="page">
-                    Data Siswa
-                </a>
-            </li>
+                    <!-- MENU ADMIN -->
+                    <li class="nav-item mb-2">
+                        <a href="data_siswa.php"
+                           class="nav-link active"
+                           aria-current="page">
+                            Data Siswa
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="data_guru.php"
-                   class="nav-link text-white">
-                    Data Guru
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_guru.php"
+                           class="nav-link text-white">
+                            Data Guru
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="data_kelas.php"
-                   class="nav-link text-white">
-                    Kelas
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_kelas.php"
+                           class="nav-link text-white">
+                            Kelas
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="data_tahun_ajaran.php"
-                   class="nav-link text-white">
-                    Tahun Ajaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_tahun_ajaran.php"
+                           class="nav-link text-white">
+                            Tahun Ajaran
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="penempatan_siswa.php"
-                   class="nav-link text-white">
-                    Penempatan Siswa
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="penempatan_siswa.php"
+                           class="nav-link text-white">
+                            Penempatan Siswa
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="wali_kelas.php"
-                   class="nav-link text-white">
-                    Wali Kelas
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="wali_kelas.php"
+                           class="nav-link text-white">
+                            Wali Kelas
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="kategori_pelanggaran.php"
-                   class="nav-link text-white">
-                    Kategori Pelanggaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="kategori_pelanggaran.php"
+                           class="nav-link text-white">
+                            Kategori Pelanggaran
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="jenis_pelanggaran.php"
-                   class="nav-link text-white">
-                    Jenis Pelanggaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="jenis_pelanggaran.php"
+                           class="nav-link text-white">
+                            Jenis Pelanggaran
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="laporan.php"
-                    class="nav-link text-white">
-                    Laporan
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="laporan.php"
+                           class="nav-link text-white">
+                            Laporan
+                        </a>
+                    </li>
 
+                <?php } elseif ($role == 'guru') { ?>
 
+                    <!-- MENU GURU -->
+                    <li class="nav-item mb-2">
+                        <a href="catat_pelanggaran.php"
+                           class="nav-link text-white">
+                            Catat Pelanggaran
+                        </a>
+                    </li>
 
-        <?php } elseif ($role == 'guru') { ?>
+                    <li class="nav-item mb-2">
+                        <a href="tindakan.php"
+                           class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
 
-            <!-- MENU GURU -->
-            <li class="nav-item mb-2">
-                <a href="catat_pelanggaran.php"
-                   class="nav-link text-white">
-                    Catat Pelanggaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="riwayat_pelanggaran.php"
+                           class="nav-link text-white">
+                            Riwayat
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="tindakan.php"
-                   class="nav-link text-white">
-                    Tindakan
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="rekap_poin.php"
+                           class="nav-link text-white">
+                            Rekap Poin
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="riwayat_pelanggaran.php"
-                   class="nav-link text-white">
-                    Riwayat
-                </a>
-            </li>
+                <?php } ?>
 
-            <li class="nav-item mb-2">
-                <a href="rekap_poin.php"
-                   class="nav-link text-white">
-                    Rekap Poin
-                </a>
-            </li>
+                <hr class="text-secondary">
 
-        <?php } ?>
+                <li class="nav-item mb-2">
+                    <a href="about_me.php"
+                       class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
 
-        <hr class="text-secondary">
+                <!-- LOGOUT -->
+                <li class="nav-item">
+                    <a href="logout.php"
+                       class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="about_me.php"
-                 class="nav-link text-white">
-                    About Me
-            </a>
-        </li>
-
-        <!-- LOGOUT -->
-        <li class="nav-item">
-            <a href="logout.php"
-               class="nav-link text-danger">
-                Logout
-            </a>
-        </li>
-
-    </ul>
-
-</div>
+            </ul>
+        </div>
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
@@ -279,22 +282,20 @@ function e($teks) {
 
             </div>
 
-<!-- NOTIFIKASI -->
-<?php if ($pesan != "") { ?>
-    <div class="alert alert-<?php echo $tipe_pesan; ?> alert-dismissible fade show text-center mt-3 mb-3"
-         role="alert">
+            <!-- NOTIFIKASI -->
+            <?php if ($pesan != "") { ?>
+                <div class="alert alert-<?php echo $tipe_pesan; ?> alert-dismissible fade show text-center mt-3 mb-3"
+                     role="alert">
 
-        <?= e($pesan); ?>
+                    <?= e($pesan); ?>
 
-        <button type="button"
-                class="btn-close"
-                data-bs-dismiss="alert"
-                aria-label="Tutup">
-        </button>
-
-    </div>
-<?php } ?>
-
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Tutup">
+                    </button>
+                </div>
+            <?php } ?>
 
             <!-- FORM UBAH DATA -->
             <?php if ($role == "admin" && $data_edit != null) { ?>
@@ -317,116 +318,89 @@ function e($teks) {
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">NIS</label>
-
-                                    <input
-                                        type="text"
-                                        name="nis"
-                                        class="form-control"
-                                        value="<?= e($data_edit['nis']); ?>"
-                                        required>
+                                    <input type="text"
+                                           name="nis"
+                                           class="form-control"
+                                           value="<?= e($data_edit['nis']); ?>"
+                                           required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">NISN</label>
-
-                                    <input
-                                        type="text"
-                                        name="nisn"
-                                        class="form-control"
-                                        value="<?= e($data_edit['nisn']); ?>"
-                                        required>
+                                    <input type="text"
+                                           name="nisn"
+                                           class="form-control"
+                                           value="<?= e($data_edit['nisn']); ?>"
+                                           required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Nama Siswa</label>
-
-                                    <input
-                                        type="text"
-                                        name="nama"
-                                        class="form-control"
-                                        value="<?= e($data_edit['nama']); ?>"
-                                        required>
+                                    <input type="text"
+                                           name="nama"
+                                           class="form-control"
+                                           value="<?= e($data_edit['nama']); ?>"
+                                           required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">
-                                        Jenis Kelamin
-                                    </label>
-
-                                    <select
-                                        name="jenis_kelamin"
-                                        class="form-select"
-                                        required>
+                                    <label class="form-label">Jenis Kelamin</label>
+                                    <select name="jenis_kelamin"
+                                            class="form-select"
+                                            required>
 
                                         <option value="L"
-                                            <?= $data_edit['jenis_kelamin'] == "L"
-                                                ? "selected" : ""; ?>>
+                                            <?= $data_edit['jenis_kelamin'] == "L" ? "selected" : ""; ?>>
                                             Laki-laki
                                         </option>
 
                                         <option value="P"
-                                            <?= $data_edit['jenis_kelamin'] == "P"
-                                                ? "selected" : ""; ?>>
+                                            <?= $data_edit['jenis_kelamin'] == "P" ? "selected" : ""; ?>>
                                             Perempuan
                                         </option>
-
                                     </select>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">
-                                        Tanggal Lahir
-                                    </label>
-
-                                    <input
-                                        type="date"
-                                        name="tanggal_lahir"
-                                        class="form-control"
-                                        value="<?= e($data_edit['tanggal_lahir']); ?>"
-                                        required>
+                                    <label class="form-label">Tanggal Lahir</label>
+                                    <input type="date"
+                                           name="tanggal_lahir"
+                                           class="form-control"
+                                           value="<?= e($data_edit['tanggal_lahir']); ?>"
+                                           required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">
-                                        Status Aktif
-                                    </label>
-
-                                    <select
-                                        name="status_aktif"
-                                        class="form-select"
-                                        required>
+                                    <label class="form-label">Status Aktif</label>
+                                    <select name="status_aktif"
+                                            class="form-select"
+                                            required>
 
                                         <option value="1"
-                                            <?= $data_edit['status_aktif'] == 1
-                                                ? "selected" : ""; ?>>
+                                            <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>
                                             Aktif
                                         </option>
 
                                         <option value="0"
-                                            <?= $data_edit['status_aktif'] == 0
-                                                ? "selected" : ""; ?>>
+                                            <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>
                                             Tidak Aktif
                                         </option>
-
                                     </select>
                                 </div>
 
                                 <div class="col-12 mb-3">
                                     <label class="form-label">Alamat</label>
-
-                                    <textarea
-                                        name="alamat"
-                                        class="form-control"
-                                        rows="3"
-                                        required><?= e($data_edit['alamat']); ?></textarea>
+                                    <textarea name="alamat"
+                                              class="form-control"
+                                              rows="3"
+                                              required><?= e($data_edit['alamat']); ?></textarea>
                                 </div>
 
                             </div>
 
-                            <button
-                                type="submit"
-                                name="ubah"
-                                class="btn btn-primary">
+                            <button type="submit"
+                                    name="ubah"
+                                    class="btn btn-primary">
                                 Simpan Perubahan
                             </button>
 
@@ -436,7 +410,6 @@ function e($teks) {
                             </a>
 
                         </form>
-
                     </div>
                 </div>
 
@@ -453,9 +426,9 @@ function e($teks) {
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered
-                                      table-striped table-hover
-                                      align-middle mb-0">
+                        <!-- ID EXAMPLE UNTUK DATATABLES -->
+                        <table id="example"
+                               class="table table-bordered table-striped table-hover align-middle mb-0">
 
                             <thead class="table-primary">
                                 <tr>
@@ -479,7 +452,9 @@ function e($teks) {
                                 <?php
                                 $query_siswa = mysqli_query(
                                     $koneksi,
-                                    "SELECT * FROM t_siswa ORDER BY id DESC"
+                                    "SELECT * FROM t_siswa
+                                     WHERE status_aktif = 1
+                                     ORDER BY id ASC"
                                 );
 
                                 $no = 1;
@@ -508,25 +483,19 @@ function e($teks) {
                                             ?>
                                         </td>
 
-                                        <td>
-                                            <?= e($siswa['tanggal_lahir']); ?>
-                                        </td>
+                                        <td><?= e($siswa['tanggal_lahir']); ?></td>
 
                                         <td><?= e($siswa['alamat']); ?></td>
 
                                         <td>
                                             <?php if ($siswa['status_aktif'] == 1) { ?>
-
                                                 <span class="badge text-bg-success">
                                                     Aktif
                                                 </span>
-
                                             <?php } else { ?>
-
                                                 <span class="badge text-bg-secondary">
                                                     Tidak Aktif
                                                 </span>
-
                                             <?php } ?>
                                         </td>
 
@@ -560,8 +529,7 @@ function e($teks) {
                                 ?>
 
                                     <tr>
-                                        <td
-                                            colspan="<?= $role == 'admin' ? 9 : 8; ?>"
+                                        <td colspan="<?= $role == 'admin' ? 9 : 8; ?>"
                                             class="text-center text-muted py-4">
                                             Belum ada data siswa.
                                         </td>
@@ -570,15 +538,16 @@ function e($teks) {
                                 <?php } ?>
 
                             </tbody>
-
                         </table>
 
                     </div>
                 </div>
             </div>
-        <p class="text-center text-secondary small mt-4">
+
+            <p class="text-center text-secondary small mt-4">
                 ©Sofinurjanah
             </p>
+
         </main>
     </div>
 </div>
@@ -599,18 +568,15 @@ function e($teks) {
                 <form method="POST">
 
                     <div class="modal-header">
-
                         <h5 class="modal-title" id="judulModalTambah">
                             Tambah Data Siswa
                         </h5>
 
-                        <button
-                            type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Close">
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close">
                         </button>
-
                     </div>
 
                     <div class="modal-body">
@@ -619,113 +585,85 @@ function e($teks) {
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">NIS</label>
-
-                                <input
-                                    type="text"
-                                    name="nis"
-                                    class="form-control"
-                                    required>
+                                <input type="text"
+                                       name="nis"
+                                       class="form-control"
+                                       required>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">NISN</label>
-
-                                <input
-                                    type="text"
-                                    name="nisn"
-                                    class="form-control"
-                                    required>
+                                <input type="text"
+                                       name="nisn"
+                                       class="form-control"
+                                       required>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Nama Siswa</label>
-
-                                <input
-                                    type="text"
-                                    name="nama"
-                                    class="form-control"
-                                    required>
+                                <input type="text"
+                                       name="nama"
+                                       class="form-control"
+                                       required>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Jenis Kelamin
-                                </label>
-
-                                <select
-                                    name="jenis_kelamin"
-                                    class="form-select"
-                                    required>
+                                <label class="form-label">Jenis Kelamin</label>
+                                <select name="jenis_kelamin"
+                                        class="form-select"
+                                        required>
 
                                     <option value="">-- Pilih --</option>
                                     <option value="L">Laki-laki</option>
                                     <option value="P">Perempuan</option>
-
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Tanggal Lahir
-                                </label>
-
-                                <input
-                                    type="date"
-                                    name="tanggal_lahir"
-                                    class="form-control"
-                                    required>
+                                <label class="form-label">Tanggal Lahir</label>
+                                <input type="date"
+                                       name="tanggal_lahir"
+                                       class="form-control"
+                                       required>
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">
-                                    Status Aktif
-                                </label>
-
-                                <select
-                                    name="status_aktif"
-                                    class="form-select"
-                                    required>
+                                <label class="form-label">Status Aktif</label>
+                                <select name="status_aktif"
+                                        class="form-select"
+                                        required>
 
                                     <option value="1">Aktif</option>
                                     <option value="0">Tidak Aktif</option>
-
                                 </select>
                             </div>
 
                             <div class="col-12 mb-3">
                                 <label class="form-label">Alamat</label>
-
-                                <textarea
-                                    name="alamat"
-                                    class="form-control"
-                                    rows="3"
-                                    required></textarea>
+                                <textarea name="alamat"
+                                          class="form-control"
+                                          rows="3"
+                                          required></textarea>
                             </div>
 
                         </div>
-
                     </div>
 
                     <div class="modal-footer">
-
-                        <button
-                            type="button"
-                            class="btn btn-secondary"
-                            data-bs-dismiss="modal">
+                        <button type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal">
                             Batal
                         </button>
 
-                        <button
-                            type="submit"
-                            name="tambah"
-                            class="btn btn-primary">
+                        <button type="submit"
+                                name="tambah"
+                                class="btn btn-primary">
                             Simpan Data
                         </button>
-
                     </div>
 
                 </form>
-
             </div>
         </div>
     </div>
@@ -733,8 +671,39 @@ function e($teks) {
 <?php } ?>
 
 <!-- Bootstrap JavaScript -->
-<script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js">
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript -->
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+
+<!-- Pengaturan DataTables -->
+<script>
+    new DataTable('#example', {
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [],
+        layout: {
+            topStart: 'info',
+            topEnd: 'search',
+            bottomStart: 'paging',
+            bottomEnd: 'pageLength'
+        },
+        language: {
+            search: 'Cari:',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ seluruh data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data siswa',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: '›',
+                previous: '‹'
+            }
+        }
+    });
 </script>
 
 </body>

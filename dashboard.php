@@ -12,11 +12,11 @@ if (!isset($_SESSION['role'])) {
 $nama = $_SESSION['nama'];
 $role = strtolower($_SESSION['role']);
 
-$query_siswa = mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_siswa");
+$query_siswa = mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_siswa WHERE status_aktif = 1");
 $data_siswa = mysqli_fetch_assoc($query_siswa);
 $jumlah_siswa = $data_siswa['jumlah'];
 
-$query_guru = mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_guru");
+$query_guru = mysqli_query($koneksi, "SELECT COUNT(*) AS jumlah FROM t_guru WHERE status_aktif = 1");
 $data_guru = mysqli_fetch_assoc($query_guru);
 $jumlah_guru = $data_guru['jumlah'];
 

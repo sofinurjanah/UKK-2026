@@ -239,7 +239,7 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
         <li class="nav-item mb-2">
             <a href="about_me.php"
-                 class="nav-link text-white">
+                 class="nav-link active">
                     About Me
             </a>
         </li>
