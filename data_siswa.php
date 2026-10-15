@@ -66,16 +66,16 @@ if (isset($_POST['ubah']) && $role == "admin") {
 if (isset($_GET['hapus']) && $role == "admin") {
     $id = $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "DELETE FROM t_siswa
-        WHERE id = '$id'");
+    $query = mysqli_query($koneksi, "
+    UPDATE t_siswa
+    SET status_aktif = 0
+    WHERE id = '$id'
+");
 
-    if ($query) {
-        $pesan = "Data siswa berhasil dihapus.";
-        $tipe_pesan = "success";
-    } else {
-        $pesan = "Data siswa gagal dihapus. Data mungkin masih digunakan.";
-        $tipe_pesan = "danger";
-    }
+if ($query) {
+    echo "Siswa berhasil dinonaktifkan.";
+} else {
+    echo "Siswa gagal dinonaktifkan.";
 }
 
 /* MENGAMBIL DATA SISWA UNTUK DIUBAH */
