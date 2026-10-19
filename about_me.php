@@ -42,19 +42,13 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
         <!-- SIDEBAR -->
 
         <div class="col-md-3 col-lg-2 min-vh-100 p-3"
-            style="background-color: #30318B;">
+             style="background-color: #30318B;">
 
             <h4 class="text-white mb-4">
-
                 Sistem Pelanggaran
-
             </h4>
 
-
             <ul class="nav nav-pills flex-column">
-
-
-                <!-- DASHBOARD -->
 
                 <li class="nav-item mb-2">
 
@@ -70,119 +64,73 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
                 <?php if ($role == 'admin') { ?>
 
-                    <!-- MENU ADMIN -->
-
                     <li class="nav-item mb-2">
-
                         <a href="data_siswa.php"
                            class="nav-link text-white">
-
                             Data Siswa
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item mb-2">
-
                         <a href="data_guru.php"
                            class="nav-link text-white">
-
                             Data Guru
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item mb-2">
-
                         <a href="data_kelas.php"
                            class="nav-link text-white">
-
                             Kelas
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item mb-2">
-
                         <a href="data_tahun_ajaran.php"
                            class="nav-link text-white">
-
                             Tahun Ajaran
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item mb-2">
-
                         <a href="penempatan_siswa.php"
                            class="nav-link text-white">
-
                             Penempatan Siswa
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item mb-2">
-
                         <a href="wali_kelas.php"
                            class="nav-link text-white">
-
                             Wali Kelas
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item mb-2">
-
                         <a href="kategori_pelanggaran.php"
                            class="nav-link text-white">
-
                             Kategori Pelanggaran
-
                         </a>
-
                     </li>
 
-
                     <li class="nav-item mb-2">
-
                         <a href="jenis_pelanggaran.php"
                            class="nav-link text-white">
-
                             Jenis Pelanggaran
-
                         </a>
-
                     </li>
-
 
                     <li class="nav-item mb-2">
-
                         <a href="laporan.php"
                            class="nav-link text-white">
-
                             Laporan
-
                         </a>
-
                     </li>
 
+                <?php } ?>
 
-                <?php } elseif ($role == 'guru') { ?>
 
-                    <!-- MENU GURU -->
+                <?php if ($role == 'guru') { ?>
 
                     <li class="nav-item mb-2">
 
@@ -231,7 +179,6 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
                     </li>
 
-
                 <?php } ?>
 
 
@@ -251,8 +198,6 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
                 Logout
             </a>
         </li>
-
-
             </ul>
 
         </div>

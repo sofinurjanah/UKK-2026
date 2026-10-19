@@ -7,74 +7,74 @@ $role = $_SESSION['role'];
 $pesan = '';
 $tipe_pesan = '';
 
-/* TAMBAH DATA KELAS */
+/* TAMBAH DATA TAHUN AJARAN */
 if (isset($_POST['tambah']) && $role == "admin") {
     $nama = $_POST['nama'];
-    $tingkat = $_POST['tingkat'];
-    $jurusan = $_POST['jurusan'];
+    $tanggal_mulai = $_POST['tanggal_mulai'];
+    $tanggal_selesai = $_POST['tanggal_selesai'];
     $status_aktif = $_POST['status_aktif'];
 
-    $query = mysqli_query($koneksi, "INSERT INTO t_kelas
-        (nama, tingkat, jurusan, status_aktif)
+    $query = mysqli_query($koneksi, "INSERT INTO t_tahun_ajaran
+        (nama, tanggal_mulai, tanggal_selesai, status_aktif)
         VALUES
-        ('$nama', '$tingkat', '$jurusan', '$status_aktif')");
+        ('$nama', '$tanggal_mulai', '$tanggal_selesai', '$status_aktif')");
 
     if ($query) {
-        $pesan = "Data kelas berhasil ditambahkan.";
+        $pesan = "Data tahun ajaran berhasil ditambahkan.";
         $tipe_pesan = "success";
     } else {
-        $pesan = "Data kelas gagal ditambahkan.";
+        $pesan = "Data tahun ajaran gagal ditambahkan.";
         $tipe_pesan = "danger";
     }
 }
 
-/* UBAH DATA KELAS */
+/* UBAH DATA TAHUN AJARAN */
 if (isset($_POST['ubah']) && $role == "admin") {
     $id = $_POST['id'];
     $nama = $_POST['nama'];
-    $tingkat = $_POST['tingkat'];
-    $jurusan = $_POST['jurusan'];
+    $tanggal_mulai = $_POST['tanggal_mulai'];
+    $tanggal_selesai = $_POST['tanggal_selesai'];
     $status_aktif = $_POST['status_aktif'];
 
-    $query = mysqli_query($koneksi, "UPDATE t_kelas SET
+    $query = mysqli_query($koneksi, "UPDATE t_tahun_ajaran SET
         nama = '$nama',
-        tingkat = '$tingkat',
-        jurusan = '$jurusan',
+        tanggal_mulai = '$tanggal_mulai',
+        tanggal_selesai = '$tanggal_selesai',
         status_aktif = '$status_aktif'
         WHERE id = '$id'");
 
     if ($query) {
-        $pesan = "Data kelas berhasil diubah.";
+        $pesan = "Data tahun ajaran berhasil diubah.";
         $tipe_pesan = "success";
     } else {
-        $pesan = "Data kelas gagal diubah.";
+        $pesan = "Data tahun ajaran gagal diubah.";
         $tipe_pesan = "danger";
     }
 }
 
-/* HAPUS DATA KELAS */
+/* HAPUS DATA TAHUN AJARAN */
 if (isset($_GET['hapus']) && $role == "admin") {
     $id = $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "DELETE FROM t_kelas
+    $query = mysqli_query($koneksi, "DELETE FROM t_tahun_ajaran
         WHERE id = '$id'");
 
     if ($query) {
-        $pesan = "Data kelas berhasil dihapus.";
+        $pesan = "Data tahun ajaran berhasil dihapus.";
         $tipe_pesan = "success";
     } else {
-        $pesan = "Data kelas gagal dihapus. Data mungkin masih digunakan.";
+        $pesan = "Data tahun ajaran gagal dihapus. Data mungkin masih digunakan.";
         $tipe_pesan = "danger";
     }
 }
 
-/* MENGAMBIL DATA KELAS UNTUK DIUBAH */
+/* MENGAMBIL DATA TAHUN AJARAN UNTUK DIUBAH */
 $data_edit = null;
 
 if (isset($_GET['edit']) && $role == "admin") {
     $id_edit = $_GET['edit'];
 
-    $query_edit = mysqli_query($koneksi, "SELECT * FROM t_kelas
+    $query_edit = mysqli_query($koneksi, "SELECT * FROM t_tahun_ajaran
         WHERE id = '$id_edit'");
 
     $data_edit = mysqli_fetch_assoc($query_edit);
@@ -86,21 +86,18 @@ if (isset($_GET['edit']) && $role == "admin") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Kelas</title>
+    <title>Data Tahun Ajaran</title>
 
-    <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
           rel="stylesheet">
-
-    <!-- CSS DATATABLES -->
-    <link rel="stylesheet"
-          href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
+    <link href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css"
+          rel="stylesheet">
 </head>
 
 <body class="bg-light">
 
 <div class="container-fluid">
-    <div class="row">
+     <div class="row">
 
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 min-vh-100 p-3"
@@ -111,44 +108,70 @@ if (isset($_GET['edit']) && $role == "admin") {
             <ul class="nav nav-pills flex-column">
 
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">Dashboard</a>
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
                 </li>
 
-                <li class="nav-item mb-2">
-                    <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
-                </li>
+                <?php if ($role == "admin") { ?>
 
-                <li class="nav-item mb-2">
-                    <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_siswa.php" class="nav-link text-white">Data Siswa</a>
+                    </li>
 
-                <li class="nav-item mb-2">
-                    <a href="data_kelas.php" class="nav-link active" aria-current="page">Kelas</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_guru.php" class="nav-link text-white">Data Guru</a>
+                    </li>
 
-                <li class="nav-item mb-2">
-                    <a href="data_tahun_ajaran.php" class="nav-link text-white">Tahun Ajaran</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_kelas.php" class="nav-link text-white">Kelas</a>
+                    </li>
 
-                <li class="nav-item mb-2">
-                    <a href="penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_tahun_ajaran.php" class="nav-link active" aria-current="page">
+                            Tahun Ajaran
+                        </a>
+                    </li>
 
-                <li class="nav-item mb-2">
-                    <a href="wali_kelas.php" class="nav-link text-white">Wali Kelas</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="penempatan_siswa.php" class="nav-link text-white">Penempatan Siswa</a>
+                    </li>
 
-                <li class="nav-item mb-2">
-                    <a href="kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="wali_kelas.php" class="nav-link text-white">Wali Kelas</a>
+                    </li>
 
-                <li class="nav-item mb-2">
-                    <a href="jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="kategori_pelanggaran.php" class="nav-link text-white">Kategori Pelanggaran</a>
+                    </li>
 
-                <li class="nav-item mb-2">
-                    <a href="laporan.php" class="nav-link text-white">Laporan</a>
-                </li>
+                    <li class="nav-item mb-2">
+                        <a href="jenis_pelanggaran.php" class="nav-link text-white">Jenis Pelanggaran</a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="laporan.php" class="nav-link text-white">Laporan</a>
+                    </li>
+
+                <?php } elseif ($role == "guru") { ?>
+
+                    <li class="nav-item mb-2">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">Catat Pelanggaran</a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="tindakan.php" class="nav-link text-white">Tindakan</a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="riwayat_pelanggaran.php" class="nav-link text-white">Riwayat Pelanggaran</a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="rekap_poin.php" class="nav-link text-white">Rekap Poin</a>
+                    </li>
+
+                <?php } ?>
 
                 <hr class="text-secondary">
 
@@ -167,16 +190,17 @@ if (isset($_GET['edit']) && $role == "admin") {
         <main class="col-md-9 col-lg-10 p-4">
 
             <!-- JUDUL DAN TOMBOL TAMBAH -->
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between
+                        align-items-center mb-4">
 
-                <h3 class="fw-bold mb-0">Data Kelas</h3>
+                <h3 class="fw-bold mb-0">Tahun Ajaran</h3>
 
                 <?php if ($role == "admin" && $data_edit == null) { ?>
                     <button type="button"
-                            class="btn btn-primary"
+                      class="btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#modalTambah">
-                        Tambah Kelas
+                        Tambah Tahun Ajaran
                     </button>
                 <?php } ?>
 
@@ -196,13 +220,13 @@ if (isset($_GET['edit']) && $role == "admin") {
                 </div>
             <?php } ?>
 
-            <!-- FORM UBAH KELAS -->
+            <!-- FORM UBAH -->
             <?php if ($role == "admin" && $data_edit != null) { ?>
 
                 <div class="card border-0 shadow-sm mb-4">
 
                     <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">Ubah Data Kelas</h5>
+                        <h5 class="mb-0">Ubah Tahun Ajaran</h5>
                     </div>
 
                     <div class="card-body">
@@ -215,36 +239,40 @@ if (isset($_GET['edit']) && $role == "admin") {
                             <div class="row">
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nama Kelas</label>
+                                    <label class="form-label">Nama Tahun Ajaran</label>
                                     <input type="text" name="nama"
                                            class="form-control"
                                            value="<?php echo htmlspecialchars($data_edit['nama'], ENT_QUOTES, 'UTF-8'); ?>"
-                                           required>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Tingkat</label>
-                                    <select name="tingkat" class="form-select" required>
-                                        <option value="X" <?php if ($data_edit['tingkat'] == "X") echo "selected"; ?>>X</option>
-                                        <option value="XI" <?php if ($data_edit['tingkat'] == "XI") echo "selected"; ?>>XI</option>
-                                        <option value="XII" <?php if ($data_edit['tingkat'] == "XII") echo "selected"; ?>>XII</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Jurusan</label>
-                                    <input type="text" name="jurusan"
-                                           class="form-control"
-                                           value="<?php echo htmlspecialchars($data_edit['jurusan'], ENT_QUOTES, 'UTF-8'); ?>"
+                                           placeholder="Contoh: 2026/2027"
                                            required>
                                 </div>
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Status Aktif</label>
                                     <select name="status_aktif" class="form-select" required>
-                                        <option value="1" <?php if ($data_edit['status_aktif'] == 1) echo "selected"; ?>>Aktif</option>
-                                        <option value="0" <?php if ($data_edit['status_aktif'] == 0) echo "selected"; ?>>Tidak Aktif</option>
+                                        <option value="1" <?php if ($data_edit['status_aktif'] == 1) echo "selected"; ?>>
+                                            Aktif
+                                        </option>
+                                        <option value="0" <?php if ($data_edit['status_aktif'] == 0) echo "selected"; ?>>
+                                            Tidak Aktif
+                                        </option>
                                     </select>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tanggal Mulai</label>
+                                    <input type="date" name="tanggal_mulai"
+                                           class="form-control"
+                                           value="<?php echo $data_edit['tanggal_mulai']; ?>"
+                                           required>
+                                </div>
+
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Tanggal Selesai</label>
+                                    <input type="date" name="tanggal_selesai"
+                                           class="form-control"
+                                           value="<?php echo $data_edit['tanggal_selesai']; ?>"
+                                           required>
                                 </div>
 
                             </div>
@@ -253,7 +281,9 @@ if (isset($_GET['edit']) && $role == "admin") {
                                 Simpan Perubahan
                             </button>
 
-                            <a href="data_kelas.php" class="btn btn-danger">Batal</a>
+                            <a href="data_tahun_ajaran.php" class="btn btn-danger">
+                                Batal
+                            </a>
 
                         </form>
 
@@ -262,26 +292,24 @@ if (isset($_GET['edit']) && $role == "admin") {
 
             <?php } ?>
 
-            <!-- DAFTAR KELAS -->
+            <!-- DAFTAR TAHUN AJARAN -->
             <div class="card border-0 shadow-sm">
 
                 <div class="card-header bg-white py-3">
-                    <h5 class="mb-0">Daftar Kelas</h5>
-                </div>
+                    <h5 class="mb-0">Daftar Tahun Ajaran</h5>
+                       </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
 
-                        <!-- TABEL DATATABLES -->
-                        <table id="example"
-                               class="table table-bordered table-striped table-hover align-middle">
+                        <table id="example" class="table table-bordered table-striped table-hover align-middle mb-0">
 
                             <thead class="table-primary">
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Kelas</th>
-                                    <th>Tingkat</th>
-                                    <th>Jurusan</th>
+                                    <th>Nama Tahun Ajaran</th>
+                                    <th>Tanggal Mulai</th>
+                                    <th>Tanggal Selesai</th>
                                     <th>Status</th>
 
                                     <?php if ($role == "admin") { ?>
@@ -293,23 +321,30 @@ if (isset($_GET['edit']) && $role == "admin") {
                             <tbody>
 
                                 <?php
-                                $query_kelas = mysqli_query($koneksi, "SELECT * FROM t_kelas");
+                                $query_tahun = mysqli_query(
+                                    $koneksi,
+                                    "SELECT * FROM t_tahun_ajaran
+                                     ORDER BY tanggal_mulai DESC"
+                                );
+
                                 $no = 1;
 
-                                while ($kelas = mysqli_fetch_assoc($query_kelas)) {
+                                while ($tahun = mysqli_fetch_assoc($query_tahun)) {
                                 ?>
 
                                     <tr>
-                                        <td><?php echo $no++; ?></td>
-
-                                        <td><?php echo htmlspecialchars($kelas['nama'], ENT_QUOTES, 'UTF-8'); ?></td>
-
-                                        <td><?php echo htmlspecialchars($kelas['tingkat'], ENT_QUOTES, 'UTF-8'); ?></td>
-
-                                        <td><?php echo htmlspecialchars($kelas['jurusan'], ENT_QUOTES, 'UTF-8'); ?></td>
+                                        <td><?php echo $no; ?></td>
 
                                         <td>
-                                            <?php if ($kelas['status_aktif'] == 1) { ?>
+                                            <?php echo htmlspecialchars($tahun['nama'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </td>
+
+                                        <td><?php echo $tahun['tanggal_mulai']; ?></td>
+
+                                        <td><?php echo $tahun['tanggal_selesai']; ?></td>
+
+                                        <td>
+                                            <?php if ($tahun['status_aktif'] == 1) { ?>
                                                 <span class="badge bg-success">Aktif</span>
                                             <?php } else { ?>
                                                 <span class="badge bg-secondary">Tidak Aktif</span>
@@ -318,46 +353,60 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                                         <?php if ($role == "admin") { ?>
                                             <td class="text-nowrap">
-                                                <a href="data_kelas.php?edit=<?php echo $kelas['id']; ?>"
-                                                   class="btn btn-warning btn-sm">Ubah</a>
 
-                                                <a href="data_kelas.php?hapus=<?php echo $kelas['id']; ?>"
+                                                <a href="data_tahun_ajaran.php?edit=<?php echo $tahun['id']; ?>"
+                                                   class="btn btn-warning btn-sm">
+                                                    Ubah
+                                                </a>
+
+                                                <a href="data_tahun_ajaran.php?hapus=<?php echo $tahun['id']; ?>"
                                                    class="btn btn-danger btn-sm"
-                                                   onclick="return confirm('Yakin ingin menghapus data kelas ini?')">
+                                                   onclick="return confirm('Yakin ingin menghapus tahun ajaran ini?')">
                                                     Hapus
                                                 </a>
+
                                             </td>
                                         <?php } ?>
+
                                     </tr>
 
-                                <?php } ?>
+                                <?php
+                                    $no++;
+                                }
+                                ?>
 
                             </tbody>
+
                         </table>
 
                     </div>
                 </div>
             </div>
 
-            <p class="text-center text-secondary small mt-4">©Sofinurjanah</p>
+            <p class="text-center text-secondary small mt-4">
+                ©Sofinurjanah
+            </p>
 
         </main>
     </div>
 </div>
 
-<!-- MODAL TAMBAH KELAS -->
+<!-- MODAL TAMBAH TAHUN AJARAN -->
 <?php if ($role == "admin") { ?>
 
 <div class="modal fade" id="modalTambah" tabindex="-1"
      aria-labelledby="judulModalTambah" aria-hidden="true">
 
-    <div class="modal-dialog">
+  <div class="modal-dialog">
         <div class="modal-content">
 
             <form method="POST">
 
                 <div class="modal-header">
-                    <h5 class="modal-title" id="judulModalTambah">Tambah Data Kelas</h5>
+                    <h5 class="modal-title" id="judulModalTambah">
+                        Tambah Tahun Ajaran
+                    </h5>
+
                     <button type="button" class="btn-close"
                             data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -365,23 +414,23 @@ if (isset($_GET['edit']) && $role == "admin") {
                 <div class="modal-body">
 
                     <div class="mb-3">
-                        <label class="form-label">Nama Kelas</label>
-                        <input type="text" name="nama" class="form-control" required>
+                        <label class="form-label">Nama Tahun Ajaran</label>
+                        <input type="text" name="nama"
+                               class="form-control"
+                               placeholder="Contoh: 2026/2027"
+                               required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Tingkat</label>
-                        <select name="tingkat" class="form-select" required>
-                            <option value="">-- Pilih Tingkat --</option>
-                            <option value="X">X</option>
-                            <option value="XI">XI</option>
-                            <option value="XII">XII</option>
-                        </select>
+                        <label class="form-label">Tanggal Mulai</label>
+                        <input type="date" name="tanggal_mulai"
+                               class="form-control" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label">Jurusan</label>
-                        <input type="text" name="jurusan" class="form-control" required>
+                        <label class="form-label">Tanggal Selesai</label>
+                        <input type="date" name="tanggal_selesai"
+                               class="form-control" required>
                     </div>
 
                     <div class="mb-3">
@@ -395,13 +444,16 @@ if (isset($_GET['edit']) && $role == "admin") {
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+
+                    <button type="button" class="btn btn-danger"
+                            data-bs-dismiss="modal">
                         Batal
                     </button>
 
                     <button type="submit" name="tambah" class="btn btn-success">
                         Tambah
                     </button>
+
                 </div>
 
             </form>
@@ -412,27 +464,39 @@ if (isset($_GET['edit']) && $role == "admin") {
 
 <?php } ?>
 
-<!-- BOOTSTRAP -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
-
-<!-- JAVASCRIPT DATATABLES -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        if (typeof DataTable !== 'undefined') {
-            new DataTable('#example', {
-                layout: {
-                    topStart: 'info',
-                    bottom: 'paging',
-                    bottomStart: null,
-                    bottomEnd: null
-                }
-            });
-        } else {
-            console.error('DataTables gagal dimuat. Periksa koneksi CDN.');
+document.addEventListener('DOMContentLoaded', function () {
+    new DataTable('#example', {
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [],
+        layout: {
+            topStart: 'info',
+            topEnd: 'search',
+            bottomStart: 'paging',
+            bottomEnd: 'pageLength'
+        },
+        language: {
+            search: 'Cari:',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ seluruh data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data tahun ajaran',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: '›',
+                previous: '‹'
+            }
         }
     });
+});
 </script>
 
 </body>
