@@ -1,10 +1,10 @@
+
 <?php
 
 include "config/koneksi.php";
 include "includes/cek_session.php";
 
 $role = $_SESSION['role'];
-
 
 // =====================================
 // FILTER
@@ -22,259 +22,338 @@ $tanggal_akhir = isset($_GET['tanggal_akhir'])
     ? $_GET['tanggal_akhir']
     : "";
 
-
 // =====================================
 // WHERE
 // =====================================
 
 $where = "WHERE 1=1";
 
-
 if ($nama_siswa != "") {
-
     $where .= " AND nama_siswa LIKE '%$nama_siswa%'";
-
 }
-
 
 if ($tanggal_awal != "") {
-
     $where .= " AND tanggal >= '$tanggal_awal'";
-
 }
-
 
 if ($tanggal_akhir != "") {
-
     $where .= " AND tanggal <= '$tanggal_akhir'";
-
 }
-
 
 // =====================================
 // DATA RIWAYAT
 // =====================================
 
 $query = mysqli_query($koneksi, "
-
     SELECT *
     FROM t_pelanggaran_siswa
-
     $where
-
     ORDER BY tanggal DESC, nama_siswa ASC
-
 ");
 
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
 
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Riwayat Pelanggaran</title>
 
+     <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- DataTables CSS -->
+    <link
+        href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+        rel="stylesheet"
+    >
+
 </head>
 
-<body>
+<body class="bg-light">
+
+<div class="container-fluid">
+    <div class="row min-vh-100">
+
+        <!-- SIDEBAR -->
+        <aside
+            class="col-md-3 col-lg-2 min-vh-100 p-3"
+            style="background-color: #30318B;"
+        >
+
+            <h4 class="text-white mb-4">
+                Sistem Pelanggaran
+            </h4>
+
+            <ul class="nav nav-pills flex-column">
+
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
+                </li>
+
+                <?php if ($role == 'admin') { ?>
+
+                    <li class="nav-item mb-2">
+                        <a href="data_siswa.php" class="nav-link text-white">
+                            Data Siswa
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="data_guru.php" class="nav-link text-white">
+                            Data Guru
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="data_kelas.php" class="nav-link text-white">
+                            Kelas
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="data_tahun_ajaran.php" class="nav-link text-white">
+                            Tahun Ajaran
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="penempatan_siswa.php" class="nav-link text-white">
+                            Penempatan Siswa
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="wali_kelas.php" class="nav-link text-white">
+                            Wali Kelas
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="kategori_pelanggaran.php" class="nav-link text-white">
+                            Kategori Pelanggaran
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="jenis_pelanggaran.php" class="nav-link text-white">
+                            Jenis Pelanggaran
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="laporan.php" class="nav-link text-white">
+                            Laporan
+                        </a>
+                    </li>
+
+                <?php } elseif ($role == 'guru') { ?>
+
+                    <li class="nav-item mb-2">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
+                            Catat Pelanggaran
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="tindakan.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="riwayat_pelanggaran.php" class="nav-link active">
+                            Riwayat
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="rekap_poin.php" class="nav-link text-white">
+                            Rekap Poin
+                        </a>
+                    </li>
 
+                <?php } ?>
 
-<h1>Riwayat Pelanggaran Siswa</h1>
+                <hr class="text-white-50">
 
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
 
-<a href="dashboard.php">
-    Kembali ke Dashboard
-</a>
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
 
-<hr>
+            </ul>
 
+        </aside>
 
-<!-- =====================================
-     FILTER
-====================================== -->
+        <!-- KONTEN UTAMA -->
+        <main class="col-md-9 col-lg-10 p-4">
 
-<h2>Cari Riwayat</h2>
+            <!-- JUDUL -->
+            <div class="mb-4">
+                <h2 class="fw-bold mb-1">
+                    Riwayat Pelanggaran Siswa
+                </h2>
+            </div>
 
+            <!-- TABEL RIWAYAT -->
+            <div class="card border-0 shadow-sm">
 
-<form method="GET">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0">
+                        Daftar Riwayat Pelanggaran
+                    </h5>
+                </div>
 
+                <div class="card-body">
 
-    <p>
+                    <div class="table-responsive">
 
-        <label>
-            Nama Siswa
-        </label>
+                        <table
+                            id="example"
+                            class="table table-bordered table-hover align-middle"
+                        >
 
-        <br>
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>Pelanggaran</th>
+                                    <th>Poin</th>
+                                    <th>Guru</th>
+                                    <th>Keterangan</th>
+                                    <th>Tindakan</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
 
-        <input type="text"
-               name="nama_siswa"
-               value="<?php echo $nama_siswa; ?>"
-               placeholder="Masukkan nama siswa">
-
-    </p>
-
-
-    <p>
-
-        <label>
-            Tanggal Awal
-        </label>
-
-        <br>
-
-        <input type="date"
-               name="tanggal_awal"
-               value="<?php echo $tanggal_awal; ?>">
-
-    </p>
-
-
-    <p>
-
-        <label>
-            Tanggal Akhir
-        </label>
-
-        <br>
-
-        <input type="date"
-               name="tanggal_akhir"
-               value="<?php echo $tanggal_akhir; ?>">
-
-    </p>
-
-
-    <button type="submit">
-        Cari
-    </button>
-
-
-    <a href="riwayat_pelanggaran.php">
-        Reset
-    </a>
-
-
-</form>
-
-
-<hr>
-
-
-<!-- =====================================
-     TABEL RIWAYAT
-====================================== -->
-
-<h2>Daftar Riwayat Pelanggaran</h2>
-
-
-<table border="1"
-       cellpadding="5"
-       cellspacing="0">
-
-    <tr>
-
-        <th>No</th>
-
-        <th>Tanggal</th>
-
-        <th>Nama Siswa</th>
-
-        <th>Kelas</th>
-
-        <th>Pelanggaran</th>
-
-        <th>Poin</th>
-
-        <th>Guru</th>
-
-        <th>Keterangan</th>
-
-        <th>Tindakan</th>
-
-        <th>Status</th>
-
-    </tr>
-
-
-    <?php
-
-    $no = 1;
-
-
-    while ($row = mysqli_fetch_assoc($query)) {
-
-    ?>
-
-        <tr>
-
-            <td>
-                <?php echo $no; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['tanggal']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['nama_siswa']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['nama_kelas']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['nama_pelanggaran']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['poin']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['nama_guru']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['keterangan']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['tindakan']; ?>
-            </td>
-
-
-            <td>
-                <?php echo $row['status']; ?>
-            </td>
-
-        </tr>
-
-
-    <?php
-
-        $no++;
-
-    }
-
-    ?>
-
-
-</table>
-
+                            <tbody>
+
+                                <?php
+
+                                $no = 1;
+
+                                while ($row = mysqli_fetch_assoc($query)) {
+
+                                ?>
+
+                                    <tr>
+
+                                        <td>
+                                            <?php echo $no++; ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['tanggal']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['nama_siswa']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['nama_kelas']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['nama_pelanggaran']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['poin']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['nama_guru']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['keterangan']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['tindakan']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['status']); ?>
+                                        </td>
+
+                                    </tr>
+
+                                <?php } ?>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <p class="text-center text-secondary small mt-4">
+                ©Sofinurjanah
+            </p>
+
+        </main>
+        <!-- AKHIR KONTEN UTAMA -->
+
+    </div>
+</div>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript -->
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+
+<!-- Pengaturan DataTables -->
+<script>
+    new DataTable('#example', {
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [],
+        layout: {
+            topStart: 'info',
+            topEnd: 'search',
+            bottomStart: 'paging',
+            bottomEnd: 'pageLength'
+        },
+        language: {
+            search: 'Cari:',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ seluruh data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data siswa',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: '›',
+                previous: '‹'
+            }
+        }
+    });
+</script>
 
 </body>
-
 </html>

@@ -6,6 +6,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" 
     rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body style="background-color: #30318B;">

@@ -1,6 +1,5 @@
 
 <?php
-
 include "config/koneksi.php";
 include "includes/cek_session.php";
 
@@ -9,7 +8,6 @@ $pesan = '';
 $tipe_pesan = '';
 
 if (isset($_POST['tambah']) && $role == "admin") {
-
     $pelanggaran_kategori_id = $_POST['pelanggaran_kategori_id'];
     $kode = $_POST['kode'];
     $nama = $_POST['nama'];
@@ -18,9 +16,9 @@ if (isset($_POST['tambah']) && $role == "admin") {
     $status_aktif = $_POST['status_aktif'];
 
     $query = mysqli_query($koneksi, "INSERT INTO t_pelanggaran
-    (pelanggaran_kategori_id, kode, nama, poin, deskripsi, status_aktif)
-    VALUES
-    ('$pelanggaran_kategori_id', '$kode', '$nama', '$poin', '$deskripsi', '$status_aktif')");
+        (pelanggaran_kategori_id, kode, nama, poin, deskripsi, status_aktif)
+        VALUES
+        ('$pelanggaran_kategori_id', '$kode', '$nama', '$poin', '$deskripsi', '$status_aktif')");
 
     if ($query) {
         $pesan = "Jenis pelanggaran berhasil ditambahkan.";
@@ -32,7 +30,6 @@ if (isset($_POST['tambah']) && $role == "admin") {
 }
 
 if (isset($_POST['ubah']) && $role == "admin") {
-
     $id = $_POST['id'];
     $pelanggaran_kategori_id = $_POST['pelanggaran_kategori_id'];
     $kode = $_POST['kode'];
@@ -41,13 +38,14 @@ if (isset($_POST['ubah']) && $role == "admin") {
     $deskripsi = $_POST['deskripsi'];
     $status_aktif = $_POST['status_aktif'];
 
-    $query = mysqli_query($koneksi, "UPDATE t_pelanggaran SET pelanggaran_kategori_id = '$pelanggaran_kategori_id',
-    kode = '$kode',
-    nama = '$nama',
-    poin = '$poin',
-    deskripsi = '$deskripsi',
-    status_aktif = '$status_aktif'
-    WHERE id = '$id'");
+    $query = mysqli_query($koneksi, "UPDATE t_pelanggaran SET
+        pelanggaran_kategori_id = '$pelanggaran_kategori_id',
+        kode = '$kode',
+        nama = '$nama',
+        poin = '$poin',
+        deskripsi = '$deskripsi',
+        status_aktif = '$status_aktif'
+        WHERE id = '$id'");
 
     if ($query) {
         $pesan = "Jenis pelanggaran berhasil diubah.";
@@ -59,11 +57,12 @@ if (isset($_POST['ubah']) && $role == "admin") {
 }
 
 if (isset($_GET['hapus']) && $role == "admin") {
-
     $id = $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "DELETE FROM t_pelanggaran
-        WHERE id = '$id'");
+    $query = mysqli_query(
+        $koneksi,
+        "DELETE FROM t_pelanggaran WHERE id = '$id'"
+    );
 
     if ($query) {
         $pesan = "Jenis pelanggaran berhasil dihapus.";
@@ -76,17 +75,16 @@ if (isset($_GET['hapus']) && $role == "admin") {
 
 $data_edit = null;
 
-if (isset($_GET['edit'])) {
-
+if (isset($_GET['edit']) && $role == "admin") {
     $id_edit = $_GET['edit'];
 
-    $query_edit = mysqli_query($koneksi, "SELECT *
-        FROM t_pelanggaran
-        WHERE id = '$id_edit'");
+    $query_edit = mysqli_query(
+        $koneksi,
+        "SELECT * FROM t_pelanggaran WHERE id = '$id_edit'"
+    );
 
     $data_edit = mysqli_fetch_assoc($query_edit);
 }
-
 ?>
 
 <!DOCTYPE html>
@@ -97,6 +95,8 @@ if (isset($_GET['edit'])) {
     <title>Kelola Jenis Pelanggaran</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-light">
@@ -191,15 +191,25 @@ if (isset($_GET['edit'])) {
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
-<!-- JUDUL HALAMAN -->
-<div class="d-flex justify-content-between
-            align-items-center mb-4">
 
-    <h3 class="fw-bold mb-0">Kelola Jenis Pelanggaran</h3>
-</div>
+            <!-- JUDUL DAN TOMBOL TAMBAH -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="fw-bold mb-0">Kelola Jenis Pelanggaran</h3>
+
+                <?php if ($role == "admin" && $data_edit == null) { ?>
+                    <button type="button"
+                            class="btn btn-primary"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#formTambah"
+                            aria-expanded="false"
+                            aria-controls="formTambah">
+                        + Tambah Jenis Pelanggaran
+                    </button>
+                <?php } ?>
+            </div>
+
             <!-- NOTIFIKASI -->
             <?php if ($pesan !== '') { ?>
-
                 <div class="alert alert-<?php echo $tipe_pesan; ?> alert-dismissible fade show"
                      role="alert">
 
@@ -210,133 +220,47 @@ if (isset($_GET['edit'])) {
                             data-bs-dismiss="alert"
                             aria-label="Tutup"></button>
                 </div>
-
             <?php } ?>
 
             <!-- FORM TAMBAH DAN UBAH -->
             <?php if ($role == "admin") { ?>
 
-                <?php if ($data_edit != null) { ?>
+                <?php
+                // Form terbuka otomatis saat mode edit.
+                $kelasForm = ($data_edit != null) ? 'show' : '';
+                ?>
+
+                <div class="collapse <?php echo $kelasForm; ?>" id="formTambah">
 
                     <div class="card shadow-sm border-0 mb-4">
+
                         <div class="card-header bg-white py-3">
-                            <h5 class="mb-0">Ubah Jenis Pelanggaran</h5>
+                            <h5 class="mb-0">
+                                <?php
+                                echo ($data_edit != null)
+                                    ? "Ubah Jenis Pelanggaran"
+                                    : "Tambah Jenis Pelanggaran";
+                                ?>
+                            </h5>
                         </div>
 
                         <div class="card-body">
+
                             <form method="POST">
 
-                                <input type="hidden" name="id"
-                                       value="<?php echo $data_edit['id']; ?>">
+                                <?php if ($data_edit != null) { ?>
+                                    <input type="hidden"
+                                           name="id"
+                                           value="<?php echo htmlspecialchars($data_edit['id'], ENT_QUOTES, 'UTF-8'); ?>">
+                                <?php } ?>
 
+                                <!-- KATEGORI -->
                                 <div class="mb-3">
                                     <label class="form-label">Kategori Pelanggaran</label>
 
                                     <select name="pelanggaran_kategori_id"
-                                            class="form-select" required>
-
-                                        <?php
-                                        $kategori = mysqli_query(
-                                            $koneksi,
-                                            "SELECT * FROM t_pelanggaran_kategori
-                                             WHERE status_aktif = 1
-                                             ORDER BY nama ASC"
-                                        );
-
-                                        while ($row = mysqli_fetch_assoc($kategori)) {
-                                        ?>
-
-                                            <option value="<?php echo $row['id']; ?>"
-                                                <?php
-                                                if ($data_edit['pelanggaran_kategori_id'] == $row['id'])
-                                                    echo "selected";
-                                                ?>>
-                                                <?php echo $row['nama']; ?>
-                                            </option>
-
-                                        <?php } ?>
-
-                                    </select>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Kode Pelanggaran</label>
-                                    <input type="text" name="kode"
-                                           class="form-control"
-                                           value="<?php echo $data_edit['kode']; ?>"
-                                           required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Nama Pelanggaran</label>
-                                    <input type="text" name="nama"
-                                           class="form-control"
-                                           value="<?php echo $data_edit['nama']; ?>"
-                                           required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Poin</label>
-                                    <input type="number" name="poin"
-                                           class="form-control"
-                                           value="<?php echo $data_edit['poin']; ?>"
-                                           min="0" required>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Deskripsi</label>
-                                    <textarea name="deskripsi"
-                                              class="form-control"
-                                              rows="4"><?php echo $data_edit['deskripsi']; ?></textarea>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label">Status</label>
-                                    <select name="status_aktif"
-                                            class="form-select" required>
-
-                                        <option value="1"
-                                            <?php
-                                            if ($data_edit['status_aktif'] == 1)
-                                                echo "selected";
-                                            ?>>Aktif</option>
-
-                                        <option value="0"
-                                            <?php
-                                            if ($data_edit['status_aktif'] == 0)
-                                                echo "selected";
-                                            ?>>Tidak Aktif</option>
-
-                                    </select>
-                                </div>
-
-                                <button type="submit" name="ubah"
-                                        class="btn btn-primary me-2">
-                                    Simpan Perubahan
-                                </button>
-
-                                <a href="jenis_pelanggaran.php"
-                                   class="btn btn-secondary">Batal</a>
-
-                            </form>
-                        </div>
-                    </div>
-
-                <?php } else { ?>
-
-                    <div class="card shadow-sm border-0 mb-4">
-                        <div class="card-header bg-white py-3">
-                            <h5 class="mb-0">Tambah Jenis Pelanggaran</h5>
-                        </div>
-
-                        <div class="card-body">
-                            <form method="POST">
-
-                                <div class="mb-3">
-                                    <label class="form-label">Kategori Pelanggaran</label>
-
-                                    <select name="pelanggaran_kategori_id"
-                                            class="form-select" required>
+                                            class="form-select"
+                                            required>
 
                                         <option value="">-- Pilih Kategori --</option>
 
@@ -348,75 +272,124 @@ if (isset($_GET['edit'])) {
                                              ORDER BY nama ASC"
                                         );
 
-                                        while ($row = mysqli_fetch_assoc($kategori)) {
+                                        while ($rowKategori = mysqli_fetch_assoc($kategori)) {
+                                            $selected = (
+                                                $data_edit != null &&
+                                                $data_edit['pelanggaran_kategori_id'] == $rowKategori['id']
+                                            ) ? 'selected' : '';
                                         ?>
-
-                                            <option value="<?php echo $row['id']; ?>">
-                                                <?php echo $row['nama']; ?>
+                                            <option value="<?php echo $rowKategori['id']; ?>"
+                                                <?php echo $selected; ?>>
+                                                <?php echo htmlspecialchars($rowKategori['nama'], ENT_QUOTES, 'UTF-8'); ?>
                                             </option>
-
                                         <?php } ?>
 
                                     </select>
                                 </div>
 
+                                <!-- KODE -->
                                 <div class="mb-3">
                                     <label class="form-label">Kode Pelanggaran</label>
-                                    <input type="text" name="kode"
+
+                                    <input type="text"
+                                           name="kode"
                                            class="form-control"
                                            placeholder="Contoh: PLG001"
+                                           value="<?php echo ($data_edit != null) ? htmlspecialchars($data_edit['kode'], ENT_QUOTES, 'UTF-8') : ''; ?>"
                                            required>
                                 </div>
 
+                                <!-- NAMA -->
                                 <div class="mb-3">
                                     <label class="form-label">Nama Pelanggaran</label>
-                                    <input type="text" name="nama"
+
+                                    <input type="text"
+                                           name="nama"
                                            class="form-control"
                                            placeholder="Contoh: Terlambat"
+                                           value="<?php echo ($data_edit != null) ? htmlspecialchars($data_edit['nama'], ENT_QUOTES, 'UTF-8') : ''; ?>"
                                            required>
                                 </div>
 
+                                <!-- POIN -->
                                 <div class="mb-3">
                                     <label class="form-label">Poin</label>
-                                    <input type="number" name="poin"
+
+                                    <input type="number"
+                                           name="poin"
                                            class="form-control"
                                            min="0"
                                            placeholder="Contoh: 5"
+                                           value="<?php echo ($data_edit != null) ? htmlspecialchars($data_edit['poin'], ENT_QUOTES, 'UTF-8') : ''; ?>"
                                            required>
                                 </div>
 
+                                <!-- DESKRIPSI -->
                                 <div class="mb-3">
                                     <label class="form-label">Deskripsi</label>
+
                                     <textarea name="deskripsi"
                                               class="form-control"
                                               rows="4"
-                                              placeholder="Masukkan deskripsi pelanggaran"></textarea>
+                                              placeholder="Masukkan deskripsi pelanggaran"><?php
+                                        echo ($data_edit != null)
+                                            ? htmlspecialchars($data_edit['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8')
+                                            : '';
+                                    ?></textarea>
                                 </div>
 
+                                <!-- STATUS -->
                                 <div class="mb-3">
                                     <label class="form-label">Status</label>
+
                                     <select name="status_aktif"
-                                            class="form-select" required>
-                                        <option value="1">Aktif</option>
-                                        <option value="0">Tidak Aktif</option>
+                                            class="form-select"
+                                            required>
+
+                                        <option value="1"
+                                            <?php
+                                            if ($data_edit != null && $data_edit['status_aktif'] == 1) {
+                                                echo 'selected';
+                                            }
+                                            ?>>
+                                            Aktif
+                                        </option>
+
+                                        <option value="0"
+                                            <?php
+                                            if ($data_edit != null && $data_edit['status_aktif'] == 0) {
+                                                echo 'selected';
+                                            }
+                                            ?>>
+                                            Tidak Aktif
+                                        </option>
+
                                     </select>
                                 </div>
 
-                                <button type="submit" name="tambah"
-                                        class="btn btn-primary">
-                                    Tambah Jenis Pelanggaran
+                                <!-- TOMBOL SIMPAN -->
+                                <button type="submit"
+                                        name="<?php echo ($data_edit != null) ? 'ubah' : 'tambah'; ?>"
+                                        class="btn btn-primary me-2">
+                                    <?php echo ($data_edit != null) ? 'Simpan Perubahan' : 'Tambah Jenis Pelanggaran'; ?>
                                 </button>
 
+                                <a href="jenis_pelanggaran.php"
+                                   class="btn btn-secondary">
+                                    Batal
+                                </a>
+
                             </form>
+
                         </div>
                     </div>
-
-                <?php } ?>
+                </div>
 
             <?php } ?>
 
             <!-- DAFTAR JENIS PELANGGARAN -->
             <div class="card shadow-sm border-0">
+
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0">Daftar Jenis Pelanggaran</h5>
                 </div>
@@ -424,7 +397,8 @@ if (isset($_GET['edit'])) {
                 <div class="card-body">
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped align-middle mb-0">
+                        <table id="example"
+                               class="table table-bordered table-striped table-hover align-middle mb-0">
 
                             <thead class="table-primary">
                                 <tr>
@@ -459,23 +433,33 @@ if (isset($_GET['edit'])) {
 
                                 while ($row = mysqli_fetch_assoc($query)) {
                                 ?>
-
                                     <tr>
                                         <td><?php echo $no; ?></td>
-                                        <td><?php echo $row['nama_kategori']; ?></td>
-                                        <td><?php echo $row['kode']; ?></td>
-                                        <td><?php echo $row['nama']; ?></td>
-                                        <td><?php echo $row['poin']; ?></td>
-                                        <td><?php echo $row['deskripsi']; ?></td>
 
                                         <td>
-                                            <?php
-                                            if ($row['status_aktif'] == 1) {
-                                                echo '<span class="badge text-bg-success">Aktif</span>';
-                                            } else {
-                                                echo '<span class="badge text-bg-secondary">Tidak Aktif</span>';
-                                            }
-                                            ?>
+                                            <?php echo htmlspecialchars($row['nama_kategori'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['kode'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['nama'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </td>
+
+                                        <td><?php echo (int) $row['poin']; ?></td>
+
+                                        <td>
+                                            <?php echo htmlspecialchars($row['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?php if ($row['status_aktif'] == 1) { ?>
+                                                <span class="badge text-bg-success">Aktif</span>
+                                            <?php } else { ?>
+                                                <span class="badge text-bg-secondary">Tidak Aktif</span>
+                                            <?php } ?>
                                         </td>
 
                                         <?php if ($role == "admin") { ?>
@@ -493,7 +477,6 @@ if (isset($_GET['edit'])) {
                                             </td>
                                         <?php } ?>
                                     </tr>
-
                                 <?php
                                     $no++;
                                 }
@@ -501,6 +484,7 @@ if (isset($_GET['edit'])) {
                             </tbody>
 
                         </table>
+
                     </div>
                 </div>
             </div>
@@ -510,6 +494,35 @@ if (isset($_GET['edit'])) {
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+<script>
+new DataTable('#example', {
+    pageLength: 10,
+    lengthMenu: [5, 10, 25, 50],
+    order: [],
+    layout: {
+        topStart: 'info',
+        topEnd: 'search',
+        bottomStart: 'paging',
+        bottomEnd: 'pageLength'
+    },
+    language: {
+        search: 'Cari:',
+        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+        infoEmpty: 'Tidak ada data',
+        infoFiltered: '(difilter dari _MAX_ seluruh data)',
+        zeroRecords: 'Data tidak ditemukan',
+        emptyTable: 'Belum ada data kategori',
+        lengthMenu: 'Tampilkan _MENU_ data',
+        paginate: {
+            first: 'Pertama',
+            last: 'Terakhir',
+            next: '›',
+            previous: '‹'
+        }
+    }
+});
+</script>
 
 </body>
 </html>

@@ -1,0 +1,421 @@
+
+/* =========================================
+   TEMA UTAMA - MODERN BLUE DASHBOARD
+   ========================================= */
+
+:root {
+    --primary: #0754b8;
+    --primary-dark: #073b78;
+    --primary-light: #eaf3ff;
+    --background: #f5f9ff;
+    --white: #ffffff;
+    --text: #17365d;
+    --muted: #71829a;
+    --border: #e3ebf5;
+    --success: #198754;
+    --danger: #dc3545;
+    --radius: 16px;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    font-size: 14px;
+}
+
+h1, h2, h3, h4, h5 {
+    color: var(--text);
+    font-weight: 700;
+}
+
+a {
+    text-decoration: none;
+}
+
+/* =========================================
+   SIDEBAR
+   ========================================= */
+
+aside,
+.sidebar,
+.col-lg-2.min-vh-100,
+.col-md-3.col-lg-2.min-vh-100 {
+    background: linear-gradient(
+        180deg,
+        #073b78 0%,
+        #0754b8 100%
+    ) !important;
+}
+
+.col-lg-2.min-vh-100,
+.col-md-3.col-lg-2.min-vh-100 {
+    padding: 24px 16px !important;
+}
+
+aside h4,
+.sidebar h4,
+.col-lg-2 h4 {
+    color: var(--white);
+    font-size: 19px;
+    font-weight: 750;
+    line-height: 1.5;
+    padding: 8px 10px;
+}
+
+.nav-pills .nav-link {
+    color: #dceaff;
+    padding: 12px 14px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.nav-pills .nav-link:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.13);
+    transform: translateX(3px);
+}
+
+.nav-pills .nav-link.active {
+    color: var(--primary-dark) !important;
+    background: #ffffff !important;
+    font-weight: 700;
+    box-shadow: 0 5px 15px rgba(0, 20, 70, 0.12);
+}
+
+.nav-pills .nav-link.text-danger {
+    color: #ffd5d9 !important;
+}
+
+.nav-pills .nav-link.text-danger:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+hr {
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+/* =========================================
+   KONTEN UTAMA
+   ========================================= */
+
+main {
+    min-width: 0;
+    padding: 32px !important;
+}
+
+main h1 {
+    font-size: clamp(24px, 3vw, 32px);
+    letter-spacing: -0.7px;
+    margin-bottom: 8px;
+}
+
+main h2 {
+    font-size: 23px;
+}
+
+main h3 {
+    font-size: 19px;
+}
+
+main p {
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.row {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+/* =========================================
+   KARTU / CARD
+   ========================================= */
+
+.card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    box-shadow: 0 5px 22px rgba(22, 63, 115, 0.045);
+    transition: box-shadow 0.2s ease,
+                transform 0.2s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 28px rgba(22, 63, 115, 0.09);
+}
+
+.card-header {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 18px 22px;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.card-body {
+    padding: 22px;
+}
+
+/* Kartu statistik dashboard */
+.card .display-6,
+.card h2,
+.card h3 {
+    color: var(--primary);
+    font-weight: 750;
+}
+
+/* =========================================
+   TOMBOL
+   ========================================= */
+
+.btn {
+    border-radius: 9px;
+    padding: 9px 16px;
+    font-weight: 600;
+    font-size: 13px;
+    transition: all 0.2s ease;
+}
+
+.btn-primary {
+    color: #fff;
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    border-color: var(--primary-dark);
+    transform: translateY(-1px);
+}
+
+.btn-success {
+    background: var(--success);
+    border-color: var(--success);
+}
+
+.btn-danger {
+    background: var(--danger);
+    border-color: var(--danger);
+}
+
+.btn-outline-primary {
+    color: var(--primary);
+    border-color: #9bbce7;
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+/* =========================================
+   FORM INPUT
+   ========================================= */
+
+.form-label {
+    color: var(--text);
+    font-weight: 600;
+    margin-bottom: 7px;
+}
+
+.form-control,
+.form-select {
+    min-height: 42px;
+    border: 1px solid #d9e4f2;
+    border-radius: 9px;
+    background-color: #fff;
+    color: var(--text);
+    font-size: 13px;
+}
+
+.form-control:focus,
+.form-select:focus {
+    border-color: #6ca6f0;
+    box-shadow: 0 0 0 3px rgba(7, 84, 184, 0.10);
+}
+
+textarea.form-control {
+    min-height: 100px;
+}
+
+/* =========================================
+   TABEL DATA
+   ========================================= */
+
+.table-responsive {
+    border-radius: 12px;
+}
+
+.table {
+    margin-bottom: 0;
+    vertical-align: middle;
+    font-size: 13px;
+}
+
+.table thead th,
+.table th {
+    background: #f0f6ff;
+    color: #31557f;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    border-bottom: 1px solid #dce7f5;
+    padding: 15px 12px;
+    white-space: nowrap;
+}
+
+.table tbody td {
+    color: #415672;
+    padding: 13px 12px;
+    border-color: #edf1f7;
+}
+
+.table tbody tr:hover td {
+    background: #f7faff;
+}
+
+.table .btn {
+    padding: 6px 10px;
+    font-size: 12px;
+}
+
+/* =========================================
+   BADGE STATUS
+   ========================================= */
+
+.badge {
+    padding: 7px 10px;
+    border-radius: 7px;
+    font-weight: 600;
+    letter-spacing: 0.1px;
+}
+
+/* =========================================
+   ALERT
+   ========================================= */
+
+.alert {
+    border: 0;
+    border-radius: 12px;
+    padding: 14px 18px;
+}
+
+/* =========================================
+   DATATABLES
+   ========================================= */
+
+.dataTables_wrapper {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.dataTables_wrapper input,
+.dataTables_wrapper select {
+    border: 1px solid #d9e4f2;
+    border-radius: 8px;
+    padding: 7px 10px;
+    background: #ffffff;
+    color: var(--text);
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 7px !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    color: #ffffff !important;
+    background: var(--primary) !important;
+    border: 1px solid var(--primary) !important;
+}
+
+/* =========================================
+   FOOTER
+   ========================================= */
+
+footer {
+    color: var(--muted);
+    font-size: 12px;
+    padding: 18px;
+}
+
+/* =========================================
+   RESPONSIVE HP / TABLET
+   ========================================= */
+
+@media (max-width: 767px) {
+    main {
+        padding: 18px !important;
+    }
+
+    .col-md-3.col-lg-2.min-vh-100,
+    .col-lg-2.min-vh-100 {
+        min-height: auto !important;
+    }
+
+    main h1 {
+        font-size: 24px;
+    }
+
+    .card-body {
+        padding: 16px;
+    }
+
+    .table {
+        font-size: 12px;
+    }
+}
+
+/* SIDEBAR TETAP DIAM SAAT SCROLL */
+@media (min-width: 768px) {
+    .col-md-3.col-lg-2.min-vh-100,
+    .col-lg-2.min-vh-100,
+    aside.sidebar {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        width: 250px;
+        height: 100vh;
+        overflow-y: auto;
+        z-index: 1000;
+    }
+
+    /* Konten bergeser ke kanan agar tidak tertutup sidebar */
+    main {
+        margin-left: 250px;
+        width: calc(100% - 250px);
+    }
+}
+
+/* Tampilan HP */
+@media (max-width: 767px) {
+    .col-md-3.col-lg-2.min-vh-100,
+    .col-lg-2.min-vh-100,
+    aside.sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        min-height: auto !important;
+    }
+
+    main {
+        margin-left: 0;
+        width: 100%;
+    }
+}

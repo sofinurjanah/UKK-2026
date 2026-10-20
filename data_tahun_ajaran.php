@@ -1,4 +1,3 @@
-
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
@@ -89,14 +88,24 @@ if (isset($_GET['edit']) && $role == "admin") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Tahun Ajaran</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- DataTables CSS -->
+    <link
+        href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-light">
 
 <div class="container-fluid">
-    <div class="row">
+     <div class="row">
 
         <!-- SIDEBAR -->
         <div class="col-md-3 col-lg-2 min-vh-100 p-3"
@@ -196,7 +205,7 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                 <?php if ($role == "admin" && $data_edit == null) { ?>
                     <button type="button"
-                            class="btn btn-primary"
+                      class="btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#modalTambah">
                         Tambah Tahun Ajaran
@@ -296,12 +305,12 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                 <div class="card-header bg-white py-3">
                     <h5 class="mb-0">Daftar Tahun Ajaran</h5>
-                </div>
+                       </div>
 
                 <div class="card-body">
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped table-hover align-middle">
+                        <table id="example" class="table table-bordered table-striped table-hover align-middle mb-0">
 
                             <thead class="table-primary">
                                 <tr>
@@ -396,7 +405,7 @@ if (isset($_GET['edit']) && $role == "admin") {
 <div class="modal fade" id="modalTambah" tabindex="-1"
      aria-labelledby="judulModalTambah" aria-hidden="true">
 
-    <div class="modal-dialog">
+  <div class="modal-dialog">
         <div class="modal-content">
 
             <form method="POST">
@@ -463,7 +472,41 @@ if (isset($_GET['edit']) && $role == "admin") {
 
 <?php } ?>
 
+<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript -->
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+
+<!-- Pengaturan DataTables -->
+<script>
+    new DataTable('#example', {
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [],
+        layout: {
+            topStart: 'info',
+            topEnd: 'search',
+            bottomStart: 'paging',
+            bottomEnd: 'pageLength'
+        },
+        language: {
+            search: 'Cari:',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ seluruh data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data siswa',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: '›',
+                previous: '‹'
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

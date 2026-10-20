@@ -88,8 +88,17 @@ if (isset($_GET['edit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Wali Kelas</title>
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- DataTables CSS -->
+    <link
+        href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+        rel="stylesheet"
+    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-light">
@@ -504,8 +513,9 @@ if (isset($_GET['edit'])) {
 
                     <div class="table-responsive">
 
-                        <table class="table table-bordered table-striped
-                                      align-middle mb-0">
+                        <!-- ID EXAMPLE UNTUK DATATABLES -->
+                        <table id="example"
+                               class="table table-bordered table-striped table-hover align-middle mb-0">
 
                             <thead class="table-primary">
                                 <tr>
@@ -647,7 +657,41 @@ if (isset($_GET['edit'])) {
     </div>
 </div>
 
+<!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- DataTables JavaScript -->
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+
+<!-- Pengaturan DataTables -->
+<script>
+    new DataTable('#example', {
+        pageLength: 10,
+        lengthMenu: [5, 10, 25, 50],
+        order: [],
+        layout: {
+            topStart: 'info',
+            topEnd: 'search',
+            bottomStart: 'paging',
+            bottomEnd: 'pageLength'
+        },
+        language: {
+            search: 'Cari:',
+            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            infoEmpty: 'Tidak ada data',
+            infoFiltered: '(difilter dari _MAX_ seluruh data)',
+            zeroRecords: 'Data tidak ditemukan',
+            emptyTable: 'Belum ada data siswa',
+            lengthMenu: 'Tampilkan _MENU_ data',
+            paginate: {
+                first: 'Pertama',
+                last: 'Terakhir',
+                next: '›',
+                previous: '‹'
+            }
+        }
+    });
+</script>
 
 </body>
 </html>
