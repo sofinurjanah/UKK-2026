@@ -419,3 +419,379 @@ footer {
         width: 100%;
     }
 }
+
+
+/* =========================================
+   ABOUT ME - DESAIN PORTOFOLIO
+   Hanya mengatur konten About Me
+========================================= */
+
+.about-page {
+    min-height: 100vh;
+    padding: 30px 35px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.about-layout {
+    width: 100%;
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: 0.85fr 1.15fr;
+    gap: 38px;
+    align-items: center;
+}
+
+.profile-card {
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #eeeeF5;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(48, 49, 139, 0.12);
+    transition: box-shadow 0.25s ease;
+}
+
+.profile-card:hover {
+    box-shadow: 0 14px 35px rgba(48, 49, 139, 0.17);
+}
+
+.profile-photo-wrap {
+    position: relative;
+    width: 100%;
+    height: 232px;
+    overflow: hidden;
+    border-radius: 12px;
+    background: #eeeeF4;
+}
+
+.profile-photo-wrap:hover .profile-photo {
+    transform: scale(1.04);
+}
+
+.profile-photo {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    transition: transform 0.4s ease;
+}
+
+.profile-hello {
+    position: absolute;
+    z-index: 2;
+    top: 25px;
+    left: -12px;
+    color: #1f2072;
+    font-family: cursive;
+    font-size: 34px;
+    font-style: italic;
+    transform: rotate(-12deg);
+}
+
+.profile-name {
+    margin: 0 0 8px;
+    color: #30318B;
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.profile-role {
+    display: inline-block;
+    padding: 7px 16px;
+    border-radius: 30px;
+    background: #eeeeff;
+    color: #30318B;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.profile-details {
+    margin-top: 22px;
+    padding-top: 17px;
+    border-top: 1px solid #e9eaf4;
+}
+
+.profile-details p {
+    margin-bottom: 10px;
+    color: #687086;
+    font-size: 13px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.profile-details strong {
+    color: #30318B;
+}
+
+.profile-skills {
+    margin-top: 25px;
+}
+
+.profile-skills-title {
+    margin-bottom: 15px;
+    color: #30318B;
+    font-size: 17px;
+    font-weight: 800;
+}
+
+.profile-skill-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.profile-skill {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 40px;
+    padding: 0 12px;
+    border-radius: 10px;
+    background: #30318B;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    box-shadow: 0 5px 12px rgba(48, 49, 139, 0.20);
+    transition: transform 0.2s ease;
+}
+
+.profile-skill:hover {
+    transform: translateY(-3px);
+}
+
+.about-information {
+    min-width: 0;
+    align-self: center;
+}
+
+.about-section {
+    margin-bottom: 25px;
+}
+
+.about-section:last-child {
+    margin-bottom: 0;
+}
+
+.about-heading {
+    margin-bottom: 13px;
+    color: #30318B;
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.about-description {
+    margin-left: 4px;
+    padding: 2px 0 2px 18px;
+    border-left: 2px solid #a5a6e7;
+    color: #646b7b;
+    font-size: 13px;
+    line-height: 1.85;
+    text-align: justify;
+}
+
+.about-timeline {
+    margin-left: 4px;
+}
+
+.about-timeline-item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 95px minmax(0, 1fr);
+    gap: 12px;
+    padding: 0 0 18px 17px;
+    border-left: 2px solid #c6c7ef;
+}
+
+.about-timeline-item:last-child {
+    padding-bottom: 0;
+    border-left-color: transparent;
+}
+
+.about-timeline-item::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: -6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #30318B;
+    box-shadow: 0 0 0 4px #eeeeff;
+}
+
+.about-timeline-label {
+    color: #30318B;
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.about-timeline-title {
+    margin: 0 0 5px;
+    color: #30318B;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1.5;
+}
+
+.about-timeline-text {
+    margin: 0;
+    color: #74798a;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.about-project-card {
+    padding: 16px;
+    border: 1px solid #e9e9ff;
+    border-radius: 15px;
+    background: #f7f7ff;
+    box-shadow: 0 6px 18px rgba(48, 49, 139, 0.08);
+}
+
+.about-project-item {
+    height: 100%;
+    padding: 8px 10px;
+    border-left: 2px solid #c6c7ef;
+}
+
+.about-project-label {
+    margin-bottom: 7px;
+    color: #777b8e;
+    font-size: 12px;
+}
+
+.about-project-value {
+    color: #30318B;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.6;
+}
+
+.about-copyright {
+    margin: 18px 0 0;
+    color: #85879a;
+    font-size: 11px;
+    text-align: center;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 991px) {
+    .about-page {
+        padding: 25px 20px;
+    }
+
+    .about-layout {
+        gap: 22px;
+    }
+
+    .profile-card {
+        padding: 16px;
+    }
+
+    .profile-photo {
+        height: 230px;
+    }
+
+    .about-timeline-item {
+        grid-template-columns: 75px minmax(0, 1fr);
+        gap: 8px;
+    }
+}
+
+@media (max-width: 767px) {
+    .about-page {
+        padding: 24px 16px;
+    }
+
+    .about-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 28px;
+    }
+
+    .profile-card {
+        width: 100%;
+        max-width: 440px;
+        margin: 0 auto;
+    }
+
+    .profile-photo {
+        height: 280px;
+    }
+
+    .about-information {
+        width: 100%;
+    }
+
+    .about-description {
+        text-align: left;
+    }
+
+    .about-copyright {
+        margin-top: 24px;
+    }
+}
+
+/* ANIMASI KHUSUS FOTO ABOUT ME */
+.profile-photo {
+    transition: transform 0.4s ease,
+                filter 0.4s ease;
+    transform-origin: center center;
+}
+
+/* FOTO MEMBESAR SAAT KURSOR MENYENTUH */
+.profile-photo-wrap:hover .profile-photo {
+    transform: scale(1.06);
+    filter: brightness(1.05);
+}
+
+/* ANIMASI TETAP HALUS */
+@media (prefers-reduced-motion: reduce) {
+    .profile-photo {
+        transition: none;
+    }
+
+    .profile-photo-wrap:hover .profile-photo {
+        transform: none;
+        filter: none;
+    }
+}
+
+
+/* FOTO ABOUT ME */
+.profile-card .profile-photo-wrap {
+    height: 232px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 12px;
+    background: #eeeeF4;
+}
+
+.profile-card .profile-photo-wrap .profile-photo {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    object-position: center 25%;
+    transform: scale(1);
+    transition: transform 0.4s ease;
+}
+
+.profile-card .profile-photo-wrap:hover .profile-photo {
+    transform: scale(1.05);
+}
+
+.profile-card .profile-photo-wrap .profile-hello {
+    position: absolute;
+    top: 18px;
+    left: 12px;
+    z-index: 2;
+    pointer-events: none;
+}
