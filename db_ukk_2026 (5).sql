@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 21 Okt 2026 pada 07.27
--- Versi server: 10.4.27-MariaDB
--- Versi PHP: 8.2.0
+-- Waktu pembuatan: 22 Okt 2026 pada 06.14
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -92,7 +92,9 @@ INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `
 (47, 'NIP20260047', 'Guru Pengolahan Data', 'guru47@ukk2026.test', 1, 47, '2026-11-19 01:00:00', '2026-11-19 01:00:00'),
 (48, 'NIP20260048', 'Guru Administrasi Pajak', 'guru48@ukk2026.test', 1, 48, '2026-12-20 01:00:00', '2026-12-20 01:00:00'),
 (49, 'NIP20260049', 'Guru Komunikasi Bisnis', 'guru49@ukk2026.test', 1, 49, '2026-01-21 01:00:00', '2026-01-21 01:00:00'),
-(50, 'NIP20260050', 'Guru Muatan Lokal', 'guru50@ukk2026.test', 1, 50, '2026-02-22 01:00:00', '2026-02-22 01:00:00');
+(50, 'NIP20260050', 'Guru Muatan Lokal', 'guru50@ukk2026.test', 1, 50, '2026-02-22 01:00:00', '2026-02-22 01:00:00'),
+(52, 'NIP20260051', 'Guru Ilmu Pengetahuan Alam', 'guru51@ukk2026.test', 1, 52, '2026-10-22 00:45:15', '2026-10-22 00:45:15'),
+(53, '47856745', 'Guru Matematika', 'gasfa7ye@gmail.com', 1, 53, '2026-10-22 01:00:17', '2026-10-22 01:00:17');
 
 -- --------------------------------------------------------
 
@@ -467,7 +469,9 @@ INSERT INTO `t_pelanggaran_siswa` (`id`, `tahun_ajaran_id`, `siswa_id`, `nama_si
 (47, 5, 47, 'Gita Nugraha ', 7, 'X TKJ 1', 47, 'Tidak Menyelesaikan Tugas Kelompok', 47, 47, 'Guru Pengolahan Data', '2026-11-19', 'Kejadian pelanggaran 47', 2, 'Tindakan 47', 'Pembinaan', '2026-11-19 02:00:00', '2026-10-21 02:26:56'),
 (48, 5, 48, 'Hana Nugraha ', 8, 'XI DKV 1', 48, 'Menggunakan Seragam Olahraga Tidak Sesuai', 48, 48, 'Guru Administrasi Pajak', '2026-12-20', 'Kejadian pelanggaran 48', 3, 'Tindakan 48', 'Selesai', '2026-12-20 02:00:00', '2026-10-21 02:26:56'),
 (49, 5, 49, 'Indra Nugraha ', 9, 'XII AKL 1', 49, 'Tidak Menjaga Ketertiban Sekolah', 49, 49, 'Guru Komunikasi Bisnis', '2026-01-21', 'Kejadian pelanggaran 49', 4, 'Tindakan 49', 'Dipantau', '2026-01-21 02:00:00', '2026-10-21 02:26:56'),
-(50, 5, 50, 'Joko Nugraha ', 10, 'X MPLB 1', 50, 'Mengulangi Pelanggaran yang Sama', 50, 50, 'Guru Muatan Lokal', '2026-02-22', 'Kejadian pelanggaran 50', 5, 'Tindakan 50', 'Ditindaklanjuti', '2026-02-22 02:00:00', '2026-10-21 02:26:56');
+(50, 5, 50, 'Joko Nugraha ', 10, 'X MPLB 1', 50, 'Mengulangi Pelanggaran yang Sama', 50, 50, 'Guru Muatan Lokal', '2026-02-22', 'Kejadian pelanggaran 50', 5, 'Tindakan 50', 'Ditindaklanjuti', '2026-02-22 02:00:00', '2026-10-21 02:26:56'),
+(51, 3, 21, 'Andi Lestari ', 1, 'X RPL 1', 16, 'Berkata Tidak Sopan', 16, 52, 'Guru Ilmu Pengetahuan Alam', '2026-10-13', '', 1, '', 'Selesai', '2026-10-22 04:00:19', '2026-10-22 04:00:19'),
+(52, 1, 10, 'Joko Saputra ', 10, 'X MPLB 1', 15, 'Berkelahi dengan Teman', 15, 52, 'Guru Ilmu Pengetahuan Alam', '2026-10-22', '', 5, '', 'Pembinaan', '2026-10-22 04:03:45', '2026-10-22 04:03:45');
 
 -- --------------------------------------------------------
 
@@ -543,7 +547,7 @@ INSERT INTO `t_siswa` (`id`, `nis`, `nisn`, `nama`, `jenis_kelamin`, `tanggal_la
 (48, 'NIS0048', '0000000048', 'Hana Nugraha ', 'P', '2011-12-15', 'Jl. Pendidikan No. 48, Tasikmalaya', 1, '2026-12-20 01:00:00', '2026-12-20 01:00:00'),
 (49, 'NIS0049', '0000000049', 'Indra Nugraha ', 'L', '2010-03-05', 'Jl. Pendidikan No. 49, Tasikmalaya', 1, '2026-01-21 01:00:00', '2026-01-21 01:00:00'),
 (50, 'NIS0050', '0000000050', 'Joko Nugraha ', 'P', '2010-04-17', 'Jl. Pendidikan No. 50, Tasikmalaya', 1, '2026-02-22 01:00:00', '2026-02-22 01:00:00'),
-(52, 'NIS0051', '0000000051', 'Sofi Nurjanah', 'P', '2009-01-23', 'Jl. Cibogo, Tasikmalaya', 0, '2026-10-01 00:35:57', '2026-10-01 00:35:57');
+(52, 'NIS0051', '0000000051', 'Sofi Nurjanah', 'P', '2009-01-23', 'Jl. Cibogo, Tasikmalaya', 1, '2026-10-01 00:35:57', '2026-10-01 00:35:57');
 
 -- --------------------------------------------------------
 
@@ -690,7 +694,9 @@ INSERT INTO `t_user` (`id`, `name`, `email`, `email_verified_at`, `password`, `r
 (48, 'User 48', 'user48@ukk2026.test', '2026-09-23 02:30:15', '$2y$12$EHNOkz05vUfEmXcl5ndTpet/k/v.g8PpuRe61tVUYe73UVXpvMe06', 'token48', 'guru', '2026-12-20 01:00:00', '2026-12-20 01:00:00'),
 (49, 'User 49', 'user49@ukk2026.test', '2026-09-23 02:30:15', '$2y$12$EHNOkz05vUfEmXcl5ndTpet/k/v.g8PpuRe61tVUYe73UVXpvMe06', 'token49', 'admin', '2026-01-21 01:00:00', '2026-01-21 01:00:00'),
 (50, 'User 50', 'user50@ukk2026.test', '2026-09-23 02:30:15', '$2y$12$EHNOkz05vUfEmXcl5ndTpet/k/v.g8PpuRe61tVUYe73UVXpvMe06', 'token50', 'guru', '2026-02-22 01:00:00', '2026-02-22 01:00:00'),
-(51, 'User 51', 'user51@ukk2026.test', '2026-10-01 00:40:27', '$2y$12$EHNOkz05vUfEmXcl5ndTpet/k/v.g8PpuRe61tVUYe73UVXpvMe06', 'token 51', 'admin', '2026-10-01 00:40:27', '2026-10-01 00:40:27');
+(51, 'User 51', 'user51@ukk2026.test', '2026-10-01 00:40:27', '$2y$12$EHNOkz05vUfEmXcl5ndTpet/k/v.g8PpuRe61tVUYe73UVXpvMe06', 'token 51', 'admin', '2026-10-01 00:40:27', '2026-10-01 00:40:27'),
+(52, 'Guru Ilmu Pengetahuan Alam', 'guru51@ukk2026.test', '2026-10-22 00:45:15', '$2y$10$saeso1kT9WppL33kd9CsZOTQTgVEljVxQQ5YZx1wF/5c3.9FviATq', '', 'guru', '2026-10-22 00:45:15', '2026-10-22 00:45:15'),
+(53, 'Guru Matematika', 'gasfa7ye@gmail.com', '2026-10-22 01:00:17', '$2y$10$Ac26YDkrGwpXSDk2Hh3qN.Gx2Pg0pL07368.Lm7i653e2XtAMtfHy', '', 'guru', '2026-10-22 01:00:17', '2026-10-22 01:00:17');
 
 -- --------------------------------------------------------
 
@@ -851,7 +857,7 @@ ALTER TABLE `t_wali_kelas`
 -- AUTO_INCREMENT untuk tabel `t_guru`
 --
 ALTER TABLE `t_guru`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_kelas`
@@ -881,7 +887,7 @@ ALTER TABLE `t_pelanggaran_kategori`
 -- AUTO_INCREMENT untuk tabel `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_siswa`
@@ -899,7 +905,7 @@ ALTER TABLE `t_tahun_ajaran`
 -- AUTO_INCREMENT untuk tabel `t_user`
 --
 ALTER TABLE `t_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_wali_kelas`
