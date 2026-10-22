@@ -163,6 +163,7 @@ if (isset($_POST['simpan'])) {
         href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
         rel="stylesheet"
     >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body class="bg-light">
@@ -174,9 +175,16 @@ if (isset($_POST['simpan'])) {
         <aside class="col-md-3 col-lg-2 min-vh-100 p-3"
                style="background-color: #30318B;">
 
-            <h4 class="text-white mb-4">
-                Sistem Pelanggaran
-            </h4>
+            <div class="mb-4 px-2">
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
+
+                <p class="text-white mb-0" style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
+            </div>
 
             <ul class="nav nav-pills flex-column">
 
@@ -406,6 +414,29 @@ if (isset($_POST['simpan'])) {
                 ); ?>
             </option>
         <?php } ?>
+    </select>
+</div>
+
+
+<!-- TANGGAL PELANGGARAN -->
+<div class="mb-3">
+    <label class="form-label">Tanggal Pelanggaran</label>
+    <input
+        type="date"
+        name="tanggal"
+        class="form-control"
+        required
+    >
+</div>
+
+<!-- STATUS PELANGGARAN -->
+<div class="mb-3">
+    <label class="form-label">Status</label>
+    <select name="status" class="form-select" required>
+        <option value="">-- Pilih Status --</option>
+        <option value="Pembinaan">Pembinaan</option>
+        <option value="Ditindaklanjuti">Ditindaklanjuti</option>
+        <option value="Selesai">Selesai</option>
     </select>
 </div>
 

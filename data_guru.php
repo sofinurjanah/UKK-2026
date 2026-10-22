@@ -7,26 +7,92 @@ $role = strtolower($_SESSION['role'] ?? '');
 $pesan = "";
 $tipe_pesan = "";
 
+
 /* TAMBAH GURU */
 if (isset($_POST['tambah']) && $role == "admin") {
-    $nip = mysqli_real_escape_string($koneksi, $_POST['nip']);
-    $nama = mysqli_real_escape_string($koneksi, $_POST['nama']);
-    $email = mysqli_real_escape_string($koneksi, $_POST['email']);
+    $nip = mysqli_real_escape_string($koneksi, trim($_POST['nip']));
+    $nama = mysqli_real_escape_string($koneksi, trim($_POST['nama']));
+    $email = mysqli_real_escape_string($koneksi, trim($_POST['email']));
+    $password = $_POST['password'];
+    $konfirmasi_password = $_POST['konfirmasi_password']?? '';
     $status_aktif = (int) $_POST['status_aktif'];
-    $user_id = (int) $_POST['user_id'];
 
-    $query = mysqli_query($koneksi, "INSERT INTO t_guru
-        (nip, nama, email, status_aktif, user_id)
-        VALUES ('$nip', '$nama', '$email', '$status_aktif', '$user_id')");
+    // Cek NIP sudah terdaftar atau belum
+    $cek_nip = mysqli_query($koneksi, "SELECT id FROM t_guru WHERE nip = '$nip'");
 
-    if ($query) {
-        $pesan = "Data guru berhasil ditambahkan.";
-        $tipe_pesan = "success";
-    } else {
-        $pesan = "Data guru gagal ditambahkan.";
+    // Cek email sudah digunakan atau belum
+    $cek_email = mysqli_query($koneksi, "SELECT id FROM t_user WHERE email = '$email'");
+
+    if (mysqli_num_rows($cek_nip) > 0) {
+        $pesan = "NIP sudah terdaftar.";
         $tipe_pesan = "danger";
+    } elseif (mysqli_num_rows($cek_email) > 0) {
+        $pesan = "Email sudah digunakan.";
+        $tipe_pesan = "danger";
+    } elseif (strlen($password) < 8) {
+        $pesan = "Password minimal 8 karakter.";
+        $tipe_pesan = "danger";
+    } elseif ($password !== $konfirmasi_password) {
+        $pesan = "Konfirmasi password tidak cocok.";
+        $tipe_pesan = "danger";
+    } else {
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
+
+        mysqli_begin_transaction($koneksi);
+
+        try {
+            // Simpan akun login ke tabel t_user
+            $password_hash_sql = mysqli_real_escape_string(
+                $koneksi,
+                $password_hash
+            );
+
+            $query_user = mysqli_query($koneksi, "INSERT INTO t_user
+                (name, email, password, role, remember_token)
+                VALUES (
+                    '$nama',
+                    '$email',
+                    '$password_hash_sql',
+                    'guru',
+                    ''
+                )");
+
+            if (!$query_user) {
+                throw new Exception("Gagal menyimpan akun pengguna.");
+            }
+
+            // Ambil ID akun yang baru dibuat
+            $user_id = mysqli_insert_id($koneksi);
+
+            // Simpan data guru ke tabel t_guru
+            $query_guru = mysqli_query($koneksi, "INSERT INTO t_guru
+                (nip, nama, email, status_aktif, user_id)
+                VALUES (
+                    '$nip',
+                    '$nama',
+                    '$email',
+                    '$status_aktif',
+                    '$user_id'
+                )");
+
+            if (!$query_guru) {
+                throw new Exception("Gagal menyimpan data guru.");
+            }
+
+            mysqli_commit($koneksi);
+
+            $pesan = "Data guru dan akun login berhasil ditambahkan.";
+            $tipe_pesan = "success";
+
+        } catch (Throwable $e) {
+            mysqli_rollback($koneksi);
+
+            $pesan = "Data guru gagal ditambahkan.";
+            $tipe_pesan = "danger";
+        }
     }
 }
+
 
 /* UBAH GURU */
 if (isset($_POST['ubah']) && $role == "admin") {
@@ -119,9 +185,16 @@ function e($teks) {
         <div class="col-md-3 col-lg-2 min-vh-100 p-3"
              style="background-color: #30318B;">
 
-            <h4 class="text-white mb-4">
-                Sistem Pelanggaran
-            </h4>
+            <div class="mb-4 px-2">
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
+
+                <p class="text-white mb-0" style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
+            </div>
 
             <ul class="nav nav-pills flex-column">
 
@@ -403,7 +476,6 @@ function e($teks) {
                                 $query_guru = mysqli_query(
                                     $koneksi,
                                     "SELECT * FROM t_guru
-                                     WHERE status_aktif = 1
                                      ORDER BY id ASC"
                                 );
 
@@ -421,11 +493,15 @@ function e($teks) {
 
                                         <td><?= e($guru['email']); ?></td>
 
-                                        <td>
-                                            <span class="badge text-bg-success">
-                                                Aktif
-                                            </span>
-                                        </td>
+                                        
+                                    <td>
+                                        <?php if ((int) $guru['status_aktif'] === 1) { ?>
+                                            <span class="badge text-bg-success">Aktif</span>
+                                        <?php } else { ?>
+                                            <span class="badge text-bg-secondary">Tidak Aktif</span>
+                                        <?php } ?>
+                                    </td>
+
 
                                         <?php if ($role == "admin") { ?>
                                             <td>
@@ -501,10 +577,11 @@ function e($teks) {
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">NIP</label>
-                                <input type="text"
-                                       name="nip"
-                                       class="form-control"
-                                       required>
+                                 <input type="text"
+                                        name="nip"
+                                        class="form-control"
+                                        maxlength="18"
+                                        required>
                             </div>
 
                             <div class="col-md-6 mb-3">
@@ -523,33 +600,28 @@ function e($teks) {
                                        required>
                             </div>
 
+                            
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Akun Pengguna</label>
-
-                                <select name="user_id"
-                                        class="form-select"
-                                        required>
-
-                                    <option value="">-- Pilih Akun Guru --</option>
-
-                                    <?php
-                                    $query_user = mysqli_query(
-                                        $koneksi,
-                                        "SELECT * FROM t_user
-                                         WHERE role = 'guru'
-                                         ORDER BY id ASC"
-                                    );
-
-                                    while ($user = mysqli_fetch_assoc($query_user)) {
-                                    ?>
-                                        <option value="<?= e($user['id']); ?>">
-                                            <?= e($user['name']); ?> -
-                                            <?= e($user['email']); ?>
-                                        </option>
-                                    <?php } ?>
-
-                                </select>
+                                <label class="form-label">Password</label>
+                                <input type="password"
+                                            name="password"
+                                            class="form-control"
+                                            minlength="8"
+                                            autocomplete="new-password"
+                                            required>
                             </div>
+
+                            
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Konfirmasi Password</label>
+                                <input type="password"
+                                    name="konfirmasi_password"
+                                    class="form-control"
+                                    minlength="8"
+                                    autocomplete="new-password"
+                                    required>
+                            </div>
+
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Status Aktif</label>

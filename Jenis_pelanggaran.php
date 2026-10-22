@@ -108,7 +108,16 @@ if (isset($_GET['edit']) && $role == "admin") {
         <aside class="col-md-3 col-lg-2 p-3 min-vh-100"
                style="background-color: #30318B;">
 
-            <h4 class="text-white mb-4">Sistem Pelanggaran</h4>
+            <div class="mb-4 px-2">
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
+
+                <p class="text-white mb-0" style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
+            </div>
 
             <ul class="nav nav-pills flex-column">
 

@@ -128,9 +128,16 @@ function e($teks) {
         <div class="col-md-3 col-lg-2 min-vh-100 p-3"
              style="background-color: #30318B;">
 
-            <h4 class="text-white mb-4">
-                Sistem Pelanggaran
-            </h4>
+            <div class="mb-4 px-2">
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
+
+                <p class="text-white mb-0" style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
+            </div>
 
             <ul class="nav nav-pills flex-column">
 
@@ -454,7 +461,6 @@ function e($teks) {
                                 $query_siswa = mysqli_query(
                                     $koneksi,
                                     "SELECT * FROM t_siswa
-                                     WHERE status_aktif = 1
                                      ORDER BY id ASC"
                                 );
 
@@ -587,17 +593,19 @@ function e($teks) {
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">NIS</label>
                                 <input type="text"
-                                       name="nis"
-                                       class="form-control"
-                                       required>
+                                    name="nis"
+                                    class="form-control"
+                                    maxlength="10"
+                                    required>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">NISN</label>
                                 <input type="text"
-                                       name="nisn"
-                                       class="form-control"
-                                       required>
+                                    name="nisn"
+                                    class="form-control"
+                                    maxlength="10"
+                                    required>
                             </div>
 
                             <div class="col-md-6 mb-3">
