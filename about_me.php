@@ -362,9 +362,7 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
             </div>
 
-            <p class="about-copyright">
-                ©Sofinurjanah
-            </p>
+            <p class="text-center text-secondary small mt-4">©Sofinurjanah</p>
 
         </main>
 

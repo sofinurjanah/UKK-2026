@@ -57,18 +57,20 @@ if (isset($_POST['ubah']) && $role == "admin") {
 }
 
 if (isset($_GET['hapus']) && $role == "admin") {
-    $id = $_GET['hapus'];
+    $id = (int) $_GET['hapus'];
 
     $query = mysqli_query(
-        $koneksi,
-        "DELETE FROM t_pelanggaran WHERE id = '$id'"
+    $koneksi,
+    "UPDATE t_pelanggaran
+     SET status_aktif = 0
+     WHERE id = $id"
     );
 
-    if ($query) {
+    if ($query && mysqli_affected_rows($koneksi) > 0) {
         $pesan = "Jenis pelanggaran berhasil dihapus.";
         $tipe_pesan = "success";
     } else {
-        $pesan = "Jenis pelanggaran gagal dihapus. Data mungkin masih digunakan.";
+        $pesan = "Jenis pelanggaran gagal dihapus. Data mungkin masih digunakan pada catatan pelanggaran siswa.";
         $tipe_pesan = "danger";
     }
 }
@@ -212,7 +214,7 @@ if (isset($_GET['edit']) && $role == "admin") {
                             data-bs-target="#formTambah"
                             aria-expanded="false"
                             aria-controls="formTambah">
-                        + Tambah Jenis Pelanggaran
+                        Tambah Jenis Pelanggaran
                     </button>
                 <?php } ?>
             </div>
@@ -498,6 +500,7 @@ if (isset($_GET['edit']) && $role == "admin") {
                 </div>
             </div>
 
+        <p class="text-center text-secondary small mt-4">©Sofinurjanah</p>
         </main>
     </div>
 </div>

@@ -21,7 +21,7 @@
             <div class="card-body p-4 p-md-5">
 
                 <div class="simpesma-logo mb-3">
-                    <span>SM</span>
+                    <img src="logo-muhammadiyah.png" alt="Logo SMK Muhammadiyah Tasikmalaya">
                 </div>
 
                 <p class="simpesma-label text-center mb-2">
@@ -73,7 +73,7 @@
                         name="login"
                         class="btn btn-primary w-100 simpesma-login-button"
                     >
-                        Login ke SIMPESMA
+                        Login
                     </button>
 
                 </form>

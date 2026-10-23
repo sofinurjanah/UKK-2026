@@ -461,16 +461,13 @@ if (isset($_GET['edit']) && $role == "admin") {
                 </div>
 
                 <div class="modal-footer">
-
-                    <button type="button" class="btn btn-danger"
-                            data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                         Batal
                     </button>
 
-                    <button type="submit" name="tambah" class="btn btn-success">
+                    <button type="submit" name="tambah" class="btn btn-primary">
                         Tambah
                     </button>
-
                 </div>
 
             </form>
