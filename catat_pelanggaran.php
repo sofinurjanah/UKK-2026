@@ -314,7 +314,7 @@ if (isset($_POST['simpan'])) {
                     data-bs-target="#formPelanggaran"
                     aria-expanded="false"
                     aria-controls="formPelanggaran">
-                    + Tambah Pelanggaran
+                     Tambah Pelanggaran
                 </button>
             </div>
 

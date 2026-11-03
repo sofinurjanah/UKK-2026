@@ -358,89 +358,129 @@ function e($teks) {
                 </div>
             <?php } ?>
 
-            <!-- FORM UBAH GURU -->
-            <?php if ($role == "admin" && $data_edit != null) { ?>
+            <!-- MODAL UBAH GURU -->
+<?php if ($role == "admin" && $data_edit != null) { ?>
 
-                <div class="card border-0 shadow-sm mb-4">
+<div class="modal fade" id="modalUbahGuru"
+     tabindex="-1"
+     aria-labelledby="judulModalUbahGuru"
+     aria-hidden="true">
 
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">Ubah Data Guru</h5>
-                    </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
-                    <div class="card-body">
+        <div class="modal-content">
 
-                        <form method="POST">
+            <form method="POST">
 
-                            <input type="hidden"
-                                   name="id"
-                                   value="<?= e($data_edit['id']); ?>">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"
+                        id="judulModalUbahGuru">
+                        Ubah Data Guru
+                    </h5>
 
-                            <div class="row">
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">NIP</label>
-                                    <input type="text"
-                                           name="nip"
-                                           class="form-control"
-                                           value="<?= e($data_edit['nip']); ?>"
-                                           required>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nama Guru</label>
-                                    <input type="text"
-                                           name="nama"
-                                           class="form-control"
-                                           value="<?= e($data_edit['nama']); ?>"
-                                           required>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Email</label>
-                                    <input type="email"
-                                           name="email"
-                                           class="form-control"
-                                           value="<?= e($data_edit['email']); ?>"
-                                           required>
-                                </div>
-
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Status Aktif</label>
-                                    <select name="status_aktif"
-                                            class="form-select"
-                                            required>
-
-                                        <option value="1"
-                                            <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>
-                                            Aktif
-                                        </option>
-
-                                        <option value="0"
-                                            <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>
-                                            Tidak Aktif
-                                        </option>
-
-                                    </select>
-                                </div>
-
-                            </div>
-
-                            <button type="submit"
-                                    name="ubah"
-                                    class="btn btn-primary">
-                                Simpan Perubahan
-                            </button>
-
-                            <a href="data_guru.php"
-                               class="btn btn-secondary">
-                                Batal
-                            </a>
-
-                        </form>
-                    </div>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Tutup">
+                    </button>
                 </div>
 
-            <?php } ?>
+                <div class="modal-body p-4">
+
+                    <input type="hidden"
+                           name="id"
+                           value="<?= e($data_edit['id']); ?>">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">NIP</label>
+
+                            <input type="text"
+                                   name="nip"
+                                   class="form-control"
+                                   value="<?= e($data_edit['nip']); ?>"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Guru</label>
+
+                            <input type="text"
+                                   name="nama"
+                                   class="form-control"
+                                   value="<?= e($data_edit['nama']); ?>"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+
+                            <input type="email"
+                                   name="email"
+                                   class="form-control"
+                                   value="<?= e($data_edit['email']); ?>"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status Aktif</label>
+
+                            <select name="status_aktif"
+                                    class="form-select"
+                                    required>
+
+                                <option value="1"
+                                    <?= $data_edit['status_aktif'] == 1 ? 'selected' : ''; ?>>
+                                    Aktif
+                                </option>
+
+                                <option value="0"
+                                    <?= $data_edit['status_aktif'] == 0 ? 'selected' : ''; ?>>
+                                    Tidak Aktif
+                                </option>
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <a href="data_guru.php"
+                       class="btn btn-secondary">
+                        Batal
+                    </a>
+
+                    <button type="submit"
+                            name="ubah"
+                            class="btn btn-primary">
+                        Simpan Perubahan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    var modal = new bootstrap.Modal(
+        document.getElementById('modalUbahGuru')
+    );
+
+    modal.show();
+
+});
+</script>
+
+<?php } ?>
 
             <!-- TABEL DATA GURU -->
             <div class="card border-0 shadow-sm">
@@ -553,7 +593,7 @@ function e($teks) {
          aria-labelledby="judulModalTambah"
          aria-hidden="true">
 
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
 
             <div class="modal-content">
 

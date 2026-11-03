@@ -305,123 +305,147 @@ function e($teks) {
                 </div>
             <?php } ?>
 
-            <!-- FORM UBAH DATA -->
-            <?php if ($role == "admin" && $data_edit != null) { ?>
+            <!-- MODAL UBAH DATA SISWA -->
+<?php if ($role == "admin" && $data_edit != null) { ?>
 
-                <div class="card border-0 shadow-sm mb-4">
+<div class="modal fade" id="modalUbah" tabindex="-1"
+     aria-labelledby="judulModalUbah" aria-hidden="true">
 
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">Ubah Data Siswa</h5>
-                    </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
-                    <div class="card-body">
+        <div class="modal-content">
 
-                        <form method="POST">
+            <form method="POST">
 
-                            <input type="hidden"
-                                   name="id"
-                                   value="<?= e($data_edit['id']); ?>">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold" id="judulModalUbah">
+                        Ubah Data Siswa
+                    </h5>
 
-                            <div class="row">
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">NIS</label>
-                                    <input type="text"
-                                           name="nis"
-                                           class="form-control"
-                                           value="<?= e($data_edit['nis']); ?>"
-                                           required>
-                                </div>
+                <div class="modal-body p-4">
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">NISN</label>
-                                    <input type="text"
-                                           name="nisn"
-                                           class="form-control"
-                                           value="<?= e($data_edit['nisn']); ?>"
-                                           required>
-                                </div>
+                    <input type="hidden" name="id"
+                           value="<?= e($data_edit['id']); ?>">
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nama Siswa</label>
-                                    <input type="text"
-                                           name="nama"
-                                           class="form-control"
-                                           value="<?= e($data_edit['nama']); ?>"
-                                           required>
-                                </div>
+                    <div class="row">
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Jenis Kelamin</label>
-                                    <select name="jenis_kelamin"
-                                            class="form-select"
-                                            required>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">NIS</label>
+                            <input type="text" name="nis"
+                                   class="form-control"
+                                   value="<?= e($data_edit['nis']); ?>"
+                                   required>
+                        </div>
 
-                                        <option value="L"
-                                            <?= $data_edit['jenis_kelamin'] == "L" ? "selected" : ""; ?>>
-                                            Laki-laki
-                                        </option>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">NISN</label>
+                            <input type="text" name="nisn"
+                                   class="form-control"
+                                   value="<?= e($data_edit['nisn']); ?>"
+                                   required>
+                        </div>
 
-                                        <option value="P"
-                                            <?= $data_edit['jenis_kelamin'] == "P" ? "selected" : ""; ?>>
-                                            Perempuan
-                                        </option>
-                                    </select>
-                                </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Siswa</label>
+                            <input type="text" name="nama"
+                                   class="form-control"
+                                   value="<?= e($data_edit['nama']); ?>"
+                                   required>
+                        </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Tanggal Lahir</label>
-                                    <input type="date"
-                                           name="tanggal_lahir"
-                                           class="form-control"
-                                           value="<?= e($data_edit['tanggal_lahir']); ?>"
-                                           required>
-                                </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jenis Kelamin</label>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Status Aktif</label>
-                                    <select name="status_aktif"
-                                            class="form-select"
-                                            required>
+                            <select name="jenis_kelamin"
+                                    class="form-select" required>
 
-                                        <option value="1"
-                                            <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>
-                                            Aktif
-                                        </option>
+                                <option value="L"
+                                    <?= $data_edit['jenis_kelamin'] == "L" ? "selected" : ""; ?>>
+                                    Laki-laki
+                                </option>
 
-                                        <option value="0"
-                                            <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>
-                                            Tidak Aktif
-                                        </option>
-                                    </select>
-                                </div>
+                                <option value="P"
+                                    <?= $data_edit['jenis_kelamin'] == "P" ? "selected" : ""; ?>>
+                                    Perempuan
+                                </option>
 
-                                <div class="col-12 mb-3">
-                                    <label class="form-label">Alamat</label>
-                                    <textarea name="alamat"
-                                              class="form-control"
-                                              rows="3"
-                                              required><?= e($data_edit['alamat']); ?></textarea>
-                                </div>
+                            </select>
+                        </div>
 
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tanggal Lahir</label>
+                            <input type="date" name="tanggal_lahir"
+                                   class="form-control"
+                                   value="<?= e($data_edit['tanggal_lahir']); ?>"
+                                   required>
+                        </div>
 
-                            <button type="submit"
-                                    name="ubah"
-                                    class="btn btn-primary">
-                                Simpan Perubahan
-                            </button>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status Aktif</label>
 
-                            <a href="data_siswa.php"
-                               class="btn btn-secondary">
-                                Batal
-                            </a>
+                            <select name="status_aktif"
+                                    class="form-select" required>
 
-                        </form>
+                                <option value="1"
+                                    <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>
+                                    Aktif
+                                </option>
+
+                                <option value="0"
+                                    <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>
+                                    Tidak Aktif
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Alamat</label>
+
+                            <textarea name="alamat"
+                                      class="form-control"
+                                      rows="3"
+                                      required><?= e($data_edit['alamat']); ?></textarea>
+                        </div>
+
                     </div>
                 </div>
 
-            <?php } ?>
+                <div class="modal-footer">
+
+                    <a href="data_siswa.php"
+                       class="btn btn-secondary">
+                        Batal
+                    </a>
+
+                    <button type="submit" name="ubah"
+                            class="btn btn-primary">
+                        Simpan Perubahan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var modalUbah = new bootstrap.Modal(
+        document.getElementById('modalUbah')
+    );
+
+    modalUbah.show();
+});
+</script>
+
+<?php } ?>
 
             <!-- TABEL DATA SISWA -->
             <div class="card border-0 shadow-sm">
@@ -439,31 +463,48 @@ function e($teks) {
                                class="table table-bordered table-striped table-hover align-middle mb-0">
 
                             <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>NIS</th>
-                                    <th>NISN</th>
-                                    <th>Nama</th>
-                                    <th>Jenis Kelamin</th>
-                                    <th>Tanggal Lahir</th>
-                                    <th>Alamat</th>
-                                    <th>Status</th>
+    <tr>
+        <th>No</th>
+        <th>NIS</th>
+        <th>NISN</th>
+        <th>Nama</th>
+        <th>Kelas</th>
+        <th>Jenis Kelamin</th>
+        <th>Tanggal Lahir</th>
+        <th>Alamat</th>
+        <th>Status</th>
 
-                                    <?php if ($role == "admin") { ?>
-                                        <th>Aksi</th>
-                                    <?php } ?>
-                                </tr>
-                            </thead>
+        <?php if ($role == "admin") { ?>
+            <th>Aksi</th>
+        <?php } ?>
+    </tr>
+</thead>
 
                             <tbody>
 
                                 <?php
-                                $query_siswa = mysqli_query(
-                                    $koneksi,
-                                    "SELECT * FROM t_siswa
-                                     ORDER BY id ASC"
-                                );
+                                $query_siswa = mysqli_query($koneksi, "
+    SELECT
+        s.*,
+        k.nama AS nama_kelas
+    FROM t_siswa s
 
+    LEFT JOIN (
+        SELECT ks1.*
+        FROM t_kelas_siswa ks1
+        INNER JOIN (
+            SELECT siswa_id, MAX(id) AS id_terbaru
+            FROM t_kelas_siswa
+            WHERE status_aktif = 1
+            GROUP BY siswa_id
+        ) ks2 ON ks1.id = ks2.id_terbaru
+    ) ks ON s.id = ks.siswa_id
+
+    LEFT JOIN t_kelas k
+        ON ks.kelas_id = k.id
+
+    ORDER BY s.id ASC
+");
                                 $no = 1;
 
                                 if (mysqli_num_rows($query_siswa) > 0) {
@@ -479,6 +520,11 @@ function e($teks) {
                                         <td><?= e($siswa['nisn']); ?></td>
 
                                         <td><?= e($siswa['nama']); ?></td>
+                                        <td>
+    <?= !empty($siswa['nama_kelas'])
+        ? e($siswa['nama_kelas'])
+        : '-'; ?>
+</td>
 
                                         <td>
                                             <?php
@@ -536,7 +582,7 @@ function e($teks) {
                                 ?>
 
                                     <tr>
-                                        <td colspan="<?= $role == 'admin' ? 9 : 8; ?>"
+                                        <td colspan="<?= $role == 'admin' ? 10 : 9; ?>"
                                             class="text-center text-muted py-4">
                                             Belum ada data siswa.
                                         </td>

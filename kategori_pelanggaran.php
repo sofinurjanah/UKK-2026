@@ -142,13 +142,13 @@ if (isset($_GET['edit'])) {
             <!-- JUDUL HALAMAN DAN TOMBOL FORM -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold mb-0">Kelola Kategori Pelanggaran</h3>
-                <?php if ($role == "admin" && $data_edit == null) { ?>
-                    <button type="button" class="btn btn-primary"
-                            data-bs-toggle="collapse" data-bs-target="#formKategori"
-                            aria-expanded="false" aria-controls="formKategori">
-                        + Tambah Kategori
-                    </button>
-                <?php } ?>
+                <<?php if ($role == "admin" && $data_edit == null) { ?>
+    <button type="button" class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#modalKategori">
+         Tambah Kategori
+    </button>
+<?php } ?>
             </div>
 
             <!-- NOTIFIKASI -->
@@ -159,70 +159,149 @@ if (isset($_GET['edit'])) {
                 </div>
             <?php } ?>
 
-            <!-- FORM TAMBAH / UBAH: TERSEMBUNYI SAAT HALAMAN DIBUKA, TERBUKA SAAT EDIT -->
-            <?php if ($role == "admin") { ?>
-                <div class="collapse <?php echo ($data_edit != null) ? 'show' : ''; ?>" id="formKategori">
-                    <div class="card border-0 shadow-sm mb-4">
-                        <div class="card-header bg-white py-3">
-                            <h5 class="mb-0">
-                                <?php echo ($data_edit != null) ? "Ubah Kategori Pelanggaran" : "Tambah Kategori Pelanggaran"; ?>
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            <?php if ($data_edit != null) { ?>
-                                <form method="POST">
-                                    <input type="hidden" name="id" value="<?php echo htmlspecialchars($data_edit['id'], ENT_QUOTES, 'UTF-8'); ?>">
+            <!-- MODAL TAMBAH / UBAH KATEGORI -->
+<?php if ($role == "admin") { ?>
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Nama Kategori</label>
-                                        <input type="text" name="nama" class="form-control"
-                                               value="<?php echo htmlspecialchars($data_edit['nama'], ENT_QUOTES, 'UTF-8'); ?>" required>
-                                    </div>
+<div class="modal fade" id="modalKategori"
+     tabindex="-1" aria-hidden="true">
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Deskripsi</label>
-                                        <textarea name="deskripsi" class="form-control" rows="4"><?php echo htmlspecialchars($data_edit['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8'); ?></textarea>
-                                    </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Status</label>
-                                        <select name="status_aktif" class="form-select" required>
-                                            <option value="1" <?php if ($data_edit['status_aktif'] == 1) echo "selected"; ?>>Aktif</option>
-                                            <option value="0" <?php if ($data_edit['status_aktif'] == 0) echo "selected"; ?>>Tidak Aktif</option>
-                                        </select>
-                                    </div>
+        <div class="modal-content">
 
-                                    <button type="submit" name="ubah" class="btn btn-primary">Simpan Perubahan</button>
-                                    <a href="kategori_pelanggaran.php" class="btn btn-secondary">Batal</a>
-                                </form>
-                            <?php } else { ?>
-                                <form method="POST">
-                                    <div class="mb-3">
-                                        <label class="form-label">Nama Kategori</label>
-                                        <input type="text" name="nama" class="form-control" placeholder="Contoh: Ringan" required>
-                                    </div>
+            <form method="POST">
 
-                                    <div class="mb-3">
-                                        <label class="form-label">Deskripsi</label>
-                                        <textarea name="deskripsi" class="form-control" rows="4" placeholder="Masukkan deskripsi kategori"></textarea>
-                                    </div>
+                <div class="modal-header">
 
-                                    <div class="mb-3">
-                                         <label class="form-label">Status</label>
-                                        <select name="status_aktif" class="form-select" required>
-                                            <option value="1">Aktif</option>
-                                            <option value="0">Tidak Aktif</option>
-                                        </select>
-                                    </div>
+                    <h5 class="modal-title fw-bold">
+                        <?php
+                        echo ($data_edit != null)
+                            ? "Ubah Kategori Pelanggaran"
+                            : "Tambah Kategori Pelanggaran";
+                        ?>
+                    </h5>
 
-                                    <button type="submit" name="tambah" class="btn btn-primary">Simpan Kategori</button>
-                                    <button type="button" class="btn btn-secondary" data-bs-toggle="collapse" data-bs-target="#formKategori">Batal</button>
-                                </form>
-                            <?php } ?>
-                        </div>
-                    </div>
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal">
+                    </button>
+
                 </div>
-            <?php } ?>
+
+                <div class="modal-body p-4">
+
+                    <?php if ($data_edit != null) { ?>
+
+                        <input type="hidden"
+                               name="id"
+                               value="<?php echo htmlspecialchars($data_edit['id'], ENT_QUOTES, 'UTF-8'); ?>">
+
+                    <?php } ?>
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Nama Kategori
+                            </label>
+
+                            <input type="text"
+                                   name="nama"
+                                   class="form-control"
+                                   placeholder="Contoh: Ringan"
+                                   value="<?php echo ($data_edit != null) ? htmlspecialchars($data_edit['nama'], ENT_QUOTES, 'UTF-8') : ''; ?>"
+                                   required>
+
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+
+                            <label class="form-label">
+                                Status
+                            </label>
+
+                            <select name="status_aktif"
+                                    class="form-select"
+                                    required>
+
+                                <option value="1"
+                                    <?php if ($data_edit != null && $data_edit['status_aktif'] == 1) echo 'selected'; ?>>
+                                    Aktif
+                                </option>
+
+                                <option value="0"
+                                    <?php if ($data_edit != null && $data_edit['status_aktif'] == 0) echo 'selected'; ?>>
+                                    Tidak Aktif
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-12 mb-3">
+
+                            <label class="form-label">
+                                Deskripsi
+                            </label>
+
+                            <textarea name="deskripsi"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Masukkan deskripsi kategori"><?php echo ($data_edit != null) ? htmlspecialchars($data_edit['deskripsi'] ?? '', ENT_QUOTES, 'UTF-8') : ''; ?></textarea>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <a href="kategori_pelanggaran.php"
+                       class="btn btn-secondary">
+                        Batal
+                    </a>
+
+                    <button type="submit"
+                            name="<?php echo ($data_edit != null) ? 'ubah' : 'tambah'; ?>"
+                            class="btn btn-primary">
+
+                        <?php
+                        echo ($data_edit != null)
+                            ? 'Simpan Perubahan'
+                            : 'Simpan Kategori';
+                        ?>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+<?php if ($data_edit != null) { ?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    var modalKategori = new bootstrap.Modal(
+        document.getElementById('modalKategori')
+    );
+
+    modalKategori.show();
+
+});
+</script>
+
+<?php } ?>
+
+<?php } ?>
 
             <!-- DAFTAR KATEGORI -->
             <div class="card border-0 shadow-sm">

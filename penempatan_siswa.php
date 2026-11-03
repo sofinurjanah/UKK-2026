@@ -277,39 +277,44 @@ if (isset($_GET['edit'])) {
                 </div>
             <?php } ?>
 
-            <!-- FORM TAMBAH / UBAH -->
-            <?php if ($role == "admin" && ($data_edit != null || isset($_GET['tambah']))) { ?>
+            <!-- MODAL TAMBAH / UBAH PENEMPATAN -->
+<?php if ($role == "admin" && ($data_edit != null || isset($_GET['tambah']))) { ?>
 
-                <div class="card border-0 shadow-sm mb-4">
+<div class="modal fade" id="modalPenempatan"
+     tabindex="-1" aria-hidden="true">
 
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">
-                            <?php
-                            echo $data_edit != null
-                                ? 'Ubah Penempatan Siswa'
-                                : 'Tambah Penempatan Siswa';
-                            ?>
-                        </h5>
-                    </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
-                    <div class="card-body">
+        <div class="modal-content">
 
-                        <form
-                            method="POST"
-                            action="penempatan_siswa.php<?php echo $data_edit != null ? '?edit=' . (int)$data_edit['id'] : ''; ?>"
-                        >
+            <form
+                method="POST"
+                action="penempatan_siswa.php<?php echo $data_edit != null ? '?edit=' . (int)$data_edit['id'] : ''; ?>"
+            >
 
-                            <?php if ($data_edit != null) { ?>
-                                <input
-                                    type="hidden"
-                                    name="id"
-                                    value="<?php echo (int)$data_edit['id']; ?>"
-                                >
-                            <?php } ?>
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <?php
+                        echo $data_edit != null
+                            ? 'Ubah Penempatan Siswa'
+                            : 'Tambah Penempatan Siswa';
+                        ?>
+                    </h5>
 
-                            <div class="row g-3">
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
+                </div>
 
-                                <!-- SISWA -->
+                <div class="modal-body p-4">
+
+                    <?php if ($data_edit != null) { ?>
+                        <input type="hidden" name="id"
+                               value="<?php echo (int)$data_edit['id']; ?>">
+                    <?php } ?>
+
+                    <div class="row g-3">
+
+                        <!-- SISWA -->
                                 <div class="col-md-6">
                                     <label class="form-label">Siswa</label>
 
@@ -442,45 +447,56 @@ if (isset($_GET['edit'])) {
                                 <div class="col-md-6">
                                     <label class="form-label">Tanggal Selesai</label>
 
-                                    <input
+                                                                        <input
                                         type="date"
                                         name="tanggal_selesai"
                                         class="form-control"
                                         value="<?php echo $data_edit != null ? htmlspecialchars($data_edit['tanggal_selesai']) : ''; ?>"
                                         required
                                     >
+
                                 </div>
 
                             </div>
 
-                            <div class="mt-4 d-flex gap-2">
+                        </div>
 
-                                <button
-                                    type="submit"
-                                    name="<?php echo $data_edit != null ? 'ubah' : 'tambah'; ?>"
-                                    class="btn btn-primary"
-                                >
-                                    <?php
-                                    echo $data_edit != null
-                                        ? 'Simpan Perubahan'
-                                        : 'Simpan Penempatan';
-                                    ?>
-                                </button>
+                <div class="modal-footer">
 
-                                <a
-                                    href="penempatan_siswa.php"
-                                    class="btn btn-secondary"
-                                >
-                                    Batal
-                                </a>
+                    <a href="penempatan_siswa.php"
+                       class="btn btn-secondary">
+                        Batal
+                    </a>
 
-                            </div>
+                    <button type="submit"
+                            name="<?php echo $data_edit != null ? 'ubah' : 'tambah'; ?>"
+                            class="btn btn-primary">
 
-                        </form>
-                    </div>
+                        <?php
+                        echo $data_edit != null
+                            ? 'Simpan Perubahan'
+                            : 'Simpan Penempatan';
+                        ?>
+
+                    </button>
+
                 </div>
 
-            <?php } ?>
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new bootstrap.Modal(
+        document.getElementById('modalPenempatan')
+    ).show();
+});
+</script>
+
+<?php } ?>
 
             <!-- TABEL DAFTAR PENEMPATAN -->
             <div class="card border-0 shadow-sm">

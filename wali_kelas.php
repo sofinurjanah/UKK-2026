@@ -272,42 +272,50 @@ if (isset($_GET['edit'])) {
 
             <?php } ?>
 
-            <!-- FORM TAMBAH DAN EDIT -->
-            <?php
-            if ($role == 'admin' &&
-                ($data_edit != null || isset($_GET['tambah']))) {
-            ?>
+            <!-- MODAL TAMBAH / UBAH WALI KELAS -->
+<?php
+if ($role == 'admin' &&
+    ($data_edit != null || isset($_GET['tambah']))) {
+?>
 
-            <div class="card border-0 shadow-sm mb-4">
+<div class="modal fade" id="modalWaliKelas"
+     tabindex="-1" aria-hidden="true">
 
-                <div class="card-header bg-white py-3">
-                    <h5 class="mb-0">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+
+        <div class="modal-content">
+
+            <form method="POST"
+                  action="wali_kelas.php<?php
+                  echo $data_edit != null
+                      ? '?edit=' . (int)$data_edit['id']
+                      : '';
+                  ?>">
+
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
                         <?php
                         echo $data_edit != null
                             ? 'Ubah Data Wali Kelas'
                             : 'Tambah Wali Kelas';
                         ?>
                     </h5>
+
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
                 </div>
 
-                <div class="card-body">
+                <div class="modal-body p-4">
 
-                    <form method="POST"
-                          action="wali_kelas.php<?php
-                          echo $data_edit != null
-                              ? '?edit=' . (int)$data_edit['id']
-                              : '';
-                          ?>">
+                    <?php if ($data_edit != null) { ?>
+                        <input type="hidden"
+                               name="id"
+                               value="<?php echo (int)$data_edit['id']; ?>">
+                    <?php } ?>
 
-                        <?php if ($data_edit != null) { ?>
-                            <input type="hidden"
-                                   name="id"
-                                   value="<?php echo (int)$data_edit['id']; ?>">
-                        <?php } ?>
+                    <div class="row g-3">
 
-                        <div class="row g-3">
-
-                            <!-- TAHUN AJARAN -->
+                        <!-- TAHUN AJARAN -->
                             <div class="col-md-6">
                                 <label class="form-label">Tahun Ajaran</label>
 
@@ -478,38 +486,46 @@ if (isset($_GET['edit'])) {
                                        required>
                             </div>
 
-                        </div>
+                    </div>
 
-                        <div class="mt-4 d-flex gap-2">
-
-                            <button type="submit"
-                                    name="<?php
-                                    echo $data_edit != null
-                                        ? 'ubah'
-                                        : 'tambah';
-                                    ?>"
-                                    class="btn btn-primary">
-
-                                <?php
-                                echo $data_edit != null
-                                    ? 'Simpan Perubahan'
-                                    : 'Simpan Wali Kelas';
-                                ?>
-
-                            </button>
-
-                            <a href="wali_kelas.php"
-                               class="btn btn-secondary">
-                                Batal
-                            </a>
-
-                        </div>
-
-                    </form>
                 </div>
-            </div>
 
-            <?php } ?>
+                <div class="modal-footer">
+
+                    <a href="wali_kelas.php"
+                       class="btn btn-secondary">
+                        Batal
+                    </a>
+
+                    <button type="submit"
+                            name="<?php echo $data_edit != null ? 'ubah' : 'tambah'; ?>"
+                            class="btn btn-primary">
+
+                        <?php
+                        echo $data_edit != null
+                            ? 'Simpan Perubahan'
+                            : 'Simpan Wali Kelas';
+                        ?>
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new bootstrap.Modal(
+        document.getElementById('modalWaliKelas')
+    ).show();
+});
+</script>
+
+<?php } ?>
 
             <!-- TABEL DATA WALI KELAS -->
             <div class="card border-0 shadow-sm">

@@ -403,23 +403,6 @@ footer {
     }
 }
 
-/* Tampilan HP */
-@media (max-width: 767px) {
-    .col-md-3.col-lg-2.min-vh-100,
-    .col-lg-2.min-vh-100,
-    aside.sidebar {
-        position: relative;
-        width: 100%;
-        height: auto;
-        min-height: auto !important;
-    }
-
-    main {
-        margin-left: 0;
-        width: 100%;
-    }
-}
-
 
 /* =========================================
    ABOUT ME - DESAIN PORTOFOLIO
@@ -486,7 +469,7 @@ footer {
     z-index: 2;
     top: 25px;
     left: -12px;
-    color: #1f2072;
+    color: #073b78;
     font-family: cursive;
     font-size: 34px;
     font-style: italic;
@@ -495,7 +478,7 @@ footer {
 
 .profile-name {
     margin: 0 0 8px;
-    color: #30318B;
+    color: #073b78;
     font-size: 25px;
     font-weight: 800;
 }
@@ -505,7 +488,7 @@ footer {
     padding: 7px 16px;
     border-radius: 30px;
     background: #eeeeff;
-    color: #30318B;
+    color: #073b78;
     font-size: 12px;
     font-weight: 700;
 }
@@ -525,7 +508,7 @@ footer {
 }
 
 .profile-details strong {
-    color: #30318B;
+    color: #073b78;
 }
 
 .profile-skills {
@@ -534,7 +517,7 @@ footer {
 
 .profile-skills-title {
     margin-bottom: 15px;
-    color: #30318B;
+    color: #073b78;
     font-size: 17px;
     font-weight: 800;
 }
@@ -553,7 +536,7 @@ footer {
     height: 40px;
     padding: 0 12px;
     border-radius: 10px;
-    background: #30318B;
+    background: #073b78;
     color: #ffffff;
     font-size: 12px;
     font-weight: 700;
@@ -580,7 +563,7 @@ footer {
 
 .about-heading {
     margin-bottom: 13px;
-    color: #30318B;
+    color: #073b78;
     font-size: 20px;
     font-weight: 800;
 }
@@ -621,19 +604,19 @@ footer {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #30318B;
+    background: #073b78;
     box-shadow: 0 0 0 4px #eeeeff;
 }
 
 .about-timeline-label {
-    color: #30318B;
+    color: #073b78;
     font-size: 12px;
     font-weight: 800;
 }
 
 .about-timeline-title {
     margin: 0 0 5px;
-    color: #30318B;
+    color: #073b78;
     font-size: 13px;
     font-weight: 800;
     line-height: 1.5;

@@ -212,62 +212,128 @@ if (isset($_GET['edit']) && $role == "admin") {
                 </div>
             <?php } ?>
 
-            <!-- FORM UBAH KELAS -->
-            <?php if ($role == "admin" && $data_edit != null) { ?>
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">Ubah Data Kelas</h5>
-                    </div>
+            <!-- MODAL UBAH KELAS -->
+<?php if ($role == "admin" && $data_edit != null) { ?>
 
-                    <div class="card-body">
-                        <form method="POST">
-                            <input type="hidden" name="id"
-                                   value="<?= $data_edit['id']; ?>">
+<div class="modal fade" id="modalUbahKelas"
+     tabindex="-1" aria-hidden="true">
 
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Nama Kelas</label>
-                                    <input type="text" name="nama"
-                                           class="form-control"
-                                           value="<?= htmlspecialchars($data_edit['nama'], ENT_QUOTES, 'UTF-8'); ?>"
-                                           required>
-                                </div>
+    <div class="modal-dialog modal-lg modal-dialog-centered">
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Tingkat</label>
-                                    <select name="tingkat" class="form-select" required>
-                                        <option value="X" <?= $data_edit['tingkat'] == "X" ? "selected" : ""; ?>>X</option>
-                                        <option value="XI" <?= $data_edit['tingkat'] == "XI" ? "selected" : ""; ?>>XI</option>
-                                        <option value="XII" <?= $data_edit['tingkat'] == "XII" ? "selected" : ""; ?>>XII</option>
-                                    </select>
-                                </div>
+        <div class="modal-content">
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Jurusan</label>
-                                    <input type="text" name="jurusan"
-                                           class="form-control"
-                                           value="<?= htmlspecialchars($data_edit['jurusan'], ENT_QUOTES, 'UTF-8'); ?>"
-                                           required>
-                                </div>
+            <form method="POST">
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label">Status Aktif</label>
-                                    <select name="status_aktif" class="form-select" required>
-                                        <option value="1" <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>Aktif</option>
-                                        <option value="0" <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>Tidak Aktif</option>
-                                    </select>
-                                </div>
-                            </div>
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        Ubah Data Kelas
+                    </h5>
 
-                            <button type="submit" name="ubah" class="btn btn-success">
-                                Simpan Perubahan
-                            </button>
-
-                            <a href="data_kelas.php" class="btn btn-danger">Batal</a>
-                        </form>
-                    </div>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal"></button>
                 </div>
-            <?php } ?>
+
+                <div class="modal-body p-4">
+
+                    <input type="hidden" name="id"
+                           value="<?= $data_edit['id']; ?>">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nama Kelas</label>
+
+                            <input type="text" name="nama"
+                                   class="form-control"
+                                   value="<?= htmlspecialchars($data_edit['nama'], ENT_QUOTES, 'UTF-8'); ?>"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Tingkat</label>
+
+                            <select name="tingkat"
+                                    class="form-select" required>
+
+                                <option value="X"
+                                    <?= $data_edit['tingkat'] == "X" ? "selected" : ""; ?>>
+                                    X
+                                </option>
+
+                                <option value="XI"
+                                    <?= $data_edit['tingkat'] == "XI" ? "selected" : ""; ?>>
+                                    XI
+                                </option>
+
+                                <option value="XII"
+                                    <?= $data_edit['tingkat'] == "XII" ? "selected" : ""; ?>>
+                                    XII
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Jurusan</label>
+
+                            <input type="text" name="jurusan"
+                                   class="form-control"
+                                   value="<?= htmlspecialchars($data_edit['jurusan'], ENT_QUOTES, 'UTF-8'); ?>"
+                                   required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status Aktif</label>
+
+                            <select name="status_aktif"
+                                    class="form-select" required>
+
+                                <option value="1"
+                                    <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>
+                                    Aktif
+                                </option>
+
+                                <option value="0"
+                                    <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>
+                                    Tidak Aktif
+                                </option>
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <a href="data_kelas.php"
+                       class="btn btn-secondary">
+                        Batal
+                    </a>
+
+                    <button type="submit" name="ubah"
+                            class="btn btn-primary">
+                        Simpan Perubahan
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    new bootstrap.Modal(
+        document.getElementById('modalUbahKelas')
+    ).show();
+});
+</script>
+
+<?php } ?>
 
             <!-- TABEL DAFTAR KELAS -->
             <div class="card border-0 shadow-sm">
@@ -349,7 +415,7 @@ if (isset($_GET['edit']) && $role == "admin") {
 <?php if ($role == "admin") { ?>
 <div class="modal fade" id="modalTambah" tabindex="-1"
      aria-labelledby="judulModalTambah" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <form method="POST">
 
