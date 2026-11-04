@@ -228,197 +228,141 @@ if (isset($_GET['edit'])) {
 
             <?php if ($data_edit != null) { ?>
 
-                <!-- FORM EDIT TINDAKAN -->
-                <div class="card border-0 shadow-sm mb-4">
+<!-- MODAL EDIT TINDAKAN -->
+<div class="modal fade" id="modalTindakan" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
 
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">
-                            Berikan Tindakan
-                        </h5>
-                    </div>
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    Berikan Tindakan
+                </h5>
 
-                    <div class="card-body p-4">
+                <a href="tindakan.php" class="btn-close"></a>
+            </div>
 
-                        <form method="POST">
+            <form method="POST">
 
+                <div class="modal-body p-4">
+
+                    <input
+                        type="hidden"
+                        name="id"
+                        value="<?php echo $data_edit['id']; ?>">
+
+                    <div class="row">
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Nama Siswa</label>
                             <input
-                                type="hidden"
-                                name="id"
-                                value="<?php echo $data_edit['id']; ?>"
-                            >
+                                type="text"
+                                class="form-control"
+                                value="<?php echo $data_edit['nama_siswa']; ?>"
+                                readonly>
+                        </div>
 
-                            <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Kelas</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="<?php echo $data_edit['nama_kelas']; ?>"
+                                readonly>
+                        </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-semibold">
-                                        Nama Siswa
-                                    </label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Pelanggaran</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="<?php echo $data_edit['nama_pelanggaran']; ?>"
+                                readonly>
+                        </div>
 
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        value="<?php echo $data_edit['nama_siswa']; ?>"
-                                        readonly
-                                    >
-                                </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Poin</label>
+                            <input
+                                type="text"
+                                class="form-control"
+                                value="<?php echo $data_edit['poin']; ?>"
+                                readonly>
+                        </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-semibold">
-                                        Kelas
-                                    </label>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-semibold">Keterangan</label>
+                            <textarea
+                                class="form-control"
+                                rows="3"
+                                readonly><?php echo $data_edit['keterangan']; ?></textarea>
+                        </div>
 
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        value="<?php echo $data_edit['nama_kelas']; ?>"
-                                        readonly
-                                    >
-                                </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label fw-semibold">Tindakan</label>
+                            <textarea
+                                name="tindakan"
+                                class="form-control"
+                                rows="4"
+                                placeholder="Masukkan tindakan yang diberikan"
+                                required><?php echo $data_edit['tindakan']; ?></textarea>
+                        </div>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-semibold">
-                                        Pelanggaran
-                                    </label>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Status</label>
 
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        value="<?php echo $data_edit['nama_pelanggaran']; ?>"
-                                        readonly
-                                    >
-                                </div>
+                            <select name="status" class="form-select" required>
 
-                                <div class="col-md-6 mb-3">
-                                    <label class="form-label fw-semibold">
-                                        Poin
-                                    </label>
+                                <option value="Teguran"
+                                    <?php if ($data_edit['status'] == "Teguran") echo "selected"; ?>>
+                                    Teguran
+                                </option>
 
-                                    <input
-                                        type="text"
-                                        class="form-control"
-                                        value="<?php echo $data_edit['poin']; ?>"
-                                        readonly
-                                    >
-                                </div>
+                                <option value="Pembinaan"
+                                    <?php if ($data_edit['status'] == "Pembinaan") echo "selected"; ?>>
+                                    Pembinaan
+                                </option>
 
-                                <div class="col-12 mb-3">
-                                    <label class="form-label fw-semibold">
-                                        Keterangan
-                                    </label>
+                                <option value="Dipantau"
+                                    <?php if ($data_edit['status'] == "Dipantau") echo "selected"; ?>>
+                                    Dipantau
+                                </option>
 
-                                    <textarea
-                                        class="form-control"
-                                        rows="3"
-                                        readonly
-                                    ><?php echo $data_edit['keterangan']; ?></textarea>
-                                </div>
+                                <option value="Ditindaklanjuti"
+                                    <?php if ($data_edit['status'] == "Ditindaklanjuti") echo "selected"; ?>>
+                                    Ditindaklanjuti
+                                </option>
 
-                                <div class="col-12 mb-3">
-                                    <label class="form-label fw-semibold">
-                                        Tindakan
-                                    </label>
+                                <option value="Selesai"
+                                    <?php if ($data_edit['status'] == "Selesai") echo "selected"; ?>>
+                                    Selesai
+                                </option>
 
-                                    <textarea
-                                        name="tindakan"
-                                        class="form-control"
-                                        rows="5"
-                                        placeholder="Masukkan tindakan yang diberikan"
-                                        required
-                                    ><?php echo $data_edit['tindakan']; ?></textarea>
-                                </div>
-
-                                <div class="col-md-6 mb-4">
-                                    <label class="form-label fw-semibold">
-                                        Status
-                                    </label>
-
-                                    <select
-                                        name="status"
-                                        class="form-select"
-                                        required
-                                    >
-
-                                        <option
-                                            value="Teguran"
-                                            <?php
-                                            if ($data_edit['status'] == "Teguran") {
-                                                echo "selected";
-                                            }
-                                            ?>
-                                        >
-                                            Teguran
-                                        </option>
-
-                                        <option
-                                            value="Pembinaan"
-                                            <?php
-                                            if ($data_edit['status'] == "Pembinaan") {
-                                                echo "selected";
-                                            }
-                                            ?>
-                                        >
-                                            Pembinaan
-                                        </option>
-
-                                        <option
-                                            value="Dipantau"
-                                            <?php
-                                            if ($data_edit['status'] == "Dipantau") {
-                                                echo "selected";
-                                            }
-                                            ?>
-                                        >
-                                            Dipantau
-                                        </option>
-
-                                        <option
-                                            value="Ditindaklanjuti"
-                                            <?php
-                                            if ($data_edit['status'] == "Ditindaklanjuti") {
-                                                echo "selected";
-                                            }
-                                            ?>
-                                        >
-                                            Ditindaklanjuti
-                                        </option>
-
-                                        <option
-                                            value="Selesai"
-                                            <?php
-                                            if ($data_edit['status'] == "Selesai") {
-                                                echo "selected";
-                                            }
-                                            ?>
-                                        >
-                                            Selesai
-                                        </option>
-
-                                    </select>
-                                </div>
-
-                            </div>
-
-                            <button
-                                type="submit"
-                                name="simpan"
-                                class="btn btn-primary"
-                            >
-                                Simpan Tindakan
-                            </button>
-
-                            <a
-                                href="tindakan.php"
-                                class="btn btn-secondary"
-                            >
-                                Batal
-                            </a>
-
-                        </form>
+                            </select>
+                        </div>
 
                     </div>
+
                 </div>
 
-            <?php } ?>
+                <div class="modal-footer">
+                    <a href="tindakan.php" class="btn btn-secondary">
+                        Batal
+                    </a>
+
+                    <button
+                        type="submit"
+                        name="simpan"
+                        class="btn btn-primary">
+                        Simpan
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+</div>
+
+<?php } ?>
 
             <!-- TABEL DAFTAR PELANGGARAN -->
             <div class="card border-0 shadow-sm">
@@ -460,7 +404,7 @@ if (isset($_GET['edit'])) {
                                 $query = mysqli_query($koneksi, "
                                     SELECT *
                                     FROM t_pelanggaran_siswa
-                                    ORDER BY tanggal DESC
+                                    ORDER BY tanggal DESC, id DESC
                                 ");
 
                                 $no = 1;
@@ -544,6 +488,18 @@ if (isset($_GET['edit'])) {
 
     </div>
 </div>
+
+<?php if ($data_edit != null) { ?>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var modal = new bootstrap.Modal(
+            document.getElementById('modalTindakan')
+        );
+
+        modal.show();
+    });
+</script>
+<?php } ?>
 
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>

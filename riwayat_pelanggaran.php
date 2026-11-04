@@ -47,8 +47,7 @@ if ($tanggal_akhir != "") {
 $query = mysqli_query($koneksi, "
     SELECT *
     FROM t_pelanggaran_siswa
-    $where
-    ORDER BY tanggal DESC, nama_siswa ASC
+    ORDER BY id DESC
 ");
 
 ?>

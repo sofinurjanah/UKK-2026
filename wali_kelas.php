@@ -7,10 +7,18 @@ include "includes/cek_session.php";
 $role = $_SESSION['role'] ?? '';
 $pesan = '';
 
+// Mengambil tahun ajaran yang sedang aktif
+$query_tahun_aktif = mysqli_query($koneksi, "
+    SELECT id, nama
+    FROM t_tahun_ajaran
+    WHERE status_aktif = 1
+    LIMIT 1
+");
+
 /* TAMBAH WALI KELAS */
 if (isset($_POST['tambah']) && $role == "admin") {
 
-    $tahun_ajaran_id = $_POST['tahun_ajaran_id'];
+    $tahun_ajaran_id = (int) $tahun_aktif['id'];
     $kelas_id = $_POST['kelas_id'];
     $guru_id = $_POST['guru_id'];
     $tanggal_mulai = $_POST['tanggal_mulai'];
@@ -32,7 +40,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
 if (isset($_POST['ubah']) && $role == "admin") {
 
     $id = $_POST['id'];
-    $tahun_ajaran_id = $_POST['tahun_ajaran_id'];
+    $tahun_ajaran_id = (int) $tahun_aktif['id'];
     $kelas_id = $_POST['kelas_id'];
     $guru_id = $_POST['guru_id'];
     $tanggal_mulai = $_POST['tanggal_mulai'];
@@ -79,6 +87,8 @@ if (isset($_GET['edit'])) {
 
     $data_edit = mysqli_fetch_assoc($query_edit);
 }
+
+$tahun_aktif = mysqli_fetch_assoc($query_tahun_aktif);
 
 ?>
 <!DOCTYPE html>
@@ -315,41 +325,29 @@ if ($role == 'admin' &&
 
                     <div class="row g-3">
 
-                        <!-- TAHUN AJARAN -->
-                            <div class="col-md-6">
-                                <label class="form-label">Tahun Ajaran</label>
+                        <div class="col-md-6 mb-3">
+    <label class="form-label">Tahun Ajaran</label>
 
-                                <select name="tahun_ajaran_id"
-                                        class="form-select"
-                                        required>
+    <?php if ($tahun_aktif) { ?>
 
-                                    <option value="">-- Pilih Tahun Ajaran --</option>
+        <input type="text"
+               class="form-control"
+               value="<?= htmlspecialchars($tahun_aktif['nama']); ?>"
+               readonly>
 
-                                    <?php
-                                    $tahun = mysqli_query(
-                                        $koneksi,
-                                        "SELECT * FROM t_tahun_ajaran
-                                         ORDER BY tanggal_mulai DESC"
-                                    );
+        <input type="hidden"
+               name="tahun_ajaran_id"
+               value="<?= (int)$tahun_aktif['id']; ?>">
 
-                                    if ($tahun) {
-                                        while ($row = mysqli_fetch_assoc($tahun)) {
-                                            $selected = (
-                                                $data_edit != null &&
-                                                $data_edit['tahun_ajaran_id'] == $row['id']
-                                            ) ? 'selected' : '';
+    <?php } else { ?>
 
-                                            echo '<option value="' .
-                                                (int)$row['id'] . '" ' .
-                                                $selected . '>' .
-                                                htmlspecialchars($row['nama']) .
-                                                '</option>';
-                                        }
-                                    }
-                                    ?>
+        <input type="text"
+               class="form-control"
+               value="Belum ada tahun ajaran aktif"
+               readonly>
 
-                                </select>
-                            </div>
+    <?php } ?>
+</div>
 
                             <!-- KELAS -->
                             <div class="col-md-6">
@@ -577,8 +575,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         ON t_wali_kelas.kelas_id = t_kelas.id
                                     INNER JOIN t_guru
                                         ON t_wali_kelas.guru_id = t_guru.id
-                                    ORDER BY t_tahun_ajaran.tanggal_mulai DESC,
-                                             t_kelas.nama ASC"
+                                    ORDER BY t_wali_kelas.id DESC"
                                 );
 
                                 $no = 1;

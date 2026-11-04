@@ -546,7 +546,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                         ON t_kelas_siswa.kelas_id = t_kelas.id
                                     INNER JOIN t_tahun_ajaran
                                         ON t_kelas_siswa.tahun_ajaran_id = t_tahun_ajaran.id
-                                    ORDER BY t_siswa.nama ASC
+                                    ORDER BY t_kelas_siswa.id DESC
                                 ");
 
                                 $no = 1;

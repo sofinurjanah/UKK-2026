@@ -307,157 +307,154 @@ if (isset($_POST['simpan'])) {
                 </div>
 
    <!-- TOMBOL BUKA FORM -->
-                <button
-                    type="button"
-                    class="btn btn-primary"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#formPelanggaran"
-                    aria-expanded="false"
-                    aria-controls="formPelanggaran">
-                     Tambah Pelanggaran
-                </button>
+<button
+    type="button"
+    class="btn btn-primary"
+    data-bs-toggle="modal"
+    data-bs-target="#modalPelanggaran">
+     Tambah Pelanggaran
+</button>
+</div>
+
+<!-- MODAL TAMBAH PELANGGARAN -->
+<div class="modal fade" id="modalPelanggaran" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">
+                    Form Tambah Pelanggaran
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
 
-            <!-- FORM TAMBAH PELANGGARAN -->
-            <div class="collapse mb-4" id="formPelanggaran">
+            <form method="POST">
+                <div class="modal-body p-4">
 
-                <div class="card border-0 shadow-sm">
+                    <!-- SISWA -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Nama Siswa</label>
+                        <select name="siswa_id" class="form-select" required>
+                            <option value="">-- Pilih Siswa --</option>
 
-                    <div class="card-header bg-white py-3">
-                        <h5 class="mb-0">
-                            Form Tambah Pelanggaran
-                        </h5>
-                    </div>
+                            <?php
+                            $query_siswa = mysqli_query($koneksi, "
+                                SELECT
+                                    t_siswa.id,
+                                    t_siswa.nis,
+                                    t_siswa.nama,
+                                    t_kelas.nama AS nama_kelas
+                                FROM t_siswa
+                                LEFT JOIN t_kelas_siswa
+                                    ON t_siswa.id = t_kelas_siswa.siswa_id
+                                LEFT JOIN t_kelas
+                                    ON t_kelas_siswa.kelas_id = t_kelas.id
+                                WHERE t_siswa.status_aktif = 1
+                                AND t_kelas_siswa.status_aktif = 1
+                                ORDER BY t_siswa.nama ASC
+                            ");
 
-                    <div class="card-body p-4">
-
-                        <form method="POST">
-
-                            <!-- SISWA -->
-                            <div class="mb-3">
-                                <label class="form-label">Nama Siswa</label>
-
-                                <select name="siswa_id" class="form-select" required>
-                                    <option value="">-- Pilih Siswa --</option>
-
+                            while ($row = mysqli_fetch_assoc($query_siswa)) {
+                            ?>
+                                <option value="<?php echo $row['id']; ?>">
                                     <?php
-                                    $query_siswa = mysqli_query($koneksi, "
-                                        SELECT
-                                            t_siswa.id,
-                                            t_siswa.nis,
-                                            t_siswa.nama,
-                                            t_kelas.nama AS nama_kelas
-                                        FROM t_siswa
-                                        LEFT JOIN t_kelas_siswa
-                                            ON t_siswa.id = t_kelas_siswa.siswa_id
-                                        LEFT JOIN t_kelas
-                                            ON t_kelas_siswa.kelas_id = t_kelas.id
-                                        WHERE t_siswa.status_aktif = 1
-                                        AND t_kelas_siswa.status_aktif = 1
-                                        ORDER BY t_siswa.nama ASC
-                                    ");
+                                    echo htmlspecialchars(
+                                        $row['nis'] . " - " . $row['nama']
+                                    );
 
-                                    while ($row = mysqli_fetch_assoc($query_siswa)) {
+                                    if ($row['nama_kelas'] != "") {
+                                        echo " (" . htmlspecialchars($row['nama_kelas']) . ")";
+                                    }
                                     ?>
-                                        <option value="<?php echo $row['id']; ?>">
-                                            <?php
-                                            echo htmlspecialchars(
-                                                $row['nis'] . " - " . $row['nama']
-                                            );
-
-                                            if ($row['nama_kelas'] != "") {
-                                                echo " (" . htmlspecialchars($row['nama_kelas']) . ")";
-                                            }
-                                            ?>
-                                        </option>
-                                    <?php } ?>
-
-                                </select>
-                            </div>
-
-                           
-<!-- JENIS PELANGGARAN -->
-<div class="mb-3">
-    <label class="form-label">Jenis Pelanggaran</label>
-
-    <select name="pelanggaran_id" class="form-select" required>
-        <option value="">-- Pilih Pelanggaran --</option>
-
-        <?php
-        $query_pelanggaran = mysqli_query($koneksi, "
-            SELECT
-                t_pelanggaran.id,
-                t_pelanggaran.kode,
-                t_pelanggaran.nama,
-                t_pelanggaran.poin,
-                t_pelanggaran_kategori.nama AS nama_kategori
-            FROM t_pelanggaran
-            INNER JOIN t_pelanggaran_kategori
-                ON t_pelanggaran.pelanggaran_kategori_id =
-                   t_pelanggaran_kategori.id
-            WHERE t_pelanggaran.status_aktif = 1
-            ORDER BY t_pelanggaran.nama ASC
-        ");
-
-        if (!$query_pelanggaran) {
-            die("Query pelanggaran gagal: " .
-                htmlspecialchars(mysqli_error($koneksi)));
-        }
-
-        while ($row = mysqli_fetch_assoc($query_pelanggaran)) {
-        ?>
-            <option value="<?= (int) $row['id']; ?>">
-                <?= htmlspecialchars(
-                    $row['kode'] . " - " .
-                    $row['nama'] . " - " .
-                    $row['poin'] . " poin"
-                ); ?>
-            </option>
-        <?php } ?>
-    </select>
-</div>
-
-
-<!-- TANGGAL PELANGGARAN -->
-<div class="mb-3">
-    <label class="form-label">Tanggal Pelanggaran</label>
-    <input
-        type="date"
-        name="tanggal"
-        class="form-control"
-        required
-    >
-</div>
-
-<!-- STATUS PELANGGARAN -->
-<div class="mb-3">
-    <label class="form-label">Status</label>
-    <select name="status" class="form-select" required>
-        <option value="">-- Pilih Status --</option>
-        <option value="Pembinaan">Pembinaan</option>
-        <option value="Ditindaklanjuti">Ditindaklanjuti</option>
-        <option value="Selesai">Selesai</option>
-    </select>
-</div>
-
-
-                            <button type="submit" name="simpan" class="btn btn-primary">
-                                Simpan Pelanggaran
-                            </button>
-
-                            <button
-                                type="button"
-                                class="btn btn-secondary"
-                                data-bs-toggle="collapse"
-                                data-bs-target="#formPelanggaran">
-                                Batal
-                            </button>
-
-                        </form>
-
+                                </option>
+                            <?php } ?>
+                        </select>
                     </div>
+
+                    <!-- JENIS PELANGGARAN -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Jenis Pelanggaran</label>
+
+                        <select name="pelanggaran_id" class="form-select" required>
+                            <option value="">-- Pilih Pelanggaran --</option>
+
+                            <?php
+                            $query_pelanggaran = mysqli_query($koneksi, "
+                                SELECT
+                                    t_pelanggaran.id,
+                                    t_pelanggaran.kode,
+                                    t_pelanggaran.nama,
+                                    t_pelanggaran.poin,
+                                    t_pelanggaran_kategori.nama AS nama_kategori
+                                FROM t_pelanggaran
+                                INNER JOIN t_pelanggaran_kategori
+                                    ON t_pelanggaran.pelanggaran_kategori_id =
+                                       t_pelanggaran_kategori.id
+                                WHERE t_pelanggaran.status_aktif = 1
+                                ORDER BY t_pelanggaran.nama ASC
+                            ");
+
+                            if (!$query_pelanggaran) {
+                                die("Query pelanggaran gagal: " .
+                                    htmlspecialchars(mysqli_error($koneksi)));
+                            }
+
+                            while ($row = mysqli_fetch_assoc($query_pelanggaran)) {
+                            ?>
+                                <option value="<?= (int) $row['id']; ?>">
+                                    <?= htmlspecialchars(
+                                        $row['kode'] . " - " .
+                                        $row['nama'] . " - " .
+                                        $row['poin'] . " poin"
+                                    ); ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                    </div>
+
+                    <!-- TANGGAL -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Tanggal Pelanggaran</label>
+                        <input
+                            type="date"
+                            name="tanggal"
+                            class="form-control"
+                            required>
+                    </div>
+
+                    <!-- STATUS -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Status</label>
+                        <select name="status" class="form-select" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option value="Pembinaan">Pembinaan</option>
+                            <option value="Ditindaklanjuti">Ditindaklanjuti</option>
+                            <option value="Selesai">Selesai</option>
+                        </select>
+                    </div>
+
                 </div>
-            </div>
+
+                <div class="modal-footer">
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        name="simpan"
+                        class="btn btn-primary">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
 
             <!-- DATA PELANGGARAN TERBARU -->
             <div class="card border-0 shadow-sm">
@@ -488,10 +485,10 @@ if (isset($_POST['simpan'])) {
                             <tbody>
                             <?php
                                 $query_data = mysqli_query($koneksi, "
-                                    SELECT *
-                                    FROM t_pelanggaran_siswa
-                                    ORDER BY tanggal DESC
-                                ");
+    SELECT *
+    FROM t_pelanggaran_siswa
+    ORDER BY id DESC
+");
 
                                 $no = 1;
 
