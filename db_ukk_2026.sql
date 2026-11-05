@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 22 Okt 2026 pada 06.14
+-- Waktu pembuatan: 05 Nov 2026 pada 05.22
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -43,58 +43,61 @@ CREATE TABLE `t_guru` (
 --
 
 INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `created_at`, `updated_at`) VALUES
-(1, 'NIP20260001', 'Guru Matematika', 'guru01@ukk2026.test', 1, 1, '2026-01-01 01:00:00', '2026-01-01 01:00:00'),
-(2, 'NIP20260002', 'Guru Bahasa Indonesia', 'guru02@ukk2026.test', 1, 2, '2026-02-02 01:00:00', '2026-02-02 01:00:00'),
-(3, 'NIP20260003', 'Guru Bahasa Inggris', 'guru03@ukk2026.test', 1, 3, '2026-03-03 01:00:00', '2026-03-03 01:00:00'),
-(4, 'NIP20260004', 'Guru Pendidikan Pancasila', 'guru04@ukk2026.test', 1, 4, '2026-04-04 01:00:00', '2026-04-04 01:00:00'),
-(5, 'NIP20260005', 'Guru Pendidikan Agama', 'guru05@ukk2026.test', 1, 5, '2026-05-05 01:00:00', '2026-05-05 01:00:00'),
-(6, 'NIP20260006', 'Guru PJOK', 'guru06@ukk2026.test', 1, 6, '2026-06-06 01:00:00', '2026-06-06 01:00:00'),
-(7, 'NIP20260007', 'Guru Sejarah', 'guru07@ukk2026.test', 1, 7, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(8, 'NIP20260008', 'Guru Seni Budaya', 'guru08@ukk2026.test', 1, 8, '2026-08-08 01:00:00', '2026-08-08 01:00:00'),
-(9, 'NIP20260009', 'Guru Informatika', 'guru09@ukk2026.test', 1, 9, '2026-09-09 01:00:00', '2026-09-09 01:00:00'),
-(10, 'NIP20260010', 'Guru BK', 'guru10@ukk2026.test', 1, 10, '2026-10-10 01:00:00', '2026-10-10 01:00:00'),
-(11, 'NIP20260011', 'Guru Produktif RPL', 'guru11@ukk2026.test', 1, 11, '2026-11-11 01:00:00', '2026-11-11 01:00:00'),
-(12, 'NIP20260012', 'Guru Pemrograman Web', 'guru12@ukk2026.test', 1, 12, '2026-12-12 01:00:00', '2026-12-12 01:00:00'),
-(13, 'NIP20260013', 'Guru Basis Data', 'guru13@ukk2026.test', 1, 13, '2026-01-13 01:00:00', '2026-01-13 01:00:00'),
-(14, 'NIP20260014', 'Guru Pemrograman Dasar', 'guru14@ukk2026.test', 1, 14, '2026-02-14 01:00:00', '2026-02-14 01:00:00'),
-(15, 'NIP20260015', 'Guru Jaringan Komputer', 'guru15@ukk2026.test', 1, 15, '2026-03-15 01:00:00', '2026-03-15 01:00:00'),
-(16, 'NIP20260016', 'Guru Produktif TKJ', 'guru16@ukk2026.test', 1, 16, '2026-04-16 01:00:00', '2026-04-16 01:00:00'),
-(17, 'NIP20260017', 'Guru Administrasi Jaringan', 'guru17@ukk2026.test', 1, 17, '2026-05-17 01:00:00', '2026-05-17 01:00:00'),
-(18, 'NIP20260018', 'Guru Sistem Komputer', 'guru18@ukk2026.test', 1, 18, '2026-06-18 01:00:00', '2026-06-18 01:00:00'),
-(19, 'NIP20260019', 'Guru Desain Grafis', 'guru19@ukk2026.test', 1, 19, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(20, 'NIP20260020', 'Guru Produktif DKV', 'guru20@ukk2026.test', 1, 20, '2026-08-20 01:00:00', '2026-08-20 01:00:00'),
-(21, 'NIP20260021', 'Guru Fotografi', 'guru21@ukk2026.test', 1, 21, '2026-09-21 01:00:00', '2026-09-21 01:00:00'),
-(22, 'NIP20260022', 'Guru Desain Komunikasi Visual', 'guru22@ukk2026.test', 1, 22, '2026-10-22 01:00:00', '2026-10-22 01:00:00'),
-(23, 'NIP20260023', 'Guru Akuntansi Dasar', 'guru23@ukk2026.test', 1, 23, '2026-11-23 01:00:00', '2026-11-23 01:00:00'),
-(24, 'NIP20260024', 'Guru Produktif AKL', 'guru24@ukk2026.test', 1, 24, '2026-12-24 01:00:00', '2026-12-24 01:00:00'),
-(25, 'NIP20260025', 'Guru Perpajakan', 'guru25@ukk2026.test', 1, 25, '2026-01-25 01:00:00', '2026-01-25 01:00:00'),
-(26, 'NIP20260026', 'Guru Komputer Akuntansi', 'guru26@ukk2026.test', 1, 26, '2026-02-26 01:00:00', '2026-02-26 01:00:00'),
-(27, 'NIP20260027', 'Guru Produktif MPLB', 'guru27@ukk2026.test', 1, 27, '2026-03-27 01:00:00', '2026-03-27 01:00:00'),
-(28, 'NIP20260028', 'Guru Administrasi Umum', 'guru28@ukk2026.test', 1, 28, '2026-04-28 01:00:00', '2026-04-28 01:00:00'),
-(29, 'NIP20260029', 'Guru Korespondensi', 'guru29@ukk2026.test', 1, 29, '2026-05-01 01:00:00', '2026-05-01 01:00:00'),
-(30, 'NIP20260030', 'Guru Kearsipan', 'guru30@ukk2026.test', 1, 30, '2026-06-02 01:00:00', '2026-06-02 01:00:00'),
-(31, 'NIP20260031', 'Guru Ekonomi', 'guru31@ukk2026.test', 1, 31, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
-(32, 'NIP20260032', 'Guru Bahasa Sunda', 'guru32@ukk2026.test', 1, 32, '2026-08-04 01:00:00', '2026-08-04 01:00:00'),
-(33, 'NIP20260033', 'Guru Pendidikan Kewarganegaraa', 'guru33@ukk2026.test', 1, 33, '2026-09-05 01:00:00', '2026-09-05 01:00:00'),
-(34, 'NIP20260034', 'Guru Projek Kreatif', 'guru34@ukk2026.test', 1, 34, '2026-10-06 01:00:00', '2026-10-06 01:00:00'),
-(35, 'NIP20260035', 'Guru Kewirausahaan', 'guru35@ukk2026.test', 1, 35, '2026-11-07 01:00:00', '2026-11-07 01:00:00'),
-(36, 'NIP20260036', 'Guru Simulasi Digital', 'guru36@ukk2026.test', 1, 36, '2026-12-08 01:00:00', '2026-12-08 01:00:00'),
-(37, 'NIP20260037', 'Guru Matematika Terapan', 'guru37@ukk2026.test', 1, 37, '2026-01-09 01:00:00', '2026-01-09 01:00:00'),
-(38, 'NIP20260038', 'Guru Bahasa Inggris Kejuruan', 'guru38@ukk2026.test', 1, 38, '2026-02-10 01:00:00', '2026-02-10 01:00:00'),
-(39, 'NIP20260039', 'Guru Produk Kreatif RPL', 'guru39@ukk2026.test', 1, 39, '2026-03-11 01:00:00', '2026-03-11 01:00:00'),
-(40, 'NIP20260040', 'Guru Produk Kreatif TKJ', 'guru40@ukk2026.test', 1, 40, '2026-04-12 01:00:00', '2026-04-12 01:00:00'),
-(41, 'NIP20260041', 'Guru Produk Kreatif DKV', 'guru41@ukk2026.test', 1, 41, '2026-05-13 01:00:00', '2026-05-13 01:00:00'),
-(42, 'NIP20260042', 'Guru Praktik Akuntansi', 'guru42@ukk2026.test', 1, 42, '2026-06-14 01:00:00', '2026-06-14 01:00:00'),
-(43, 'NIP20260043', 'Guru Praktik Perkantoran', 'guru43@ukk2026.test', 1, 43, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
-(44, 'NIP20260044', 'Guru Teknologi Informasi', 'guru44@ukk2026.test', 1, 44, '2026-08-16 01:00:00', '2026-08-16 01:00:00'),
-(45, 'NIP20260045', 'Guru Keamanan Jaringan', 'guru45@ukk2026.test', 1, 45, '2026-09-17 01:00:00', '2026-09-17 01:00:00'),
-(46, 'NIP20260046', 'Guru Ilustrasi Digital', 'guru46@ukk2026.test', 1, 46, '2026-10-18 01:00:00', '2026-10-18 01:00:00'),
-(47, 'NIP20260047', 'Guru Pengolahan Data', 'guru47@ukk2026.test', 1, 47, '2026-11-19 01:00:00', '2026-11-19 01:00:00'),
-(48, 'NIP20260048', 'Guru Administrasi Pajak', 'guru48@ukk2026.test', 1, 48, '2026-12-20 01:00:00', '2026-12-20 01:00:00'),
-(49, 'NIP20260049', 'Guru Komunikasi Bisnis', 'guru49@ukk2026.test', 1, 49, '2026-01-21 01:00:00', '2026-01-21 01:00:00'),
-(50, 'NIP20260050', 'Guru Muatan Lokal', 'guru50@ukk2026.test', 1, 50, '2026-02-22 01:00:00', '2026-02-22 01:00:00'),
-(52, 'NIP20260051', 'Guru Ilmu Pengetahuan Alam', 'guru51@ukk2026.test', 1, 52, '2026-10-22 00:45:15', '2026-10-22 00:45:15'),
-(53, '47856745', 'Guru Matematika', 'gasfa7ye@gmail.com', 1, 53, '2026-10-22 01:00:17', '2026-10-22 01:00:17');
+(1, 'NIP20260001', 'Wawan Kurniawan, S.Pd.I', 'WawanKurniawan@gmail.com', 1, 1, '2026-01-01 01:00:00', '2026-01-01 01:00:00'),
+(2, 'NIP20260002', 'Ai Nuryaidah, S.Pd', 'AiNuryaidah@gmail.com', 1, 2, '2026-02-02 01:00:00', '2026-02-02 01:00:00'),
+(3, 'NIP20260003', 'Maya Permata Endah, S.Pd', 'MayaPermataEndah@gmail.com', 1, 3, '2026-03-03 01:00:00', '2026-03-03 01:00:00'),
+(4, 'NIP20260004', 'Dody Jaenudin, S.Pd', 'DodyJaenudin@gmail.com', 1, 4, '2026-04-04 01:00:00', '2026-04-04 01:00:00'),
+(5, 'NIP20260005', 'Dedi Kardiman, S.Pd', 'DediKardiman@gmail.com', 1, 5, '2026-05-05 01:00:00', '2026-05-05 01:00:00'),
+(6, 'NIP20260006', 'Uca Musa Yusenda, S.Pd', 'UcaMusaYusenda@gmail.com', 1, 6, '2026-06-06 01:00:00', '2026-06-06 01:00:00'),
+(7, 'NIP20260007', 'Drs. Ahmad Nur Mukhlis', 'AhmadNurMukhlis@gmail.com', 1, 7, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
+(8, 'NIP20260008', 'Drs. Heri', 'Heri@gmail.com', 1, 8, '2026-08-08 01:00:00', '2026-08-08 01:00:00'),
+(9, 'NIP20260009', 'Asep Bastaman', 'AsepBastaman@gmail.com', 1, 9, '2026-09-09 01:00:00', '2026-09-09 01:00:00'),
+(10, 'NIP20260010', 'H. Encep Maemun, S.T., M.Pd', 'EncepMaemun@gmail.com', 1, 10, '2026-10-10 01:00:00', '2026-10-10 01:00:00'),
+(11, 'NIP20260011', 'Opik', 'Opik@gmail.com', 1, 11, '2026-11-11 01:00:00', '2026-11-11 01:00:00'),
+(12, 'NIP20260012', 'Ida Farida, S.Pd', 'IdaFarida@gmail.com', 1, 12, '2026-12-12 01:00:00', '2026-12-12 01:00:00'),
+(13, 'NIP20260013', 'Idah Mahmudah, S.Pd', 'IdahMahmudah@gmail.com', 1, 13, '2026-01-13 01:00:00', '2026-01-13 01:00:00'),
+(14, 'NIP20260014', 'Drs. Muhamad Ali', 'MuhamadAli@gmail.com', 1, 14, '2026-02-14 01:00:00', '2026-02-14 01:00:00'),
+(15, 'NIP20260015', 'Helmi Ali Akbar, S.Pd.I', 'HelmiAliAkbar@gmail.com', 1, 15, '2026-03-15 01:00:00', '2026-03-15 01:00:00'),
+(16, 'NIP20260016', 'Syeni Suswarini, S.Pd', 'SyeniSuswarini@gmail.com', 1, 16, '2026-04-16 01:00:00', '2026-04-16 01:00:00'),
+(17, 'NIP20260017', 'Wiwid Yulianti, S.Pd', 'WiwidYulianti@gmail.com', 1, 17, '2026-05-17 01:00:00', '2026-05-17 01:00:00'),
+(18, 'NIP20260018', 'Ansor Muhajir, S.T', 'AnsorMuhajir@gmail.com', 1, 18, '2026-06-18 01:00:00', '2026-06-18 01:00:00'),
+(19, 'NIP20260019', 'Ogi Gaosun Gais, S.Pd.I', 'OgiGaosunGais@gmail.com', 1, 19, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
+(20, 'NIP20260020', 'Sandi Mulyana, S.Pd', 'SandiMulyana@gmail.com', 1, 20, '2026-08-20 01:00:00', '2026-08-20 01:00:00'),
+(21, 'NIP20260021', 'Erna Suryani, S.Pd', 'ErnaSuryani@gmail.com', 1, 21, '2026-09-21 01:00:00', '2026-09-21 01:00:00'),
+(22, 'NIP20260022', 'Ai Wahidah, S.Ag', 'AiWahidah@gmail.com', 1, 22, '2026-10-22 01:00:00', '2026-10-22 01:00:00'),
+(23, 'NIP20260023', 'Chandra Aditya Yusup, S.Pd', 'ChandraAdityaYusup@gmail.com', 1, 23, '2026-11-23 01:00:00', '2026-11-23 01:00:00'),
+(24, 'NIP20260024', 'Arif Kusmawan, S.Pd', 'ArifKusmawan@gmail.com', 1, 24, '2026-12-24 01:00:00', '2026-12-24 01:00:00'),
+(25, 'NIP20260025', 'Asep Taufiq Hidayat, S.Kom', 'AsepTaufiqHidayat@gmail.com', 1, 25, '2026-01-25 01:00:00', '2026-01-25 01:00:00'),
+(26, 'NIP20260026', 'Rendy Ichsan Kusumah, S.T', 'RendyIchsanKusumah@gmail.com', 1, 26, '2026-02-26 01:00:00', '2026-02-26 01:00:00'),
+(27, 'NIP20260027', 'Feri Rahmawan, S.Pd', 'FeriRahmawan@gmail.com', 1, 27, '2026-03-27 01:00:00', '2026-03-27 01:00:00'),
+(28, 'NIP20260028', 'Ari Sandriana, S.Kom', 'AriSandriana@gmail.com', 1, 28, '2026-04-28 01:00:00', '2026-04-28 01:00:00'),
+(29, 'NIP20260029', 'Yaneu Nurdian, S.Pd, M.Pd', 'YaneuNurdian@gmail.com', 1, 29, '2026-05-01 01:00:00', '2026-05-01 01:00:00'),
+(30, 'NIP20260030', 'Ucu Muhammad Khoer N, S.Pd', 'UcuMuhammadKhoerN@gmail.com', 1, 30, '2026-06-02 01:00:00', '2026-06-02 01:00:00'),
+(31, 'NIP20260031', 'Mira Dwi Rahmawati, S.Ag', 'MiraDwiRahmawati@gmail.com', 1, 31, '2026-07-03 01:00:00', '2026-07-03 01:00:00'),
+(32, 'NIP20260032', 'Aldi Maulana, S.Pd', 'AldiMaulana@gmail.com', 1, 32, '2026-08-04 01:00:00', '2026-08-04 01:00:00'),
+(33, 'NIP20260033', 'Eli Rosliah, S.Pd', 'EliRosliah@gmail.com', 1, 33, '2026-09-05 01:00:00', '2026-09-05 01:00:00'),
+(34, 'NIP20260034', 'Isni Nur Fitriani, S.Pd', 'IsniNurFitriani@gmail.com', 1, 34, '2026-10-06 01:00:00', '2026-10-06 01:00:00'),
+(35, 'NIP20260035', 'Aanisah Putri Nur Aini, S.Pd', 'AanisahPutriNurAini@gmail.com', 1, 35, '2026-11-07 01:00:00', '2026-11-07 01:00:00'),
+(36, 'NIP20260036', 'Yusi Luthfiani, S.Sos.I', 'YusiLuthfiani@gmail.com', 1, 36, '2026-12-08 01:00:00', '2026-12-08 01:00:00'),
+(37, 'NIP20260037', 'Lilis Rustandy Mawardi, S.Pd.,', 'LilisRustandyMawardi@gmail.com', 1, 37, '2026-01-09 01:00:00', '2026-01-09 01:00:00'),
+(38, 'NIP20260038', 'Yusrin Noer Sabrina, S.Pd', 'YusrinNoerSabrina@gmail.com', 1, 38, '2026-02-10 01:00:00', '2026-02-10 01:00:00'),
+(39, 'NIP20260039', 'Senny Indayani, S.Pd', 'SennyIndayani@gmail.com', 1, 39, '2026-03-11 01:00:00', '2026-03-11 01:00:00'),
+(40, 'NIP20260040', 'Ilma Amalia, S.Pd', 'IlmaAmalia@gmail.com', 1, 40, '2026-04-12 01:00:00', '2026-04-12 01:00:00'),
+(41, 'NIP20260041', 'Alvira Sofwatunnisa, S.Pd', 'AlviraSofwatunnisa@gmail.com', 1, 41, '2026-05-13 01:00:00', '2026-05-13 01:00:00'),
+(42, 'NIP20260042', 'Risna Andriyani, S.Pd', 'RisnaAndriyani@gmail.com', 1, 42, '2026-06-14 01:00:00', '2026-06-14 01:00:00'),
+(43, 'NIP20260043', 'Dra. Tintin Noerhayati', 'TintinNoerhayati@gmail.com', 1, 43, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
+(44, 'NIP20260044', 'Rizkia Fahira, S.Pd', 'RizkiaFahira@gmail.com', 1, 44, '2026-08-16 01:00:00', '2026-08-16 01:00:00'),
+(45, 'NIP20260045', 'Frasetio', 'Frasetio@gmail.com', 1, 45, '2026-09-17 01:00:00', '2026-09-17 01:00:00'),
+(46, 'NIP20260046', 'Ratnaningsih Hatil Aeni, S.Pd', 'RatnaningsihHatilAeni@gmail.com', 1, 46, '2026-10-18 01:00:00', '2026-10-18 01:00:00'),
+(47, 'NIP20260047', 'Dheny Darajatul Hasani, S.Pd', 'DhenyDarajatulHasani@gmail.com', 1, 47, '2026-11-19 01:00:00', '2026-11-19 01:00:00'),
+(48, 'NIP20260048', 'Fahrullah, S.Pd', 'Fahrullah@gmail.com', 1, 48, '2026-12-20 01:00:00', '2026-12-20 01:00:00'),
+(49, 'NIP20260049', 'Aan Andriana, S.T', 'AanAndriana@gmail.com', 1, 49, '2026-01-21 01:00:00', '2026-01-21 01:00:00'),
+(50, 'NIP20260050', 'Fitri Fauziah, S.T', 'FitriFauziah@gmail.com', 1, 50, '2026-02-22 01:00:00', '2026-02-22 01:00:00'),
+(51, 'NIP20260051', 'Nida Aulia, S.Pd', 'NidaAulia@gmail.com', 1, 51, '2026-10-22 00:45:15', '2026-10-22 00:45:15'),
+(52, 'NIP20260052', 'Sri Nurrizki Putri Krisnadi, S', 'SriNurrizkiPutriKrisnad@gmail.com', 1, 52, '2026-10-22 01:00:17', '2026-10-22 01:00:17'),
+(53, 'NIP20260053', 'Riesy Putri Navia, S.Kom', 'RiesyPutriNavia@gmail.com', 1, 0, '2026-11-05 02:15:47', '2026-11-05 02:15:47'),
+(54, 'NIP20260054', 'Rurry Febriani Maryadi, S.Pd', 'RurryFebrianiMaryadi@gmail.com', 1, 0, '2026-11-05 02:15:47', '2026-11-05 02:15:47'),
+(55, 'NIP20260055', 'Irvan Rizal, S.Pd', 'IrvanRizal@gmail.com', 1, 54, '2026-11-05 02:19:21', '2026-11-05 02:19:21');
 
 -- --------------------------------------------------------
 
@@ -191,17 +194,17 @@ CREATE TABLE `t_kelas_siswa` (
 --
 
 INSERT INTO `t_kelas_siswa` (`id`, `siswa_id`, `tahun_ajaran_id`, `kelas_id`, `tanggal_mulai`, `tanggal_selesai`, `status_aktif`, `created_at`, `updated_at`) VALUES
-(1, 1, 1, 1, '1977-07-01', '1978-06-30', 1, '2026-01-01 01:00:00', '2026-01-01 01:00:00'),
-(2, 2, 1, 2, '1977-07-01', '1978-06-30', 1, '2026-01-02 01:00:00', '2026-01-02 01:00:00'),
-(3, 3, 1, 3, '1977-07-01', '1978-06-30', 1, '2026-01-03 01:00:00', '2026-01-03 01:00:00'),
-(4, 4, 1, 4, '1977-07-01', '1978-06-30', 1, '2026-01-04 01:00:00', '2026-01-04 01:00:00'),
-(5, 5, 1, 5, '1977-07-01', '1978-06-30', 1, '2026-01-05 01:00:00', '2026-01-05 01:00:00'),
-(6, 6, 1, 6, '1977-07-01', '1978-06-30', 1, '2026-01-06 01:00:00', '2026-01-06 01:00:00'),
-(7, 7, 1, 7, '1977-07-01', '1978-06-30', 1, '2026-01-07 01:00:00', '2026-01-07 01:00:00'),
+(1, 1, 1, 21, '1977-07-01', '1978-06-30', 1, '2026-01-01 01:00:00', '2026-01-01 01:00:00'),
+(2, 2, 1, 21, '1977-07-01', '1978-06-30', 1, '2026-01-02 01:00:00', '2026-01-02 01:00:00'),
+(3, 3, 1, 21, '1977-07-01', '1978-06-30', 1, '2026-01-03 01:00:00', '2026-01-03 01:00:00'),
+(4, 4, 1, 21, '1977-07-01', '1978-06-30', 1, '2026-01-04 01:00:00', '2026-01-04 01:00:00'),
+(5, 5, 1, 21, '1977-07-01', '1978-06-30', 1, '2026-01-05 01:00:00', '2026-01-05 01:00:00'),
+(6, 6, 1, 21, '1977-07-01', '1978-06-30', 1, '2026-01-06 01:00:00', '2026-01-06 01:00:00'),
+(7, 7, 1, 21, '1977-07-01', '1978-06-30', 1, '2026-01-07 01:00:00', '2026-01-07 01:00:00'),
 (8, 8, 1, 8, '1977-07-01', '1978-06-30', 1, '2026-01-08 01:00:00', '2026-01-08 01:00:00'),
 (9, 9, 1, 9, '1977-07-01', '1978-06-30', 1, '2026-01-09 01:00:00', '2026-01-09 01:00:00'),
 (10, 10, 1, 10, '1977-07-01', '1978-06-30', 1, '2026-01-10 01:00:00', '2026-01-10 01:00:00'),
-(11, 11, 2, 1, '1978-07-01', '1979-06-30', 1, '2026-01-11 01:00:00', '2026-01-11 01:00:00'),
+(11, 11, 2, 21, '1978-07-01', '1979-06-30', 1, '2026-01-11 01:00:00', '2026-01-11 01:00:00'),
 (12, 12, 2, 2, '1978-07-01', '1979-06-30', 1, '2026-01-12 01:00:00', '2026-01-12 01:00:00'),
 (13, 13, 2, 3, '1978-07-01', '1979-06-30', 1, '2026-01-13 01:00:00', '2026-01-13 01:00:00'),
 (14, 14, 2, 4, '1978-07-01', '1979-06-30', 1, '2026-01-14 01:00:00', '2026-01-14 01:00:00'),
@@ -470,8 +473,8 @@ INSERT INTO `t_pelanggaran_siswa` (`id`, `tahun_ajaran_id`, `siswa_id`, `nama_si
 (48, 5, 48, 'Hana Nugraha ', 8, 'XI DKV 1', 48, 'Menggunakan Seragam Olahraga Tidak Sesuai', 48, 48, 'Guru Administrasi Pajak', '2026-12-20', 'Kejadian pelanggaran 48', 3, 'Tindakan 48', 'Selesai', '2026-12-20 02:00:00', '2026-10-21 02:26:56'),
 (49, 5, 49, 'Indra Nugraha ', 9, 'XII AKL 1', 49, 'Tidak Menjaga Ketertiban Sekolah', 49, 49, 'Guru Komunikasi Bisnis', '2026-01-21', 'Kejadian pelanggaran 49', 4, 'Tindakan 49', 'Dipantau', '2026-01-21 02:00:00', '2026-10-21 02:26:56'),
 (50, 5, 50, 'Joko Nugraha ', 10, 'X MPLB 1', 50, 'Mengulangi Pelanggaran yang Sama', 50, 50, 'Guru Muatan Lokal', '2026-02-22', 'Kejadian pelanggaran 50', 5, 'Tindakan 50', 'Ditindaklanjuti', '2026-02-22 02:00:00', '2026-10-21 02:26:56'),
-(51, 3, 21, 'Andi Lestari ', 1, 'X RPL 1', 16, 'Berkata Tidak Sopan', 16, 52, 'Guru Ilmu Pengetahuan Alam', '2026-10-13', '', 1, '', 'Selesai', '2026-10-22 04:00:19', '2026-10-22 04:00:19'),
-(52, 1, 10, 'Joko Saputra ', 10, 'X MPLB 1', 15, 'Berkelahi dengan Teman', 15, 52, 'Guru Ilmu Pengetahuan Alam', '2026-10-22', '', 5, '', 'Pembinaan', '2026-10-22 04:03:45', '2026-10-22 04:03:45');
+(51, 3, 21, 'Andi Lestari ', 1, 'X RPL 1', 16, 'Berkata Tidak Sopan', 16, 51, 'Guru Ilmu Pengetahuan Alam', '2026-10-13', '', 1, '', 'Selesai', '2026-10-22 04:00:19', '2026-10-22 04:00:19'),
+(52, 1, 10, 'Joko Saputra ', 10, 'X MPLB 1', 15, 'Berkelahi dengan Teman', 15, 51, 'Guru Ilmu Pengetahuan Alam', '2026-10-22', '', 5, '', 'Pembinaan', '2026-10-22 04:03:45', '2026-10-22 04:03:45');
 
 -- --------------------------------------------------------
 
@@ -497,32 +500,32 @@ CREATE TABLE `t_siswa` (
 --
 
 INSERT INTO `t_siswa` (`id`, `nis`, `nisn`, `nama`, `jenis_kelamin`, `tanggal_lahir`, `alamat`, `status_aktif`, `created_at`, `updated_at`) VALUES
-(1, 'NIS0001', '0000000001', 'Andi Saputra ', 'L', '2010-01-15', 'Jl. Pendidikan No. 1, Tasikmalaya', 1, '2026-01-01 01:00:00', '2026-01-01 01:00:00'),
-(2, 'NIS0002', '0000000002', 'Budi Saputra ', 'P', '2010-02-20', 'Jl. Pendidikan No. 2, Tasikmalaya', 1, '2026-02-02 01:00:00', '2026-02-02 01:00:00'),
-(3, 'NIS0003', '0000000003', 'Citra Saputra ', 'L', '2010-03-12', 'Jl. Pendidikan No. 3, Tasikmalaya', 1, '2026-03-03 01:00:00', '2026-03-03 01:00:00'),
-(4, 'NIS0004', '0000000004', 'Dina Saputra ', 'P', '2010-04-25', 'Jl. Pendidikan No. 4, Tasikmalaya', 1, '2026-04-04 01:00:00', '2026-04-04 01:00:00'),
-(5, 'NIS0005', '0000000005', 'Eka Saputra ', 'L', '2010-05-18', 'Jl. Pendidikan No. 5, Tasikmalaya', 1, '2026-05-05 01:00:00', '2026-05-05 01:00:00'),
-(6, 'NIS0006', '0000000006', 'Fajar Saputra ', 'P', '2010-06-07', 'Jl. Pendidikan No. 6, Tasikmalaya', 1, '2026-06-06 01:00:00', '2026-06-06 01:00:00'),
-(7, 'NIS0007', '0000000007', 'Gita Saputra', 'L', '2010-07-22', 'Jl. Pendidikan No. 7, Tasikmalaya', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
-(8, 'NIS0008', '0000000008', 'Hana Saputra ', 'P', '2010-08-14', 'Jl. Pendidikan No. 8, Tasikmalaya', 1, '2026-08-08 01:00:00', '2026-08-08 01:00:00'),
-(9, 'NIS0009', '0000000009', 'Indra Saputra ', 'L', '2010-09-30', 'Jl. Pendidikan No. 9, Tasikmalaya', 1, '2026-09-09 01:00:00', '2026-09-09 01:00:00'),
-(10, 'NIS0010', '0000000010', 'Joko Saputra ', 'P', '2010-10-11', 'Jl. Pendidikan No. 10, Tasikmalaya', 1, '2026-10-10 01:00:00', '2026-10-10 01:00:00'),
-(11, 'NIS0011', '0000000011', 'Andi Pratama ', 'L', '2010-11-05', 'Jl. Pendidikan No. 11, Tasikmalaya', 1, '2026-11-11 01:00:00', '2026-11-11 01:00:00'),
-(12, 'NIS0012', '0000000012', 'Budi Pratama ', 'P', '2010-12-19', 'Jl. Pendidikan No. 12, Tasikmalaya', 1, '2026-12-12 01:00:00', '2026-12-12 01:00:00'),
-(13, 'NIS0013', '0000000013', 'Citra Pratama ', 'L', '2011-01-08', 'Jl. Pendidikan No. 13, Tasikmalaya', 1, '2026-01-13 01:00:00', '2026-01-13 01:00:00'),
-(14, 'NIS0014', '0000000014', 'Dina Pratama ', 'P', '2011-02-17', 'Jl. Pendidikan No. 14, Tasikmalaya', 1, '2026-02-14 01:00:00', '2026-02-14 01:00:00'),
-(15, 'NIS0015', '0000000015', 'Eka Pratama ', 'L', '2011-03-29', 'Jl. Pendidikan No. 15, Tasikmalaya', 1, '2026-03-15 01:00:00', '2026-03-15 01:00:00'),
-(16, 'NIS0016', '0000000016', 'Fajar Pratama ', 'P', '2011-04-13', 'Jl. Pendidikan No. 16, Tasikmalaya', 1, '2026-04-16 01:00:00', '2026-04-16 01:00:00'),
-(17, 'NIS0017', '0000000017', 'Gita Pratama ', 'L', '2011-05-21', 'Jl. Pendidikan No. 17, Tasikmalaya', 1, '2026-05-17 01:00:00', '2026-05-17 01:00:00'),
-(18, 'NIS0018', '0000000018', 'Hana Pratama ', 'P', '2011-06-09', 'Jl. Pendidikan No. 18, Tasikmalaya', 1, '2026-06-18 01:00:00', '2026-06-18 01:00:00'),
-(19, 'NIS0019', '0000000019', 'Indra Pratama ', 'L', '2011-07-27', 'Jl. Pendidikan No. 19, Tasikmalaya', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
-(20, 'NIS0020', '0000000020', 'Joko Pratama ', 'P', '2011-08-16', 'Jl. Pendidikan No. 20, Tasikmalaya', 1, '2026-08-20 01:00:00', '2026-08-20 01:00:00'),
-(21, 'NIS0021', '0000000021', 'Andi Lestari ', 'L', '2011-09-04', 'Jl. Pendidikan No. 21, Tasikmalaya', 1, '2026-09-21 01:00:00', '0000-00-00 00:00:00'),
-(22, 'NIS0022', '0000000022', 'Budi Lestari ', 'P', '2011-10-23', 'Jl. Pendidikan No. 22, Tasikmalaya', 1, '2026-10-22 01:00:00', '2026-10-22 01:00:00'),
-(23, 'NIS0023', '0000000023', 'Citra Lestari ', 'L', '2011-11-14', 'Jl. Pendidikan No. 23, Tasikmalaya', 1, '2026-11-23 01:00:00', '2026-11-23 01:00:00'),
-(24, 'NIS0024', '0000000024', 'Dina Lestari ', 'P', '2011-12-02', 'Jl. Pendidikan No. 24, Tasikmalaya', 1, '2026-12-24 01:00:00', '2026-12-24 01:00:00'),
-(25, 'NIS0025', '0000000025', 'Eka Lestari ', 'L', '2010-01-28', 'Jl. Pendidikan No. 25, Tasikmalaya', 1, '2026-01-25 01:00:00', '2026-01-25 01:00:00'),
-(26, 'NIS0026', '0000000026', 'Fajar Lestari ', 'P', '2010-02-11', 'Jl. Pendidikan No. 26, Tasikmalaya', 1, '2026-02-26 01:00:00', '2026-02-26 01:00:00'),
+(1, '102410544', '0000000001', 'Adittia Nur Lantip', 'L', '2010-01-15', 'Jl. Pendidikan No. 1, Tasikmalaya', 1, '2026-01-01 01:00:00', '2026-01-01 01:00:00'),
+(2, '102410545', '0000000002', 'Agnia Rosya Noerillah', 'P', '2010-02-20', 'Jl. Pendidikan No. 2, Tasikmalaya', 1, '2026-02-02 01:00:00', '2026-02-02 01:00:00'),
+(3, '102410546', '0000000003', 'Anisa Amirulla', 'L', '2010-03-12', 'Jl. Pendidikan No. 3, Tasikmalaya', 1, '2026-03-03 01:00:00', '2026-03-03 01:00:00'),
+(4, '102410547', '0000000004', 'Aradea Kandi', 'P', '2010-04-25', 'Jl. Pendidikan No. 4, Tasikmalaya', 1, '2026-04-04 01:00:00', '2026-04-04 01:00:00'),
+(5, '102410548', '0000000005', 'Arfa Diesa Okmaleliza', 'L', '2010-05-18', 'Jl. Pendidikan No. 5, Tasikmalaya', 1, '2026-05-05 01:00:00', '2026-05-05 01:00:00'),
+(6, '102410549', '0000000006', 'Fitri Nur Syami', 'P', '2010-06-07', 'Jl. Pendidikan No. 6, Tasikmalaya', 1, '2026-06-06 01:00:00', '2026-06-06 01:00:00'),
+(7, '102410550', '0000000007', 'Junita Putri Nur Rahman', 'L', '2010-07-22', 'Jl. Pendidikan No. 7, Tasikmalaya', 1, '2026-07-07 01:00:00', '2026-07-07 01:00:00'),
+(8, '102410551', '0000000008', 'Mohammad Atalarik Ali Syahbana', 'P', '2010-08-14', 'Jl. Pendidikan No. 8, Tasikmalaya', 1, '2026-08-08 01:00:00', '2026-08-08 01:00:00'),
+(9, '102410552', '0000000009', 'Muhammad Fahril Fahrurozi', 'L', '2010-09-30', 'Jl. Pendidikan No. 9, Tasikmalaya', 1, '2026-09-09 01:00:00', '2026-09-09 01:00:00'),
+(10, '102410750', '0000000010', 'Muhammad Adnan Syaeful Islami', 'P', '2010-10-11', 'Jl. Pendidikan No. 10, Tasikmalaya', 1, '2026-10-10 01:00:00', '2026-10-10 01:00:00'),
+(11, '102410553', '0000000011', 'Muhammad Zahru Aqila Fikri', 'L', '2010-11-05', 'Jl. Pendidikan No. 11, Tasikmalaya', 1, '2026-11-11 01:00:00', '2026-11-11 01:00:00'),
+(12, '102410554', '0000000012', 'Nadia Zulfa Soraya', 'P', '2010-12-19', 'Jl. Pendidikan No. 12, Tasikmalaya', 1, '2026-12-12 01:00:00', '2026-12-12 01:00:00'),
+(13, '102410555', '0000000013', 'Nazril Ilham', 'L', '2011-01-08', 'Jl. Pendidikan No. 13, Tasikmalaya', 1, '2026-01-13 01:00:00', '2026-01-13 01:00:00'),
+(14, '102410556', '0000000014', 'Puspita Dewi', 'P', '2011-02-17', 'Jl. Pendidikan No. 14, Tasikmalaya', 1, '2026-02-14 01:00:00', '2026-02-14 01:00:00'),
+(15, '102410558', '0000000015', 'Rakha Muhammad Naykal', 'L', '2011-03-29', 'Jl. Pendidikan No. 15, Tasikmalaya', 1, '2026-03-15 01:00:00', '2026-03-15 01:00:00'),
+(16, '102410559', '0000000016', 'Rani Melani', 'P', '2011-04-13', 'Jl. Pendidikan No. 16, Tasikmalaya', 1, '2026-04-16 01:00:00', '2026-04-16 01:00:00'),
+(17, '102410560', '0000000017', 'Reihan Muzaki', 'L', '2011-05-21', 'Jl. Pendidikan No. 17, Tasikmalaya', 1, '2026-05-17 01:00:00', '2026-05-17 01:00:00'),
+(18, '102410561', '0000000018', 'Resa Juliansah', 'P', '2011-06-09', 'Jl. Pendidikan No. 18, Tasikmalaya', 1, '2026-06-18 01:00:00', '2026-06-18 01:00:00'),
+(19, '102410562', '0000000019', 'Rizki Permata Sugianto', 'L', '2011-07-27', 'Jl. Pendidikan No. 19, Tasikmalaya', 1, '2026-07-19 01:00:00', '2026-07-19 01:00:00'),
+(20, '102410563', '0000000020', 'Sahira Firaj', 'P', '2011-08-16', 'Jl. Pendidikan No. 20, Tasikmalaya', 1, '2026-08-20 01:00:00', '2026-08-20 01:00:00'),
+(21, '102410564', '0000000021', 'Sendi Mardian', 'L', '2011-09-04', 'Jl. Pendidikan No. 21, Tasikmalaya', 1, '2026-09-21 01:00:00', '0000-00-00 00:00:00'),
+(22, '102410755', '0000000022', 'Shahaidan Nizzar', 'P', '2011-10-23', 'Jl. Pendidikan No. 22, Tasikmalaya', 1, '2026-10-22 01:00:00', '2026-10-22 01:00:00'),
+(23, '102410565', '0000000023', 'Sherly Satriani', 'L', '2011-11-14', 'Jl. Pendidikan No. 23, Tasikmalaya', 1, '2026-11-23 01:00:00', '2026-11-23 01:00:00'),
+(24, '102410566', '0000000024', 'Sofinurjanah', 'P', '2011-12-02', 'Jl. Pendidikan No. 24, Tasikmalaya', 1, '2026-12-24 01:00:00', '2026-12-24 01:00:00'),
+(25, '102410567', '0000000025', 'Suraiya Salsabila Azzahira', 'L', '2010-01-28', 'Jl. Pendidikan No. 25, Tasikmalaya', 1, '2026-01-25 01:00:00', '2026-01-25 01:00:00'),
+(26, '102410568', '0000000026', 'Toni Antonio', 'P', '2010-02-11', 'Jl. Pendidikan No. 26, Tasikmalaya', 1, '2026-02-26 01:00:00', '2026-02-26 01:00:00'),
 (27, 'NIS0027', '0000000027', 'Gita Lestari ', 'L', '2010-03-24', 'Jl. Pendidikan No. 27, Tasikmalaya', 1, '2026-03-27 01:00:00', '2026-03-27 01:00:00'),
 (28, 'NIS0028', '0000000028', 'Hana Lestari ', 'P', '2010-04-09', 'Jl. Pendidikan No. 28, Tasikmalaya', 1, '2026-04-28 01:00:00', '2026-04-28 01:00:00'),
 (29, 'NIS0029', '0000000029', 'Indra Lestari ', 'L', '2010-05-30', 'Jl. Pendidikan No. 29, Tasikmalaya', 1, '2026-05-01 01:00:00', '2026-05-01 01:00:00'),
@@ -696,7 +699,8 @@ INSERT INTO `t_user` (`id`, `name`, `email`, `email_verified_at`, `password`, `r
 (50, 'User 50', 'user50@ukk2026.test', '2026-09-23 02:30:15', '$2y$12$EHNOkz05vUfEmXcl5ndTpet/k/v.g8PpuRe61tVUYe73UVXpvMe06', 'token50', 'guru', '2026-02-22 01:00:00', '2026-02-22 01:00:00'),
 (51, 'User 51', 'user51@ukk2026.test', '2026-10-01 00:40:27', '$2y$12$EHNOkz05vUfEmXcl5ndTpet/k/v.g8PpuRe61tVUYe73UVXpvMe06', 'token 51', 'admin', '2026-10-01 00:40:27', '2026-10-01 00:40:27'),
 (52, 'Guru Ilmu Pengetahuan Alam', 'guru51@ukk2026.test', '2026-10-22 00:45:15', '$2y$10$saeso1kT9WppL33kd9CsZOTQTgVEljVxQQ5YZx1wF/5c3.9FviATq', '', 'guru', '2026-10-22 00:45:15', '2026-10-22 00:45:15'),
-(53, 'Guru Matematika', 'gasfa7ye@gmail.com', '2026-10-22 01:00:17', '$2y$10$Ac26YDkrGwpXSDk2Hh3qN.Gx2Pg0pL07368.Lm7i653e2XtAMtfHy', '', 'guru', '2026-10-22 01:00:17', '2026-10-22 01:00:17');
+(53, 'Guru Matematika', 'gasfa7ye@gmail.com', '2026-10-22 01:00:17', '$2y$10$Ac26YDkrGwpXSDk2Hh3qN.Gx2Pg0pL07368.Lm7i653e2XtAMtfHy', '', 'guru', '2026-10-22 01:00:17', '2026-10-22 01:00:17'),
+(54, 'Irvan Rizal, S.Pd', 'IrvanRizal@gmail.com', '2026-11-05 02:19:21', '$2y$10$gHO7dVfwxm8twwO4m.ZFYON/6gCKTOC7l/s2KBKcpfnx2P9rooc86', '', 'guru', '2026-11-05 02:19:21', '2026-11-05 02:19:21');
 
 -- --------------------------------------------------------
 
@@ -857,7 +861,7 @@ ALTER TABLE `t_wali_kelas`
 -- AUTO_INCREMENT untuk tabel `t_guru`
 --
 ALTER TABLE `t_guru`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_kelas`
@@ -905,7 +909,7 @@ ALTER TABLE `t_tahun_ajaran`
 -- AUTO_INCREMENT untuk tabel `t_user`
 --
 ALTER TABLE `t_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_wali_kelas`
