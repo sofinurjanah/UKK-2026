@@ -251,8 +251,7 @@ $tahun_aktif = mysqli_fetch_assoc($query_tahun_aktif);
                 <h3 class="fw-bold mb-0">Kelola Wali Kelas</h3>
 
                 <?php
-                if ($role == 'admin' && $data_edit == null
-                    && !isset($_GET['tambah'])) {
+                if ($role == 'admin') {
                 ?>
                     <a href="wali_kelas.php?tambah=1"
                        class="btn btn-primary">
@@ -311,8 +310,10 @@ if ($role == 'admin' &&
                         ?>
                     </h5>
 
-                    <button type="button" class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                    <a href="wali_kelas.php"
+   class="btn-close"
+   aria-label="Tutup">
+</a>
                 </div>
 
                 <div class="modal-body p-4">

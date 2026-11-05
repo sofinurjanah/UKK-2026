@@ -142,7 +142,7 @@ if (isset($_GET['edit'])) {
             <!-- JUDUL HALAMAN DAN TOMBOL FORM -->
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold mb-0">Kelola Kategori Pelanggaran</h3>
-                <<?php if ($role == "admin" && $data_edit == null) { ?>
+                <?php if ($role == "admin") { ?>
     <button type="button" class="btn btn-primary"
             data-bs-toggle="modal"
             data-bs-target="#modalKategori">
@@ -181,11 +181,10 @@ if (isset($_GET['edit'])) {
                         ?>
                     </h5>
 
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal">
-                    </button>
-
+                    <a href="kategori_pelanggaran.php"
+   class="btn-close"
+   aria-label="Tutup">
+</a>
                 </div>
 
                 <div class="modal-body p-4">

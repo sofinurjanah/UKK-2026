@@ -360,10 +360,10 @@ if (isset($_GET['edit']) && $role == "admin") {
                                         Ubah Tahun Ajaran
                                     </h5>
 
-                                    <button type="button"
-                                            class="btn-close"
-                                            data-bs-dismiss="modal">
-                                    </button>
+                                    <a href="data_tahun_ajaran.php"
+                                    class="btn-close"
+                                    aria-label="Tutup">
+                                    </a>
                                 </div>
 
                                 <div class="modal-body p-4">

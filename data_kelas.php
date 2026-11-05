@@ -7,6 +7,14 @@ $role = strtolower($_SESSION['role']);
 $pesan = '';
 $tipe_pesan = '';
 
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    $tipe_pesan = $_SESSION['tipe_pesan'];
+
+    unset($_SESSION['pesan']);
+    unset($_SESSION['tipe_pesan']);
+}
+
 /* TAMBAH DATA KELAS */
 if (isset($_POST['tambah']) && $role == "admin") {
     $nama = mysqli_real_escape_string($koneksi, $_POST['nama']);
@@ -40,10 +48,16 @@ if (isset($_POST['ubah']) && $role == "admin") {
         status_aktif = '$status_aktif'
         WHERE id = '$id'");
 
-    $pesan = $query
-        ? "Data kelas berhasil diubah."
-        : "Data kelas gagal diubah.";
-    $tipe_pesan = $query ? "success" : "danger";
+    if ($query) {
+        $_SESSION['pesan'] = "Data kelas berhasil diubah.";
+        $_SESSION['tipe_pesan'] = "success";
+    } else {
+        $_SESSION['pesan'] = "Data kelas gagal diubah.";
+        $_SESSION['tipe_pesan'] = "danger";
+    }
+
+    header("Location: data_kelas.php");
+    exit;
 }
 
 /* HAPUS DATA KELAS */
@@ -191,7 +205,7 @@ if (isset($_GET['edit']) && $role == "admin") {
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3 class="fw-bold mb-0">Data Kelas</h3>
 
-                <?php if ($role == "admin" && $data_edit == null) { ?>
+                <?php if ($role == "admin") { ?>
                     <button type="button"
                             class="btn btn-primary"
                             data-bs-toggle="modal"
@@ -229,8 +243,9 @@ if (isset($_GET['edit']) && $role == "admin") {
                         Ubah Data Kelas
                     </h5>
 
-                    <button type="button" class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                    <a href="data_kelas.php"
+   class="btn-close"
+   aria-label="Tutup"></a>
                 </div>
 
                 <div class="modal-body p-4">

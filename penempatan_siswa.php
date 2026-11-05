@@ -245,11 +245,7 @@ if (isset($_GET['edit'])) {
                 <h3 class="fw-bold mb-0">Penempatan Siswa</h3>
 
                 <?php
-                if (
-                    $role == "admin" &&
-                    $data_edit == null &&
-                    !isset($_GET['tambah'])
-                ) {
+                if ($role == "admin") {
                 ?>
                     <a
                         href="penempatan_siswa.php?tambah=1"
@@ -301,8 +297,10 @@ if (isset($_GET['edit'])) {
                         ?>
                     </h5>
 
-                    <button type="button" class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                    <a href="penempatan_siswa.php"
+                        class="btn-close"
+                        aria-label="Tutup">
+                    </a>
                 </div>
 
                 <div class="modal-body p-4">
