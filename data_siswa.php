@@ -7,6 +7,15 @@ $role = $_SESSION['role'];
 $pesan = "";
 $tipe_pesan = "";
 
+// Mengambil notifikasi setelah redirect
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    $tipe_pesan = $_SESSION['tipe_pesan'];
+
+    unset($_SESSION['pesan']);
+    unset($_SESSION['tipe_pesan']);
+}
+
 /* TAMBAH DATA SISWA */
 if (isset($_POST['tambah']) && $role == "admin") {
     $nis = $_POST['nis'];
@@ -32,6 +41,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
     }
 }
 
+
 /* UBAH DATA SISWA */
 if (isset($_POST['ubah']) && $role == "admin") {
     $id = $_POST['id'];
@@ -42,6 +52,7 @@ if (isset($_POST['ubah']) && $role == "admin") {
     $tanggal_lahir = $_POST['tanggal_lahir'];
     $alamat = $_POST['alamat'];
     $status_aktif = $_POST['status_aktif'];
+    $kelas_id = $_POST['kelas_id'];
 
     $query = mysqli_query($koneksi, "UPDATE t_siswa SET
         nis = '$nis',
@@ -54,13 +65,31 @@ if (isset($_POST['ubah']) && $role == "admin") {
         WHERE id = '$id'");
 
     if ($query) {
-        $pesan = "Data siswa berhasil diubah.";
-        $tipe_pesan = "success";
+
+        $query_kelas = mysqli_query($koneksi, "
+            UPDATE t_kelas_siswa
+            SET kelas_id = '$kelas_id'
+            WHERE siswa_id = '$id'
+            AND status_aktif = 1
+        ");
+
+        if ($query_kelas) {
+            $_SESSION['pesan'] = "Data siswa berhasil diubah.";
+            $_SESSION['tipe_pesan'] = "success";
+        } else {
+            $_SESSION['pesan'] = "Data siswa berhasil diubah, tetapi kelas gagal diperbarui.";
+            $_SESSION['tipe_pesan'] = "danger";
+        }
+
     } else {
-        $pesan = "Data siswa gagal diubah.";
-        $tipe_pesan = "danger";
+        $_SESSION['pesan'] = "Data siswa gagal diubah.";
+        $_SESSION['tipe_pesan'] = "danger";
     }
+
+    header("Location: data_siswa.php");
+    exit;
 }
+
 
 /* HAPUS DATA SISWA */
 if (isset($_GET['hapus']) && $role == "admin") {
@@ -89,6 +118,22 @@ if (isset($_GET['edit']) && $role == "admin") {
         WHERE id = '$id_edit'");
 
     $data_edit = mysqli_fetch_assoc($query_edit);
+
+    $kelas_edit = mysqli_query($koneksi, "
+    SELECT id, nama FROM t_kelas
+    ORDER BY nama ASC
+");
+
+$query_kelas_siswa = mysqli_query($koneksi, "
+    SELECT kelas_id
+    FROM t_kelas_siswa
+    WHERE siswa_id = '$id_edit'
+    AND status_aktif = 1
+    ORDER BY id DESC
+    LIMIT 1
+");
+
+$data_kelas_edit = mysqli_fetch_assoc($query_kelas_siswa);
 }
 
 /* MENAMPILKAN TEKS DENGAN AMAN */
@@ -278,7 +323,7 @@ function e($teks) {
 
                 <h3 class="fw-bold mb-0">Data Siswa</h3>
 
-                <?php if ($role == "admin" && $data_edit == null) { ?>
+                <?php if ($role == "admin") { ?>
                     <button
                         type="button"
                         class="btn btn-primary"
@@ -322,8 +367,10 @@ function e($teks) {
                         Ubah Data Siswa
                     </h5>
 
-                    <button type="button" class="btn-close"
-                            data-bs-dismiss="modal"></button>
+                    <a href="data_siswa.php"
+                        class="btn-close"
+                        aria-label="Tutup">
+                    </a>
                 </div>
 
                 <div class="modal-body p-4">
@@ -355,6 +402,22 @@ function e($teks) {
                                    class="form-control"
                                    value="<?= e($data_edit['nama']); ?>"
                                    required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                        <label class="form-label">Kelas</label>
+
+                        <select name="kelas_id" class="form-select" required>
+                            <option value="">-- Pilih Kelas --</option>
+
+                            <?php while ($kelas = mysqli_fetch_assoc($kelas_edit)) { ?>
+                                <option value="<?= e($kelas['id']); ?>"
+                                    <?= ($data_kelas_edit && $data_kelas_edit['kelas_id'] == $kelas['id']) ? "selected" : ""; ?>>
+                                    <?= e($kelas['nama']); ?>
+                                </option>
+                            <?php } ?>
+
+                            </select>
                         </div>
 
                         <div class="col-md-6 mb-3">

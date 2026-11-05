@@ -7,6 +7,14 @@ $role = strtolower($_SESSION['role'] ?? '');
 $pesan = "";
 $tipe_pesan = "";
 
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    $tipe_pesan = $_SESSION['tipe_pesan'];
+
+    unset($_SESSION['pesan']);
+    unset($_SESSION['tipe_pesan']);
+}
+
 
 /* TAMBAH GURU */
 if (isset($_POST['tambah']) && $role == "admin") {
@@ -94,6 +102,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
 }
 
 
+
 /* UBAH GURU */
 if (isset($_POST['ubah']) && $role == "admin") {
     $id = (int) $_POST['id'];
@@ -110,13 +119,17 @@ if (isset($_POST['ubah']) && $role == "admin") {
         WHERE id = '$id'");
 
     if ($query) {
-        $pesan = "Data guru berhasil diubah.";
-        $tipe_pesan = "success";
+        $_SESSION['pesan'] = "Data guru berhasil diubah.";
+        $_SESSION['tipe_pesan'] = "success";
     } else {
-        $pesan = "Data guru gagal diubah.";
-        $tipe_pesan = "danger";
+        $_SESSION['pesan'] = "Data guru gagal diubah.";
+        $_SESSION['tipe_pesan'] = "danger";
     }
+
+    header("Location: data_guru.php");
+    exit;
 }
+
 
 /* NONAKTIFKAN GURU */
 if (isset($_GET['hapus']) && $role == "admin") {
@@ -331,7 +344,7 @@ function e($teks) {
 
                 <h3 class="fw-bold mb-0">Data Guru</h3>
 
-                <?php if ($role == "admin" && $data_edit == null) { ?>
+                <?php if ($role == "admin") { ?>
                     <button
                         type="button"
                         class="btn btn-primary"
@@ -378,11 +391,10 @@ function e($teks) {
                         Ubah Data Guru
                     </h5>
 
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="modal"
-                            aria-label="Tutup">
-                    </button>
+                    <a href="data_guru.php"
+                        class="btn-close"
+                        aria-label="Tutup">
+                    </a>
                 </div>
 
                 <div class="modal-body p-4">
@@ -398,6 +410,7 @@ function e($teks) {
 
                             <input type="text"
                                    name="nip"
+                                   maxlength="18"
                                    class="form-control"
                                    value="<?= e($data_edit['nip']); ?>"
                                    required>
