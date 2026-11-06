@@ -244,7 +244,7 @@ if ($query_jenis) {
         <aside class="col-md-3 col-lg-2 min-vh-100 p-3 sidebar">
 
             <div class="mb-4 px-2">
-                <h3 class="text-white mb-1 sidebar-brand">
+                <h3 class="text-white mb-1 fw-bold">
                     SIMPESMA
                 </h3>
 
@@ -346,7 +346,35 @@ if ($query_jenis) {
                         </a>
                     </li>
 
-                <?php } ?>
+                <?php } elseif ($role == 'wali_kelas') { ?>
+
+    <!-- MENU WALI KELAS -->
+
+    <li class="nav-item mb-2">
+        <a href="data_siswa_wali.php" class="nav-link text-white">
+            Data Siswa di Kelasnya
+        </a>
+    </li>
+
+    <li class="nav-item mb-2">
+        <a href="riwayat_pelanggaran_wali.php" class="nav-link text-white">
+            Riwayat Pelanggaran Siswa
+        </a>
+    </li>
+
+    <li class="nav-item mb-2">
+        <a href="rekap_poin_wali.php" class="nav-link text-white">
+            Rekap Poin Siswa
+        </a>
+    </li>
+
+    <li class="nav-item mb-2">
+        <a href="laporan_kelas.php" class="nav-link text-white">
+            Laporan Pelanggaran Kelas
+        </a>
+    </li>
+
+<?php } ?>
 
                 <hr class="text-secondary">
 
@@ -371,7 +399,7 @@ if ($query_jenis) {
             <!-- JUDUL DASHBOARD -->
             <div class="mb-3">
                 <h2 class="dashboard-title mb-2">
-                    Dashboard <?= ucfirst(htmlspecialchars($role)); ?>
+                    Dashboard <?= $role == 'wali_kelas' ? 'Wali Kelas' : ucfirst(htmlspecialchars($role)); ?>
                 </h2>
 
                 <p class="welcome-text mb-0">
@@ -520,6 +548,50 @@ if ($query_jenis) {
                             </div>
                         </div>
                     </div>
+
+                    <?php } elseif ($role == 'wali_kelas') { ?>
+
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6>Data Siswa di Kelasnya</h6>
+                <p class="stat-description mt-3">
+                    Lihat data siswa di kelas sendiri.
+                </p>
+                <a href="data_siswa_wali.php" class="btn btn-dashboard">
+                    Lihat Siswa
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6>Riwayat Pelanggaran</h6>
+                <p class="stat-description mt-3">
+                    Lihat riwayat pelanggaran siswa.
+                </p>
+                <a href="riwayat_pelanggaran_wali.php" class="btn btn-dashboard">
+                    Lihat Riwayat
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card stat-card">
+            <div class="card-body">
+                <h6>Rekap Poin Siswa</h6>
+                <p class="stat-description mt-3">
+                    Lihat rekap poin siswa.
+                </p>
+                <a href="rekap_poin_wali.php" class="btn btn-dashboard">
+                    Lihat Rekap
+                </a>
+            </div>
+        </div>
+    </div>
 
                 <?php } ?>
 
