@@ -1,4 +1,3 @@
-
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
@@ -7,36 +6,116 @@ $role = $_SESSION['role'];
 $pesan = "";
 $tipe_pesan = "";
 
-// Mengambil notifikasi setelah redirect
-if (isset($_SESSION['pesan'])) {
-    $pesan = $_SESSION['pesan'];
-    $tipe_pesan = $_SESSION['tipe_pesan'];
+/* CEK DATA GANDA SISWA */
+function siswaDuplikat($koneksi, $kolom, $nilai, $id = null) {
+    $kolom_valid = ['nis', 'nisn', 'nama'];
 
-    unset($_SESSION['pesan']);
-    unset($_SESSION['tipe_pesan']);
+    if (!in_array($kolom, $kolom_valid, true)) {
+        throw new Exception("Kolom pemeriksaan tidak valid.");
+    }
+
+    if ($kolom === 'nama') {
+        $kondisi = "LOWER(TRIM(nama)) = LOWER(TRIM(?))";
+    } else {
+        $kondisi = "TRIM($kolom) = TRIM(?)";
+    }
+
+    $sql = "SELECT id FROM t_siswa WHERE $kondisi";
+
+    if ($id !== null) {
+        $sql .= " AND id <> ?";
+    }
+
+    $sql .= " LIMIT 1";
+
+    $stmt = mysqli_prepare($koneksi, $sql);
+
+    if (!$stmt) {
+        throw new Exception("Pemeriksaan data siswa gagal.");
+    }
+
+    if ($id !== null) {
+        mysqli_stmt_bind_param($stmt, "si", $nilai, $id);
+    } else {
+        mysqli_stmt_bind_param($stmt, "s", $nilai);
+    }
+
+    if (!mysqli_stmt_execute($stmt)) {
+        mysqli_stmt_close($stmt);
+        throw new Exception("Pemeriksaan data siswa gagal.");
+    }
+
+    mysqli_stmt_store_result($stmt);
+
+    $ada = mysqli_stmt_num_rows($stmt) > 0;
+    mysqli_stmt_close($stmt);
+
+    return $ada;
 }
 
 /* TAMBAH DATA SISWA */
 if (isset($_POST['tambah']) && $role == "admin") {
-    $nis = $_POST['nis'];
-    $nisn = $_POST['nisn'];
-    $nama = $_POST['nama'];
-    $jenis_kelamin = $_POST['jenis_kelamin'];
-    $tanggal_lahir = $_POST['tanggal_lahir'];
-    $alamat = $_POST['alamat'];
-    $status_aktif = $_POST['status_aktif'];
+    $nis = trim($_POST['nis'] ?? '');
+    $nisn = trim($_POST['nisn'] ?? '');
+    $nama = trim($_POST['nama'] ?? '');
+    $jenis_kelamin = $_POST['jenis_kelamin'] ?? '';
+    $tanggal_lahir = $_POST['tanggal_lahir'] ?? '';
+    $alamat = trim($_POST['alamat'] ?? '');
+    $status_aktif = isset($_POST['status_aktif']) ? (int) $_POST['status_aktif'] : -1;
 
-    $query = mysqli_query($koneksi, "INSERT INTO t_siswa
-        (nis, nisn, nama, jenis_kelamin, tanggal_lahir, alamat, status_aktif)
-        VALUES
-        ('$nis', '$nisn', '$nama', '$jenis_kelamin',
-        '$tanggal_lahir', '$alamat', '$status_aktif')");
+    try {
+        if (
+            $nis === '' || $nisn === '' || $nama === '' ||
+            $jenis_kelamin === '' || $tanggal_lahir === '' ||
+            $alamat === '' || !in_array($status_aktif, [0, 1], true)
+        ) {
+            $pesan = "Semua data siswa wajib diisi dengan benar.";
+            $tipe_pesan = "danger";
+        } elseif (siswaDuplikat($koneksi, 'nis', $nis)) {
+            $pesan = "NIS sudah terdaftar. Gunakan NIS yang berbeda.";
+            $tipe_pesan = "danger";
+        } elseif (siswaDuplikat($koneksi, 'nisn', $nisn)) {
+            $pesan = "NISN sudah terdaftar. Gunakan NISN yang berbeda.";
+            $tipe_pesan = "danger";
+        } elseif (siswaDuplikat($koneksi, 'nama', $nama)) {
+            $pesan = "Nama siswa sudah terdaftar. Periksa kembali data yang dimasukkan.";
+            $tipe_pesan = "danger";
+        } else {
+            $stmt = mysqli_prepare(
+                $koneksi,
+                "INSERT INTO t_siswa
+                (nis, nisn, nama, jenis_kelamin, tanggal_lahir, alamat, status_aktif)
+                VALUES (?, ?, ?, ?, ?, ?, ?)"
+            );
 
-    if ($query) {
-        $pesan = "Data siswa berhasil ditambahkan.";
-        $tipe_pesan = "success";
-    } else {
-        $pesan = "Data siswa gagal ditambahkan.";
+            if (!$stmt) {
+                throw new Exception("Data siswa gagal disiapkan.");
+            }
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "ssssssi",
+                $nis,
+                $nisn,
+                $nama,
+                $jenis_kelamin,
+                $tanggal_lahir,
+                $alamat,
+                $status_aktif
+            );
+
+            if (mysqli_stmt_execute($stmt)) {
+                $pesan = "Data siswa berhasil ditambahkan.";
+                $tipe_pesan = "success";
+            } else {
+                $pesan = "Data siswa gagal ditambahkan.";
+                $tipe_pesan = "danger";
+            }
+
+            mysqli_stmt_close($stmt);
+        }
+    } catch (Throwable $e) {
+        $pesan = "Data siswa gagal ditambahkan. Periksa kembali data yang dimasukkan.";
         $tipe_pesan = "danger";
     }
 }
@@ -44,45 +123,99 @@ if (isset($_POST['tambah']) && $role == "admin") {
 
 /* UBAH DATA SISWA */
 if (isset($_POST['ubah']) && $role == "admin") {
-    $id = $_POST['id'];
-    $nis = $_POST['nis'];
-    $nisn = $_POST['nisn'];
-    $nama = $_POST['nama'];
-    $jenis_kelamin = $_POST['jenis_kelamin'];
-    $tanggal_lahir = $_POST['tanggal_lahir'];
-    $alamat = $_POST['alamat'];
-    $status_aktif = $_POST['status_aktif'];
-    $kelas_id = $_POST['kelas_id'];
+    $id = (int) ($_POST['id'] ?? 0);
+    $nis = trim($_POST['nis'] ?? '');
+    $nisn = trim($_POST['nisn'] ?? '');
+    $nama = trim($_POST['nama'] ?? '');
+    $jenis_kelamin = $_POST['jenis_kelamin'] ?? '';
+    $tanggal_lahir = $_POST['tanggal_lahir'] ?? '';
+    $alamat = trim($_POST['alamat'] ?? '');
+    $status_aktif = isset($_POST['status_aktif']) ? (int) $_POST['status_aktif'] : -1;
+    $kelas_id = (int) ($_POST['kelas_id'] ?? 0);
 
-    $query = mysqli_query($koneksi, "UPDATE t_siswa SET
-        nis = '$nis',
-        nisn = '$nisn',
-        nama = '$nama',
-        jenis_kelamin = '$jenis_kelamin',
-        tanggal_lahir = '$tanggal_lahir',
-        alamat = '$alamat',
-        status_aktif = '$status_aktif'
-        WHERE id = '$id'");
-
-    if ($query) {
-
-        $query_kelas = mysqli_query($koneksi, "
-            UPDATE t_kelas_siswa
-            SET kelas_id = '$kelas_id'
-            WHERE siswa_id = '$id'
-            AND status_aktif = 1
-        ");
-
-        if ($query_kelas) {
-            $_SESSION['pesan'] = "Data siswa berhasil diubah.";
-            $_SESSION['tipe_pesan'] = "success";
-        } else {
-            $_SESSION['pesan'] = "Data siswa berhasil diubah, tetapi kelas gagal diperbarui.";
+    try {
+        if (
+            $id <= 0 || $nis === '' || $nisn === '' || $nama === '' ||
+            $jenis_kelamin === '' || $tanggal_lahir === '' ||
+            $alamat === '' || $kelas_id <= 0 || !in_array($status_aktif, [0, 1], true)
+        ) {
+            $_SESSION['pesan'] = "Data siswa belum lengkap atau tidak valid.";
             $_SESSION['tipe_pesan'] = "danger";
-        }
+        } elseif (siswaDuplikat($koneksi, 'nis', $nis, $id)) {
+            $_SESSION['pesan'] = "NIS sudah digunakan oleh siswa lain.";
+            $_SESSION['tipe_pesan'] = "danger";
+        } elseif (siswaDuplikat($koneksi, 'nisn', $nisn, $id)) {
+            $_SESSION['pesan'] = "NISN sudah digunakan oleh siswa lain.";
+            $_SESSION['tipe_pesan'] = "danger";
+        } elseif (siswaDuplikat($koneksi, 'nama', $nama, $id)) {
+            $_SESSION['pesan'] = "Nama siswa sudah digunakan oleh siswa lain. Periksa kembali data yang dimasukkan.";
+            $_SESSION['tipe_pesan'] = "danger";
+        } else {
+            $stmt = mysqli_prepare(
+                $koneksi,
+                "UPDATE t_siswa SET
+                    nis = ?,
+                    nisn = ?,
+                    nama = ?,
+                    jenis_kelamin = ?,
+                    tanggal_lahir = ?,
+                    alamat = ?,
+                    status_aktif = ?
+                 WHERE id = ?"
+            );
 
-    } else {
-        $_SESSION['pesan'] = "Data siswa gagal diubah.";
+            if (!$stmt) {
+                throw new Exception("Perubahan data siswa gagal disiapkan.");
+            }
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "ssssssii",
+                $nis,
+                $nisn,
+                $nama,
+                $jenis_kelamin,
+                $tanggal_lahir,
+                $alamat,
+                $status_aktif,
+                $id
+            );
+
+            $query = mysqli_stmt_execute($stmt);
+            mysqli_stmt_close($stmt);
+
+            if ($query) {
+                $stmt_kelas = mysqli_prepare(
+                    $koneksi,
+                    "UPDATE t_kelas_siswa
+                     SET kelas_id = ?
+                     WHERE siswa_id = ?
+                     AND status_aktif = 1"
+                );
+
+                if (!$stmt_kelas) {
+                    $_SESSION['pesan'] = "Data siswa berhasil diubah, tetapi kelas gagal diperbarui.";
+                    $_SESSION['tipe_pesan'] = "danger";
+                } else {
+                    mysqli_stmt_bind_param($stmt_kelas, "ii", $kelas_id, $id);
+                    $query_kelas = mysqli_stmt_execute($stmt_kelas);
+                    mysqli_stmt_close($stmt_kelas);
+
+                    if ($query_kelas) {
+                        $_SESSION['pesan'] = "Data siswa berhasil diubah.";
+                        $_SESSION['tipe_pesan'] = "success";
+                    } else {
+                        $_SESSION['pesan'] = "Data siswa berhasil diubah, tetapi kelas gagal diperbarui.";
+                        $_SESSION['tipe_pesan'] = "danger";
+                    }
+                }
+            } else {
+                $_SESSION['pesan'] = "Data siswa gagal diubah.";
+                $_SESSION['tipe_pesan'] = "danger";
+            }
+        }
+    } catch (Throwable $e) {
+        $_SESSION['pesan'] = "Data siswa gagal diubah. Periksa kembali data yang dimasukkan.";
         $_SESSION['tipe_pesan'] = "danger";
     }
 
@@ -91,20 +224,59 @@ if (isset($_POST['ubah']) && $role == "admin") {
 }
 
 
-/* HAPUS DATA SISWA */
+/* HAPUS PERMANEN DATA SISWA */
 if (isset($_GET['hapus']) && $role == "admin") {
-    $id = $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "UPDATE t_siswa
-        SET status_aktif = 0
-        WHERE id = '$id'");
+    $id = (int) $_GET['hapus'];
 
-    if ($query) {
-        $pesan = "Data siswa berhasil dihapus.";
-        $tipe_pesan = "success";
-    } else {
-        $pesan = "Data siswa gagal dihapus karena masih digunakan pada penempatan kelas.";
+    if ($id <= 0) {
+        $pesan = "ID siswa tidak valid.";
         $tipe_pesan = "danger";
+    } else {
+
+        $stmt_cek = mysqli_prepare($koneksi, "
+            SELECT
+                (SELECT COUNT(*) FROM t_kelas_siswa
+                 WHERE siswa_id = ?) AS jumlah_kelas,
+
+                (SELECT COUNT(*) FROM t_pelanggaran_siswa
+                 WHERE siswa_id = ?) AS jumlah_pelanggaran
+        ");
+
+        mysqli_stmt_bind_param($stmt_cek, "ii", $id, $id);
+        mysqli_stmt_execute($stmt_cek);
+
+        $hasil_cek = mysqli_stmt_get_result($stmt_cek);
+        $data_cek = mysqli_fetch_assoc($hasil_cek);
+
+        mysqli_stmt_close($stmt_cek);
+
+        if (
+            $data_cek['jumlah_kelas'] > 0 ||
+            $data_cek['jumlah_pelanggaran'] > 0
+        ) {
+            $pesan = "Siswa tidak bisa dihapus permanen karena masih memiliki riwayat penempatan kelas atau pelanggaran.";
+            $tipe_pesan = "danger";
+
+        } else {
+
+            $stmt_hapus = mysqli_prepare(
+                $koneksi,
+                "DELETE FROM t_siswa WHERE id = ?"
+            );
+
+            mysqli_stmt_bind_param($stmt_hapus, "i", $id);
+
+            if (mysqli_stmt_execute($stmt_hapus)) {
+                $pesan = "Data siswa berhasil dihapus permanen.";
+                $tipe_pesan = "success";
+            } else {
+                $pesan = "Data siswa gagal dihapus.";
+                $tipe_pesan = "danger";
+            }
+
+            mysqli_stmt_close($stmt_hapus);
+        }
     }
 }
 

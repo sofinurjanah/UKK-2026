@@ -7,19 +7,25 @@ include "config/koneksi.php";
 include "includes/cek_session.php";
 
 $role = strtolower(trim($_SESSION['role'] ?? ''));
-$email = $_SESSION['email'] ?? '';
-$guru_id = (int) ($_SESSION['guru_id'] ?? 0);
+$email = trim($_SESSION['email'] ?? '');
 
-if ($role != 'wali_kelas') {
+if (!in_array($role, ['wali_kelas', 'wali kelas'], true)) {
     header("Location: dashboard.php");
     exit;
 }
 
-/* CARI ID GURU JIKA BELUM ADA DI SESSION */
-if ($guru_id <= 0 && $email != '') {
+$guru_id = 0;
+
+// Ambil ID guru berdasarkan email akun yang login
+if ($email != '') {
+
     $stmt_guru = mysqli_prepare(
         $koneksi,
-        "SELECT id FROM t_guru WHERE email = ? LIMIT 1"
+        "SELECT id
+         FROM t_guru
+         WHERE LOWER(TRIM(email)) = LOWER(TRIM(?))
+         AND status_aktif = 1
+         LIMIT 1"
     );
 
     mysqli_stmt_bind_param($stmt_guru, "s", $email);

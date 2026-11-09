@@ -7,7 +7,6 @@ include "includes/cek_session.php";
 $role = $_SESSION['role'] ?? '';
 $pesan = '';
 
-// Mengambil tahun ajaran yang sedang aktif
 $query_tahun_aktif = mysqli_query($koneksi, "
     SELECT id, nama
     FROM t_tahun_ajaran
@@ -15,9 +14,9 @@ $query_tahun_aktif = mysqli_query($koneksi, "
     LIMIT 1
 ");
 
+$tahun_aktif = mysqli_fetch_assoc($query_tahun_aktif);
 /* TAMBAH WALI KELAS */
-if (isset($_POST['tambah']) && $role == "admin") {
-
+if (isset($_POST['tambah']) && $role == "admin" && $tahun_aktif) {
     $tahun_ajaran_id = (int) $tahun_aktif['id'];
     $kelas_id = $_POST['kelas_id'];
     $guru_id = $_POST['guru_id'];
@@ -37,8 +36,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
 }
 
 /* UBAH WALI KELAS */
-if (isset($_POST['ubah']) && $role == "admin") {
-
+if (isset($_POST['ubah']) && $role == "admin" && $tahun_aktif) {
     $id = $_POST['id'];
     $tahun_ajaran_id = (int) $tahun_aktif['id'];
     $kelas_id = $_POST['kelas_id'];
@@ -87,8 +85,6 @@ if (isset($_GET['edit'])) {
 
     $data_edit = mysqli_fetch_assoc($query_edit);
 }
-
-$tahun_aktif = mysqli_fetch_assoc($query_tahun_aktif);
 
 ?>
 <!DOCTYPE html>

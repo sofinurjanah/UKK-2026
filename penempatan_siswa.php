@@ -8,46 +8,170 @@ $pesan = '';
 
 /* TAMBAH PENEMPATAN SISWA */
 if (isset($_POST['tambah']) && $role == "admin") {
-    $siswa_id = $_POST['siswa_id'];
-    $tahun_ajaran_id = $_POST['tahun_ajaran_id'];
-    $kelas_id = $_POST['kelas_id'];
-    $tanggal_mulai = $_POST['tanggal_mulai'];
-    $tanggal_selesai = $_POST['tanggal_selesai'];
-    $status_aktif = $_POST['status_aktif'];
+    $siswa_id = (int)($_POST['siswa_id'] ?? 0);
+    $tahun_ajaran_id = (int)($_POST['tahun_ajaran_id'] ?? 0);
+    $kelas_id = (int)($_POST['kelas_id'] ?? 0);
+    $tanggal_mulai = trim($_POST['tanggal_mulai'] ?? '');
+    $tanggal_selesai = trim($_POST['tanggal_selesai'] ?? '');
+    $status_aktif = isset($_POST['status_aktif'])
+        ? (int)$_POST['status_aktif'] : -1;
 
-    $query_tambah = mysqli_query($koneksi, "INSERT INTO t_kelas_siswa
-        (siswa_id, tahun_ajaran_id, kelas_id, tanggal_mulai, tanggal_selesai, status_aktif)
-        VALUES
-        ('$siswa_id', '$tahun_ajaran_id', '$kelas_id',
-         '$tanggal_mulai', '$tanggal_selesai', '$status_aktif')");
+    if (
+        $siswa_id <= 0 ||
+        $tahun_ajaran_id <= 0 ||
+        $kelas_id <= 0 ||
+        $tanggal_mulai === '' ||
+        $tanggal_selesai === '' ||
+        !in_array($status_aktif, [0, 1], true)
+    ) {
+        $pesan = "Semua data penempatan wajib diisi dengan benar.";
+    } else {
+        try {
+            $cek = mysqli_prepare(
+                $koneksi,
+                "SELECT id FROM t_kelas_siswa
+                 WHERE siswa_id = ? AND tahun_ajaran_id = ?
+                 LIMIT 1"
+            );
 
-    $pesan = $query_tambah
-        ? "Penempatan siswa berhasil ditambahkan."
-        : "Penempatan siswa gagal ditambahkan.";
+            if (!$cek) {
+                $pesan = "Penempatan siswa gagal diperiksa.";
+            } else {
+                mysqli_stmt_bind_param(
+                    $cek, "ii", $siswa_id, $tahun_ajaran_id
+                );
+
+                mysqli_stmt_execute($cek);
+                mysqli_stmt_store_result($cek);
+
+                if (mysqli_stmt_num_rows($cek) > 0) {
+                    $pesan = "Siswa tersebut sudah memiliki penempatan pada tahun ajaran yang dipilih.";
+                } else {
+                    $stmt = mysqli_prepare(
+                        $koneksi,
+                        "INSERT INTO t_kelas_siswa
+                        (siswa_id, tahun_ajaran_id, kelas_id,
+                         tanggal_mulai, tanggal_selesai, status_aktif)
+                        VALUES (?, ?, ?, ?, ?, ?)"
+                    );
+
+                    if ($stmt) {
+                        mysqli_stmt_bind_param(
+                            $stmt,
+                            "iiissi",
+                            $siswa_id,
+                            $tahun_ajaran_id,
+                            $kelas_id,
+                            $tanggal_mulai,
+                            $tanggal_selesai,
+                            $status_aktif
+                        );
+
+                        $pesan = mysqli_stmt_execute($stmt)
+                            ? "Penempatan siswa berhasil ditambahkan."
+                            : "Penempatan siswa gagal ditambahkan.";
+
+                        mysqli_stmt_close($stmt);
+                    } else {
+                        $pesan = "Penempatan siswa gagal disiapkan.";
+                    }
+                }
+
+                mysqli_stmt_close($cek);
+            }
+        } catch (mysqli_sql_exception $e) {
+            $pesan = "Penempatan siswa gagal ditambahkan. Data yang dipilih tidak valid.";
+        }
+    }
 }
+
 
 /* UBAH PENEMPATAN SISWA */
 if (isset($_POST['ubah']) && $role == "admin") {
-    $id = $_POST['id'];
-    $siswa_id = $_POST['siswa_id'];
-    $tahun_ajaran_id = $_POST['tahun_ajaran_id'];
-    $kelas_id = $_POST['kelas_id'];
-    $tanggal_mulai = $_POST['tanggal_mulai'];
-    $tanggal_selesai = $_POST['tanggal_selesai'];
-    $status_aktif = $_POST['status_aktif'];
+    $id = (int)($_POST['id'] ?? 0);
+    $siswa_id = (int)($_POST['siswa_id'] ?? 0);
+    $tahun_ajaran_id = (int)($_POST['tahun_ajaran_id'] ?? 0);
+    $kelas_id = (int)($_POST['kelas_id'] ?? 0);
+    $tanggal_mulai = trim($_POST['tanggal_mulai'] ?? '');
+    $tanggal_selesai = trim($_POST['tanggal_selesai'] ?? '');
+    $status_aktif = isset($_POST['status_aktif'])
+        ? (int)$_POST['status_aktif'] : -1;
 
-    $query_ubah = mysqli_query($koneksi, "UPDATE t_kelas_siswa SET
-        siswa_id = '$siswa_id',
-        tahun_ajaran_id = '$tahun_ajaran_id',
-        kelas_id = '$kelas_id',
-        tanggal_mulai = '$tanggal_mulai',
-        tanggal_selesai = '$tanggal_selesai',
-        status_aktif = '$status_aktif'
-        WHERE id = '$id'");
+    if (
+        $id <= 0 ||
+        $siswa_id <= 0 ||
+        $tahun_ajaran_id <= 0 ||
+        $kelas_id <= 0 ||
+        $tanggal_mulai === '' ||
+        $tanggal_selesai === '' ||
+        !in_array($status_aktif, [0, 1], true)
+    ) {
+        $pesan = "Data penempatan yang diubah belum lengkap atau tidak valid.";
+    } else {
+        try {
+            $cek = mysqli_prepare(
+                $koneksi,
+                "SELECT id FROM t_kelas_siswa
+                 WHERE siswa_id = ?
+                 AND tahun_ajaran_id = ?
+                 AND id <> ?
+                 LIMIT 1"
+            );
 
-    $pesan = $query_ubah
-        ? "Penempatan siswa berhasil diubah."
-        : "Penempatan siswa gagal diubah.";
+            if (!$cek) {
+                $pesan = "Perubahan penempatan gagal diperiksa.";
+            } else {
+                mysqli_stmt_bind_param(
+                    $cek, "iii", $siswa_id, $tahun_ajaran_id, $id
+                );
+
+                mysqli_stmt_execute($cek);
+                mysqli_stmt_store_result($cek);
+
+                if (mysqli_stmt_num_rows($cek) > 0) {
+                    $pesan = "Siswa tersebut sudah memiliki penempatan pada tahun ajaran yang dipilih.";
+                } else {
+                    $stmt = mysqli_prepare(
+                        $koneksi,
+                        "UPDATE t_kelas_siswa SET
+                            siswa_id = ?,
+                            tahun_ajaran_id = ?,
+                            kelas_id = ?,
+                            tanggal_mulai = ?,
+                            tanggal_selesai = ?,
+                            status_aktif = ?
+                         WHERE id = ?"
+                    );
+
+                    if ($stmt) {
+                        mysqli_stmt_bind_param(
+                            $stmt,
+                            "iiissii",
+                            $siswa_id,
+                            $tahun_ajaran_id,
+                            $kelas_id,
+                            $tanggal_mulai,
+                            $tanggal_selesai,
+                            $status_aktif,
+                            $id
+                        );
+
+                        $pesan = mysqli_stmt_execute($stmt)
+                            ? "Penempatan siswa berhasil diubah."
+                            : "Penempatan siswa gagal diubah.";
+
+                        mysqli_stmt_close($stmt);
+                    } else {
+                        $pesan = "Perubahan penempatan gagal disiapkan.";
+                    }
+                }
+
+                mysqli_stmt_close($cek);
+            }
+        } catch (mysqli_sql_exception $e) {
+            $pesan = "Penempatan siswa gagal diubah. Data yang dipilih tidak valid.";
+        }
+    }
 }
 
 /* HAPUS PENEMPATAN SISWA */

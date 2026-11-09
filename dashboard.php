@@ -241,7 +241,8 @@ if ($query_jenis) {
     <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-        <aside class="col-md-3 col-lg-2 min-vh-100 p-3 sidebar">
+        <aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+            style="background-color: #30318B;">
 
             <div class="mb-4 px-2">
                 <h3 class="text-white mb-1 fw-bold">
