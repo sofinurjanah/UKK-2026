@@ -1,4 +1,3 @@
-
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
@@ -7,6 +6,12 @@ $role = $_SESSION['role'];
 
 $pesan = '';
 $tipe_pesan = '';
+
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    $tipe_pesan = $_SESSION['tipe_pesan'] ?? '';
+    unset($_SESSION['pesan'], $_SESSION['tipe_pesan']);
+}
 
 /* TAMBAH DATA TAHUN AJARAN */
 if (isset($_POST['tambah']) && $role == "admin") {
@@ -48,15 +53,39 @@ if (isset($_POST['tambah']) && $role == "admin") {
 /* UBAH DATA TAHUN AJARAN */
 if (isset($_POST['ubah']) && $role == "admin") {
 
-    $id = (int) $_POST['id'];
-    $nama = $_POST['nama'];
-    $tanggal_mulai = $_POST['tanggal_mulai'];
-    $tanggal_selesai = $_POST['tanggal_selesai'];
+    $id = (int) ($_POST['id'] ?? 0);
+    $nama = trim($_POST['nama'] ?? '');
+    $tanggal_mulai = $_POST['tanggal_mulai'] ?? '';
+    $tanggal_selesai = $_POST['tanggal_selesai'] ?? '';
 
     if ($tanggal_mulai > $tanggal_selesai) {
-        $pesan = "Tanggal mulai tidak boleh melebihi tanggal selesai.";
-        $tipe_pesan = "danger";
+        $_SESSION['pesan'] = "Tanggal mulai tidak boleh melebihi tanggal selesai.";
+        $_SESSION['tipe_pesan'] = "danger";
     } else {
+        $stmt_cek = mysqli_prepare($koneksi, "
+            SELECT nama, tanggal_mulai, tanggal_selesai
+            FROM t_tahun_ajaran WHERE id = ?
+        ");
+
+        mysqli_stmt_bind_param($stmt_cek, "i", $id);
+        mysqli_stmt_execute($stmt_cek);
+
+        $hasil_cek = mysqli_stmt_get_result($stmt_cek);
+        $data_lama = mysqli_fetch_assoc($hasil_cek);
+
+        mysqli_stmt_close($stmt_cek);
+
+        // Jika tidak ada perubahan, langsung kembali tanpa notifikasi
+        if (
+            $data_lama &&
+            $data_lama['nama'] == $nama &&
+            $data_lama['tanggal_mulai'] == $tanggal_mulai &&
+            $data_lama['tanggal_selesai'] == $tanggal_selesai
+        ) {
+            header("Location: data_tahun_ajaran.php");
+            exit;
+        }
+
         $stmt = mysqli_prepare($koneksi, "
             UPDATE t_tahun_ajaran SET
                 nama = ?,
@@ -76,15 +105,18 @@ if (isset($_POST['ubah']) && $role == "admin") {
         );
 
         if (mysqli_stmt_execute($stmt)) {
-            $pesan = "Data tahun ajaran berhasil diubah.";
-            $tipe_pesan = "success";
+            $_SESSION['pesan'] = "Data tahun ajaran berhasil diubah.";
+            $_SESSION['tipe_pesan'] = "success";
         } else {
-            $pesan = "Data gagal diubah: " . mysqli_error($koneksi);
-            $tipe_pesan = "danger";
+            $_SESSION['pesan'] = "Data gagal diubah: " . mysqli_error($koneksi);
+            $_SESSION['tipe_pesan'] = "danger";
         }
 
         mysqli_stmt_close($stmt);
     }
+
+    header("Location: data_tahun_ajaran.php");
+    exit;
 }
 
 /* HAPUS DATA TAHUN AJARAN */
@@ -166,9 +198,9 @@ if (isset($_GET['edit']) && $role == "admin") {
           rel="stylesheet">
 
     <link
-    href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
-    rel="stylesheet"
->
+        href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
+        rel="stylesheet"
+    >
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -361,8 +393,8 @@ if (isset($_GET['edit']) && $role == "admin") {
                                     </h5>
 
                                     <a href="data_tahun_ajaran.php"
-                                    class="btn-close"
-                                    aria-label="Tutup">
+                                       class="btn-close"
+                                       aria-label="Tutup">
                                     </a>
                                 </div>
 
@@ -460,21 +492,21 @@ if (isset($_GET['edit']) && $role == "admin") {
                     <div class="table-responsive">
 
                         <table id="example"
-       class="table table-bordered table-striped table-hover align-middle mb-0">
+                               class="table table-bordered table-striped table-hover align-middle mb-0">
 
-    <thead class="table-primary">
-        <tr>
-            <th>No</th>
-            <th>Nama Tahun Ajaran</th>
-            <th>Tanggal Mulai</th>
-            <th>Tanggal Selesai</th>
-            <th>Status</th>
+                            <thead class="table-primary">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Tahun Ajaran</th>
+                                    <th>Tanggal Mulai</th>
+                                    <th>Tanggal Selesai</th>
+                                    <th>Status</th>
 
-            <?php if ($role == "admin") { ?>
-                <th>Aksi</th>
-            <?php } ?>
-        </tr>
-    </thead>
+                                    <?php if ($role == "admin") { ?>
+                                        <th>Aksi</th>
+                                    <?php } ?>
+                                </tr>
+                            </thead>
 
                             <tbody>
 

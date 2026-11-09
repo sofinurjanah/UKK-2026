@@ -6,7 +6,18 @@ include "includes/cek_session.php";
 
 $role = $_SESSION['role'] ?? '';
 $pesan = '';
+$tipe_pesan = '';
 
+/* PESAN SESSION */
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    $tipe_pesan = $_SESSION['tipe_pesan'] ?? 'success';
+
+    unset($_SESSION['pesan']);
+    unset($_SESSION['tipe_pesan']);
+}
+
+/* TAHUN AJARAN AKTIF */
 $query_tahun_aktif = mysqli_query($koneksi, "
     SELECT id, nama
     FROM t_tahun_ajaran
@@ -15,8 +26,14 @@ $query_tahun_aktif = mysqli_query($koneksi, "
 ");
 
 $tahun_aktif = mysqli_fetch_assoc($query_tahun_aktif);
-/* TAMBAH WALI KELAS */
+
+
+/* =========================
+   TAMBAH WALI KELAS
+========================= */
+
 if (isset($_POST['tambah']) && $role == "admin" && $tahun_aktif) {
+
     $tahun_ajaran_id = (int) $tahun_aktif['id'];
     $kelas_id = $_POST['kelas_id'];
     $guru_id = $_POST['guru_id'];
@@ -24,64 +41,163 @@ if (isset($_POST['tambah']) && $role == "admin" && $tahun_aktif) {
     $tanggal_selesai = $_POST['tanggal_selesai'];
     $status_aktif = $_POST['status_aktif'];
 
-    $query = mysqli_query($koneksi, "INSERT INTO t_wali_kelas
-        (tahun_ajaran_id, kelas_id, guru_id, tanggal_mulai, tanggal_selesai, status_aktif)
+    $query = mysqli_query($koneksi, "
+        INSERT INTO t_wali_kelas
+        (
+            tahun_ajaran_id,
+            kelas_id,
+            guru_id,
+            tanggal_mulai,
+            tanggal_selesai,
+            status_aktif
+        )
         VALUES
-        ('$tahun_ajaran_id', '$kelas_id', '$guru_id',
-         '$tanggal_mulai', '$tanggal_selesai', '$status_aktif')");
+        (
+            '$tahun_ajaran_id',
+            '$kelas_id',
+            '$guru_id',
+            '$tanggal_mulai',
+            '$tanggal_selesai',
+            '$status_aktif'
+        )
+    ");
 
-    $pesan = $query
-        ? "Data wali kelas berhasil ditambahkan."
-        : "Data wali kelas gagal ditambahkan.";
+    if ($query) {
+        $_SESSION['pesan'] = "Data wali kelas berhasil ditambahkan.";
+        $_SESSION['tipe_pesan'] = "success";
+
+        header("Location: wali_kelas.php");
+        exit;
+    } else {
+        $pesan = "Data wali kelas gagal ditambahkan.";
+        $tipe_pesan = "danger";
+    }
 }
 
-/* UBAH WALI KELAS */
+
+/* =========================
+   UBAH WALI KELAS
+========================= */
+
 if (isset($_POST['ubah']) && $role == "admin" && $tahun_aktif) {
-    $id = $_POST['id'];
+
+    $id = (int) $_POST['id'];
     $tahun_ajaran_id = (int) $tahun_aktif['id'];
-    $kelas_id = $_POST['kelas_id'];
-    $guru_id = $_POST['guru_id'];
+    $kelas_id = (int) $_POST['kelas_id'];
+    $guru_id = (int) $_POST['guru_id'];
     $tanggal_mulai = $_POST['tanggal_mulai'];
     $tanggal_selesai = $_POST['tanggal_selesai'];
-    $status_aktif = $_POST['status_aktif'];
+    $status_aktif = (int) $_POST['status_aktif'];
 
-    $query = mysqli_query($koneksi, "UPDATE t_wali_kelas SET
-        tahun_ajaran_id = '$tahun_ajaran_id',
-        kelas_id = '$kelas_id',
-        guru_id = '$guru_id',
-        tanggal_mulai = '$tanggal_mulai',
-        tanggal_selesai = '$tanggal_selesai',
-        status_aktif = '$status_aktif'
-        WHERE id = '$id'");
+    /* AMBIL DATA LAMA */
+    $query_lama = mysqli_query($koneksi, "
+        SELECT *
+        FROM t_wali_kelas
+        WHERE id = '$id'
+    ");
 
-    $pesan = $query
-        ? "Data wali kelas berhasil diubah."
-        : "Data wali kelas gagal diubah.";
+    $data_lama = mysqli_fetch_assoc($query_lama);
+
+    if ($data_lama) {
+
+        /* CEK APAKAH ADA PERUBAHAN */
+        $ada_perubahan =
+            $data_lama['tahun_ajaran_id'] != $tahun_ajaran_id ||
+            $data_lama['kelas_id'] != $kelas_id ||
+            $data_lama['guru_id'] != $guru_id ||
+            $data_lama['tanggal_mulai'] != $tanggal_mulai ||
+            $data_lama['tanggal_selesai'] != $tanggal_selesai ||
+            $data_lama['status_aktif'] != $status_aktif;
+
+        /* JIKA TIDAK ADA PERUBAHAN */
+        if (!$ada_perubahan) {
+
+            header("Location: wali_kelas.php");
+            exit;
+
+        }
+
+        /* JIKA ADA PERUBAHAN */
+        $query = mysqli_query($koneksi, "
+            UPDATE t_wali_kelas SET
+                tahun_ajaran_id = '$tahun_ajaran_id',
+                kelas_id = '$kelas_id',
+                guru_id = '$guru_id',
+                tanggal_mulai = '$tanggal_mulai',
+                tanggal_selesai = '$tanggal_selesai',
+                status_aktif = '$status_aktif'
+            WHERE id = '$id'
+        ");
+
+        if ($query) {
+
+            $_SESSION['pesan'] = "Data wali kelas berhasil diubah.";
+            $_SESSION['tipe_pesan'] = "success";
+
+            header("Location: wali_kelas.php");
+            exit;
+
+        } else {
+
+            $pesan = "Data wali kelas gagal diubah.";
+            $tipe_pesan = "danger";
+
+        }
+
+    } else {
+
+        $pesan = "Data wali kelas tidak ditemukan.";
+        $tipe_pesan = "danger";
+
+    }
 }
 
-/* HAPUS WALI KELAS */
+
+/* =========================
+   HAPUS WALI KELAS
+========================= */
+
 if (isset($_GET['hapus']) && $role == "admin") {
 
-    $id = $_GET['hapus'];
+    $id = (int) $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "DELETE FROM t_wali_kelas
-        WHERE id = '$id'");
+    $query = mysqli_query($koneksi, "
+        DELETE FROM t_wali_kelas
+        WHERE id = '$id'
+    ");
 
-    $pesan = $query
-        ? "Data wali kelas berhasil dihapus."
-        : "Data wali kelas gagal dihapus.";
+    if ($query) {
+
+        $_SESSION['pesan'] = "Data wali kelas berhasil dihapus.";
+        $_SESSION['tipe_pesan'] = "success";
+
+    } else {
+
+        $_SESSION['pesan'] = "Data wali kelas gagal dihapus.";
+        $_SESSION['tipe_pesan'] = "danger";
+
+    }
+
+    header("Location: wali_kelas.php");
+    exit;
 }
 
-/* DATA UNTUK EDIT */
+
+/* =========================
+   DATA UNTUK EDIT
+========================= */
+
 $data_edit = null;
 
 if (isset($_GET['edit'])) {
 
-    $id_edit = $_GET['edit'];
+    $id_edit = (int) $_GET['edit'];
 
-    $query_edit = mysqli_query($koneksi, "SELECT *
+    $query_edit = mysqli_query($koneksi, "
+        SELECT *
         FROM t_wali_kelas
-        WHERE id = '$id_edit'");
+        WHERE id = '$id_edit'
+    ");
 
     $data_edit = mysqli_fetch_assoc($query_edit);
 }
@@ -258,24 +374,22 @@ if (isset($_GET['edit'])) {
             </div>
 
             <!-- PESAN -->
-            <?php if ($pesan !== '') { ?>
+        <?php if ($pesan !== '') { ?>
 
-                <div class="alert <?php
-                    echo strpos($pesan, 'berhasil') !== false
-                        ? 'alert-success'
-                        : 'alert-danger';
-                ?> alert-dismissible fade show" role="alert">
+            <div class="alert alert-<?php echo htmlspecialchars($tipe_pesan); ?> alert-dismissible fade show"
+                role="alert">
 
-                    <?php echo htmlspecialchars($pesan); ?>
+                <?php echo htmlspecialchars($pesan); ?>
 
-                    <button type="button"
-                            class="btn-close"
-                            data-bs-dismiss="alert"
-                            aria-label="Tutup">
-                    </button>
-                </div>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="alert"
+                        aria-label="Tutup">
+                </button>
 
-            <?php } ?>
+            </div>
+
+        <?php } ?>
 
             <!-- MODAL TAMBAH / UBAH WALI KELAS -->
 <?php

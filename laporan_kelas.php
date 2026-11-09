@@ -250,80 +250,74 @@ if ($data_wali) {
     <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-        <aside class="col-md-3 col-lg-2 min-vh-100 p-3 sidebar">
+<aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+    style="background-color: #30318B;">
 
-            <div class="mb-4 px-2">
+    <div class="mb-4 px-2">
+        <h3 class="text-white mb-1 fw-bold">
+            SIMPESMA
+        </h3>
 
-                <h3 class="text-white mb-1 sidebar-brand">
-                    SIMPESMA
-                </h3>
+        <p class="text-white mb-0"
+           style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+            Sistem Informasi Manajemen
+            Pelanggaran Siswa Muhammadiyah
+        </p>
+    </div>
 
-                <p class="text-white mb-0 sidebar-description"
-                   style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+    <ul class="nav nav-pills flex-column">
 
-                    Sistem Informasi Manajemen
-                    Pelanggaran Siswa Muhammadiyah
+        <li class="nav-item mb-2">
+            <a href="dashboard.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                Dashboard
+            </a>
+        </li>
 
-                </p>
+        <li class="nav-item mb-2">
+            <a href="data_siswa_wali.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
+                Data Siswa di Kelasnya
+            </a>
+        </li>
 
-            </div>
+        <li class="nav-item mb-2">
+            <a href="riwayat_pelanggaran_wali.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
+                Riwayat Pelanggaran Siswa
+            </a>
+        </li>
 
-            <ul class="nav nav-pills flex-column">
+        <li class="nav-item mb-2">
+            <a href="rekap_poin_wali.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
+                Rekap Poin Siswa
+            </a>
+        </li>
 
-                <li class="nav-item mb-2">
-                    <a href="dashboard.php"
-                       class="nav-link text-white">
-                        Dashboard
-                    </a>
-                </li>
+        <li class="nav-item mb-2">
+            <a href="laporan_kelas.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
+                Laporan Pelanggaran Kelas
+            </a>
+        </li>
 
-                <li class="nav-item mb-2">
-                    <a href="data_siswa_wali.php"
-                       class="nav-link text-white">
-                        Data Siswa di Kelasnya
-                    </a>
-                </li>
+        <hr class="text-secondary">
 
-                <li class="nav-item mb-2">
-                    <a href="riwayat_pelanggaran_wali.php"
-                       class="nav-link text-white">
-                        Riwayat Pelanggaran Siswa
-                    </a>
-                </li>
+        <li class="nav-item mb-2">
+            <a href="about_me.php" class="nav-link text-white">
+                About Me
+            </a>
+        </li>
 
-                <li class="nav-item mb-2">
-                    <a href="rekap_poin_wali.php"
-                       class="nav-link text-white">
-                        Rekap Poin Siswa
-                    </a>
-                </li>
+        <li class="nav-item">
+            <a href="logout.php" class="nav-link text-danger">
+                Logout
+            </a>
+        </li>
 
-                <li class="nav-item mb-2">
-                    <a href="laporan_kelas.php"
-                       class="nav-link active">
-                        Laporan Pelanggaran Kelas
-                    </a>
-                </li>
-
-                <hr class="text-secondary">
-
-                <li class="nav-item mb-2">
-                    <a href="about_me.php"
-                       class="nav-link text-white">
-                        About Me
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a href="logout.php"
-                       class="nav-link text-danger">
-                        Logout
-                    </a>
-                </li>
-
-            </ul>
-
-        </aside>
+    </ul>
+</aside>
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">

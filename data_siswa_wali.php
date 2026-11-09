@@ -143,48 +143,54 @@ if (!empty($daftar_kelas)) {
 
         
 <!-- SIDEBAR -->
-<aside class="col-md-3 col-lg-2 min-vh-100 p-3 sidebar">
+<aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+    style="background-color: #30318B;">
 
-            <div class="mb-4 px-2">
-                <h3 class="text-white mb-1 sidebar-brand">
-                    SIMPESMA
-                </h3>
+    <div class="mb-4 px-2">
+        <h3 class="text-white mb-1 fw-bold">
+            SIMPESMA
+        </h3>
 
-                <p class="text-white mb-0 sidebar-description"
-                style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
-                    Sistem Informasi Manajemen
-                    Pelanggaran Siswa Muhammadiyah
-                </p>
-            </div>
+        <p class="text-white mb-0"
+           style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+            Sistem Informasi Manajemen
+            Pelanggaran Siswa Muhammadiyah
+        </p>
+    </div>
 
     <ul class="nav nav-pills flex-column">
 
         <li class="nav-item mb-2">
-            <a href="dashboard.php" class="nav-link text-white">
+            <a href="dashboard.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
                 Dashboard
             </a>
         </li>
 
         <li class="nav-item mb-2">
-            <a href="data_siswa_wali.php" class="nav-link active">
+            <a href="data_siswa_wali.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
                 Data Siswa di Kelasnya
             </a>
         </li>
 
         <li class="nav-item mb-2">
-            <a href="riwayat_pelanggaran_wali.php" class="nav-link text-white">
+            <a href="riwayat_pelanggaran_wali.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
                 Riwayat Pelanggaran Siswa
             </a>
         </li>
 
         <li class="nav-item mb-2">
-            <a href="rekap_poin_wali.php" class="nav-link text-white">
+            <a href="rekap_poin_wali.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
                 Rekap Poin Siswa
             </a>
         </li>
 
         <li class="nav-item mb-2">
-            <a href="laporan_kelas.php" class="nav-link text-white">
+            <a href="laporan_kelas.php"
+               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
                 Laporan Pelanggaran Kelas
             </a>
         </li>
@@ -204,7 +210,6 @@ if (!empty($daftar_kelas)) {
         </li>
 
     </ul>
-
 </aside>
 
 

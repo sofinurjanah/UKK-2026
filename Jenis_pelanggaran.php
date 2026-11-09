@@ -6,6 +6,14 @@ $role = $_SESSION['role'];
 $pesan = '';
 $tipe_pesan = '';
 
+// MENGAMBIL NOTIFIKASI DARI SESSION
+if (isset($_SESSION['pesan'])) {
+    $pesan = $_SESSION['pesan'];
+    $tipe_pesan = $_SESSION['tipe_pesan'] ?? '';
+
+    unset($_SESSION['pesan'], $_SESSION['tipe_pesan']);
+}
+
 
 // ==============================
 // TAMBAH JENIS PELANGGARAN
@@ -42,14 +50,48 @@ if (isset($_POST['tambah']) && $role == "admin") {
 // ==============================
 if (isset($_POST['ubah']) && $role == "admin") {
 
-    $id = $_POST['id'];
+    $id = (int) ($_POST['id'] ?? 0);
     $pelanggaran_kategori_id = $_POST['pelanggaran_kategori_id'];
-    $kode = $_POST['kode'];
-    $nama = $_POST['nama'];
+    $kode = trim($_POST['kode']);
+    $nama = trim($_POST['nama']);
     $poin = $_POST['poin'];
-    $deskripsi = $_POST['deskripsi'];
+    $deskripsi = trim($_POST['deskripsi']);
     $status_aktif = $_POST['status_aktif'];
 
+    // MENGAMBIL DATA LAMA
+    $stmt_cek = mysqli_prepare(
+        $koneksi,
+        "SELECT pelanggaran_kategori_id, kode, nama, poin, deskripsi, status_aktif
+         FROM t_pelanggaran
+         WHERE id = ?"
+    );
+
+    mysqli_stmt_bind_param($stmt_cek, "i", $id);
+    mysqli_stmt_execute($stmt_cek);
+
+    $hasil_cek = mysqli_stmt_get_result($stmt_cek);
+    $data_lama = mysqli_fetch_assoc($hasil_cek);
+
+    mysqli_stmt_close($stmt_cek);
+
+    // MEMERIKSA APAKAH ADA PERUBAHAN
+    if (
+        $data_lama &&
+        (string)$data_lama['pelanggaran_kategori_id'] === (string)$pelanggaran_kategori_id &&
+        (string)$data_lama['kode'] === (string)$kode &&
+        (string)$data_lama['nama'] === (string)$nama &&
+        (string)$data_lama['poin'] === (string)$poin &&
+        (string)($data_lama['deskripsi'] ?? '') === (string)$deskripsi &&
+        (string)$data_lama['status_aktif'] === (string)$status_aktif
+    ) {
+
+        // JIKA TIDAK ADA PERUBAHAN
+        // LANGSUNG KEMBALI KE TABEL TANPA NOTIFIKASI
+        header("Location: jenis_pelanggaran.php");
+        exit;
+    }
+
+    // JIKA ADA PERUBAHAN, UPDATE DATA
     $query = mysqli_query(
         $koneksi,
         "UPDATE t_pelanggaran SET
@@ -63,12 +105,16 @@ if (isset($_POST['ubah']) && $role == "admin") {
     );
 
     if ($query) {
-        $pesan = "Jenis pelanggaran berhasil diubah.";
-        $tipe_pesan = "success";
+        $_SESSION['pesan'] = "Jenis pelanggaran berhasil diubah.";
+        $_SESSION['tipe_pesan'] = "success";
     } else {
-        $pesan = "Jenis pelanggaran gagal diubah.";
-        $tipe_pesan = "danger";
+        $_SESSION['pesan'] = "Jenis pelanggaran gagal diubah.";
+        $_SESSION['tipe_pesan'] = "danger";
     }
+
+    // KEMBALI KE TABEL DAN MENUTUP MODAL EDIT
+    header("Location: jenis_pelanggaran.php");
+    exit;
 }
 
 

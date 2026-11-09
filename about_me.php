@@ -1,4 +1,3 @@
-
 <?php
 
 session_start();
@@ -31,215 +30,211 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 <body>
 
 <div class="container-fluid">
-    <div class="row">
+    <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-<aside class="col-md-3 col-lg-2 min-vh-100 p-3 sidebar">
+        <aside class="col-md-3 col-lg-2 min-vh-100 p-3">
 
-    <div class="mb-4 px-2">
-        <h3 class="text-white mb-1 sidebar-brand">
-            SIMPESMA
-        </h3>
+            <div class="mb-4 px-2">
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
 
-        <p class="text-white mb-0 sidebar-description">
-            Sistem Informasi Manajemen
-            Pelanggaran Siswa Muhammadiyah
-        </p>
-    </div>
+                <p class="text-white mb-0 sidebar-description">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
+            </div>
 
-    <ul class="nav nav-pills flex-column">
+            <ul class="nav nav-pills flex-column">
 
-        <!-- DASHBOARD -->
-        <li class="nav-item mb-2">
-            <a href="dashboard.php" class="nav-link text-white">
-                Dashboard
-            </a>
-        </li>
+                <!-- DASHBOARD -->
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php" class="nav-link text-white">
+                        Dashboard
+                    </a>
+                </li>
 
-        <?php if ($role == 'admin') { ?>
+                <?php if ($role == 'admin') { ?>
 
-            <li class="nav-item mb-2">
-                <a href="data_siswa.php" class="nav-link text-white">
-                    Data Siswa
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_siswa.php" class="nav-link text-white">
+                            Data Siswa
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="data_guru.php" class="nav-link text-white">
-                    Data Guru
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_guru.php" class="nav-link text-white">
+                            Data Guru
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="data_kelas.php" class="nav-link text-white">
-                    Kelas
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_kelas.php" class="nav-link text-white">
+                            Kelas
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="data_tahun_ajaran.php" class="nav-link text-white">
-                    Tahun Ajaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_tahun_ajaran.php" class="nav-link text-white">
+                            Tahun Ajaran
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="penempatan_siswa.php" class="nav-link text-white">
-                    Penempatan Siswa
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="penempatan_siswa.php" class="nav-link text-white">
+                            Penempatan Siswa
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="wali_kelas.php" class="nav-link text-white">
-                    Wali Kelas
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="wali_kelas.php" class="nav-link text-white">
+                            Wali Kelas
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="kategori_pelanggaran.php" class="nav-link text-white">
-                    Kategori Pelanggaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="kategori_pelanggaran.php" class="nav-link text-white">
+                            Kategori Pelanggaran
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="jenis_pelanggaran.php" class="nav-link text-white">
-                    Jenis Pelanggaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="jenis_pelanggaran.php" class="nav-link text-white">
+                            Jenis Pelanggaran
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="laporan.php" class="nav-link text-white">
-                    Laporan
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="laporan.php" class="nav-link text-white">
+                            Laporan
+                        </a>
+                    </li>
 
-        <?php } elseif ($role == 'guru') { ?>
+                <?php } elseif ($role == 'guru') { ?>
 
-            <li class="nav-item mb-2">
-                <a href="catat_pelanggaran.php" class="nav-link text-white">
-                    Catat Pelanggaran
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
+                            Catat Pelanggaran
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="tindakan.php" class="nav-link text-white">
-                    Tindakan
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="tindakan.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="riwayat_pelanggaran.php" class="nav-link text-white">
-                    Riwayat
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="riwayat_pelanggaran.php" class="nav-link text-white">
+                            Riwayat
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="rekap_poin.php" class="nav-link text-white">
-                    Rekap Poin
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="rekap_poin.php" class="nav-link text-white">
+                            Rekap Poin
+                        </a>
+                    </li>
 
-        <?php } elseif ($role == 'wali_kelas') { ?>
+                <?php } elseif ($role == 'wali_kelas') { ?>
 
-            <!-- MENU WALI KELAS -->
+                    <li class="nav-item mb-2">
+                        <a href="data_siswa_wali.php" class="nav-link text-white">
+                            Data Siswa di Kelasnya
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="data_siswa_wali.php" class="nav-link text-white">
-                    Data Siswa di Kelasnya
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="riwayat_pelanggaran_wali.php" class="nav-link text-white">
+                            Riwayat Pelanggaran Siswa
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="riwayat_pelanggaran_wali.php" class="nav-link text-white">
-                    Riwayat Pelanggaran Siswa
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="rekap_poin_wali.php" class="nav-link text-white">
+                            Rekap Poin Siswa
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="rekap_poin_wali.php" class="nav-link text-white">
-                    Rekap Poin Siswa
-                </a>
-            </li>
+                    <li class="nav-item mb-2">
+                        <a href="laporan_kelas.php" class="nav-link text-white">
+                            Laporan Pelanggaran Kelas
+                        </a>
+                    </li>
 
-            <li class="nav-item mb-2">
-                <a href="laporan_kelas.php" class="nav-link text-white">
-                    Laporan Pelanggaran Kelas
-                </a>
-            </li>
+                <?php } ?>
 
-        <?php } ?>
+                <hr class="text-secondary">
 
-        <hr class="text-secondary">
+                <!-- ABOUT ME -->
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link active">
+                        About Me
+                    </a>
+                </li>
 
-        <!-- ABOUT ME -->
-        <li class="nav-item mb-2">
-            <a href="about_me.php" class="nav-link active">
-                About Me
-            </a>
-        </li>
+                <!-- LOGOUT -->
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
 
-        <!-- LOGOUT -->
-        <li class="nav-item">
-            <a href="logout.php" class="nav-link text-danger">
-                Logout
-            </a>
-        </li>
+            </ul>
 
-    </ul>
-
-</aside>
+        </aside>
 
         <!-- KONTEN ABOUT ME -->
-        <main class="col-md-9 col-lg-10 about-page">
+        <main class="col-md-9 col-lg-10 p-4 d-flex flex-column about-page">
 
             <div class="about-layout">
 
-                
-<!-- KARTU PROFIL KIRI -->
-<section class="profile-card">
+                <!-- KARTU PROFIL KIRI -->
+                <section class="profile-card">
 
-    <div class="profile-photo-wrap">
-        <span class="profile-hello">Hello!</span>
+                    <div class="profile-photo-wrap">
+                        <span class="profile-hello">Hello!</span>
 
-        <img src="foto_profil.png"
-             alt="Foto Profil <?= htmlspecialchars($nama); ?>"
-             class="profile-photo">
-    </div>
+                        <img src="foto_profil.png"
+                             alt="Foto Profil <?= htmlspecialchars($nama); ?>"
+                             class="profile-photo">
+                    </div>
 
-    <h2 class="profile-name">
-        <?= htmlspecialchars($nama); ?>
-    </h2>
+                    <h2 class="profile-name">
+                        <?= htmlspecialchars($nama); ?>
+                    </h2>
 
-    <span class="profile-role">
-        <?= htmlspecialchars(ucfirst($role)); ?>
-    </span>
+                    <span class="profile-role">
+                        <?= htmlspecialchars(ucfirst($role)); ?>
+                    </span>
 
-    <div class="profile-details">
-        <p>
-            <strong>Nama:</strong>
-            <?= htmlspecialchars($nama); ?>
-        </p>
+                    <div class="profile-details">
+                        <p>
+                            <strong>Nama:</strong>
+                            <?= htmlspecialchars($nama); ?>
+                        </p>
 
-        <p>
-            <strong>Role:</strong>
-            <?= htmlspecialchars(ucfirst($role)); ?>
-        </p>
-    </div>
+                        <p>
+                            <strong>Role:</strong>
+                            <?= htmlspecialchars(ucfirst($role)); ?>
+                        </p>
+                    </div>
 
-    <div class="profile-skills">
-        <h3 class="profile-skills-title">
-            TECHNICAL SKILLS
-        </h3>
+                    <div class="profile-skills">
+                        <h3 class="profile-skills-title">
+                            TECHNICAL SKILLS
+                        </h3>
 
-        <div class="profile-skill-list">
-            <span class="profile-skill">HTML</span>
-            <span class="profile-skill">CSS</span>
-            <span class="profile-skill">PHP</span>
-            <span class="profile-skill">SQL</span>
-        </div>
-    </div>
+                        <div class="profile-skill-list">
+                            <span class="profile-skill">HTML</span>
+                            <span class="profile-skill">CSS</span>
+                            <span class="profile-skill">PHP</span>
+                            <span class="profile-skill">SQL</span>
+                        </div>
+                    </div>
 
-</section>
-
+                </section>
 
                 <!-- INFORMASI KANAN -->
                 <section class="about-information">
@@ -391,7 +386,9 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
             </div>
 
-            <p class="text-center text-secondary small mt-4">©Sofinurjanah</p>
+            <p class="text-center text-secondary small mt-4">
+                ©Sofinurjanah
+            </p>
 
         </main>
 

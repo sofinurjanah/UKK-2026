@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.0
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 09 Nov 2026 pada 05.49
--- Versi server: 10.4.32-MariaDB
--- Versi PHP: 8.2.12
+-- Waktu pembuatan: 09 Nov 2026 pada 11.06
+-- Versi server: 10.4.27-MariaDB
+-- Versi PHP: 8.2.0
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -157,19 +157,7 @@ INSERT INTO `t_kelas` (`id`, `nama`, `tingkat`, `jurusan`, `status_aktif`, `crea
 (35, 'XII TKR 1', 'XII', 'TKR', 1, '2026-11-07 01:00:00', '2026-11-05 09:37:21'),
 (36, 'XI TKR 3', 'XI', 'TKR', 1, '2026-12-08 01:00:00', '2026-11-05 09:37:21'),
 (37, 'XII TKR 3', 'XII', 'TKR', 1, '2026-01-09 01:00:00', '2026-11-05 09:37:21'),
-(38, 'XI TSM 1', 'XI', 'TSM', 1, '2026-02-10 01:00:00', '2026-11-05 09:37:21'),
-(39, 'XII AKL 3', 'XII', 'AKL', 0, '2026-03-11 01:00:00', '2026-11-05 09:37:21'),
-(40, 'X MPLB 3', 'X', 'MPLB', 0, '2026-04-12 01:00:00', '2026-11-05 09:37:21'),
-(41, 'XI RPL 3', 'XI', 'RPL', 0, '2026-05-13 01:00:00', '2026-11-05 09:37:21'),
-(42, 'XII TKJ 3', 'XII', 'TKJ', 0, '2026-06-14 01:00:00', '2026-11-05 09:37:21'),
-(43, 'X DKV 3', 'X', 'DKV', 0, '2026-07-15 01:00:00', '2026-11-05 09:37:21'),
-(44, 'XI AKL 3', 'XI', 'AKL', 0, '2026-08-16 01:00:00', '2026-11-05 09:37:21'),
-(45, 'XII MPLB 3', 'XII', 'MPLB', 0, '2026-09-17 01:00:00', '2026-11-05 09:37:21'),
-(46, 'X RPL 4', 'X', 'RPL', 0, '2026-10-18 01:00:00', '2026-11-05 09:37:21'),
-(47, 'XI TKJ 4', 'XI', 'TKJ', 0, '2026-11-19 01:00:00', '2026-11-05 09:37:21'),
-(48, 'XII DKV 4', 'XII', 'DKV', 0, '2026-12-20 01:00:00', '2026-11-05 09:37:21'),
-(49, 'X AKL 4', 'X', 'AKL', 0, '2026-01-21 01:00:00', '2026-11-05 09:37:21'),
-(50, 'XI MPLB 4', 'XI', 'MPLB', 0, '2026-02-22 01:00:00', '2026-11-05 09:37:21');
+(38, 'XI TSM 1', 'XI', 'TSM', 1, '2026-02-10 01:00:00', '2026-11-05 09:37:21');
 
 -- --------------------------------------------------------
 
@@ -212,7 +200,7 @@ INSERT INTO `t_kelas_siswa` (`id`, `siswa_id`, `tahun_ajaran_id`, `kelas_id`, `t
 (16, 16, 50, 13, '1978-07-01', '1979-06-30', 1, '2026-01-16 01:00:00', '2026-01-16 01:00:00'),
 (17, 17, 50, 13, '1978-07-01', '1979-06-30', 1, '2026-01-17 01:00:00', '2026-01-17 01:00:00'),
 (18, 18, 50, 13, '1978-07-01', '1979-06-30', 1, '2026-01-18 01:00:00', '2026-01-18 01:00:00'),
-(19, 19, 2, 13, '1978-07-01', '1979-06-30', 1, '2026-01-19 01:00:00', '2026-01-19 01:00:00'),
+(19, 19, 50, 13, '1978-07-01', '1979-06-30', 1, '2026-01-19 01:00:00', '2026-01-19 01:00:00'),
 (20, 20, 50, 13, '1978-07-01', '1979-06-30', 1, '2026-01-20 01:00:00', '2026-01-20 01:00:00'),
 (21, 21, 50, 13, '1979-07-01', '1980-06-30', 1, '2026-01-21 01:00:00', '2026-01-21 01:00:00'),
 (22, 22, 50, 13, '1979-07-01', '1980-06-30', 1, '2026-01-22 01:00:00', '0000-00-00 00:00:00'),
@@ -459,9 +447,11 @@ CREATE TABLE `t_pelanggaran_siswa` (
 --
 
 INSERT INTO `t_pelanggaran_siswa` (`id`, `tahun_ajaran_id`, `siswa_id`, `nama_siswa`, `kelas_id`, `nama_kelas`, `pelanggaran_id`, `nama_pelanggaran`, `pelanggaran_kategori_id`, `guru_id`, `nama_guru`, `tanggal`, `keterangan`, `poin`, `tindakan`, `status`, `created_at`, `updated_at`) VALUES
-(55, 50, 1, 'Adittia Nur Lantip', 13, 'XII RPL 2', 16, 'Berkata Tidak Sopan', 16, 2, 'Ai Nuryaidah, S.Pd', '2026-11-06', '', 1, '', 'Pembinaan', '2026-11-06 05:02:23', '2026-11-06 05:02:23'),
-(56, 50, 2, 'Agnia Rosya Noerillah', 13, 'XII RPL 2', 34, 'Mencoret Meja atau Dinding', 34, 2, 'Ai Nuryaidah, S.Pd', '2026-11-07', '', 4, '', 'Ditindaklanjuti', '2026-11-06 05:07:29', '2026-11-06 05:07:29'),
-(57, 2, 19, 'Rizki Permata Sugianto', 13, 'XII RPL 2', 47, 'Tidak Menyelesaikan Tugas Kelompok', 47, 2, 'Ai Nuryaidah, S.Pd', '2026-11-27', '', 2, '', 'Selesai', '2026-11-06 05:11:45', '2026-11-06 05:11:45');
+(58, 50, 1, 'Adittia Nur Lantip', 13, 'XII RPL 2', 16, 'Berkata Tidak Sopan', 16, 32, 'Aldi Maulana, S.Pd', '2026-11-09', '', 1, '', 'Ditindaklanjuti', '2026-11-09 06:59:02', '2026-11-09 06:59:02'),
+(59, 50, 92, 'Laodra Roba Ahfiana', 20, 'X TKR 4', 27, 'Mencontek Pekerjaan Teman', 27, 24, 'Arif Kusmawan, S.Pd', '2026-11-09', '', 2, '', 'Selesai', '2026-11-09 06:59:55', '2026-11-09 06:59:55'),
+(60, 50, 115, 'Ali Rahmat Mutaqin', 21, 'XII TKR 4', 11, 'Membolos Saat Jam Pelajaran', 11, 35, 'Aanisah Putri Nur Aini, S.Pd', '2026-11-09', '', 1, '', 'Ditindaklanjuti', '2026-11-09 07:00:22', '2026-11-09 07:00:22'),
+(61, 50, 12, 'Nadia Zulfa Soraya', 13, 'XII RPL 2', 21, 'Menggunakan HP Saat Pelajaran', 21, 44, 'Rizkia Fahira, S.Pd', '2026-11-09', '', 1, '', 'Pembinaan', '2026-11-09 07:00:45', '2026-11-09 07:00:45'),
+(62, 50, 14, 'Puspita Dewi', 13, 'XII RPL 2', 47, 'Tidak Menyelesaikan Tugas Kelompok', 47, 39, 'Senny Indayani, S.Pd', '2026-11-09', '', 2, '', 'Selesai', '2026-11-09 07:01:12', '2026-11-09 07:01:12');
 
 -- --------------------------------------------------------
 
@@ -573,8 +563,7 @@ INSERT INTO `t_siswa` (`id`, `nis`, `nisn`, `nama`, `jenis_kelamin`, `tanggal_la
 (140, '112510757', '0000000084', 'Sani Achmad Fikri', 'L', '2008-04-16', 'Jl. Leuwisari, Tasikmalaya', 1, '2026-11-06 08:30:14', '2026-11-06 08:30:14'),
 (141, '102410373', '0000000085', 'Sendy Ramdhani', 'L', '2008-05-28', 'Jl. Manonjaya, Tasikmalaya', 1, '2026-11-06 08:30:14', '2026-11-06 08:30:14'),
 (142, '102410374', '0000000086', 'Surahman Wahdan Andika', 'L', '2008-06-09', 'Jl. Salawu, Tasikmalaya', 1, '2026-11-06 08:30:14', '2026-11-06 08:30:14'),
-(143, '102410375', '0000000087', 'Tahmid Hidayatulloh', 'L', '2008-07-17', 'Jl. Sukaratu, Tasikmalaya', 1, '2026-11-06 08:30:14', '2026-11-06 08:30:14'),
-(144, '1231243142', '1342351341', 'fugfidsfjdks', 'P', '2026-11-09', '3434rweq2a', 0, '2026-11-09 04:45:35', '2026-11-09 04:45:35');
+(143, '102410375', '0000000087', 'Tahmid Hidayatulloh', 'L', '2008-07-17', 'Jl. Sukaratu, Tasikmalaya', 1, '2026-11-06 08:30:14', '2026-11-06 08:30:14');
 
 -- --------------------------------------------------------
 
@@ -891,7 +880,7 @@ ALTER TABLE `t_pelanggaran_kategori`
 -- AUTO_INCREMENT untuk tabel `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_siswa`
