@@ -1,3 +1,4 @@
+
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
@@ -197,6 +198,67 @@ if (isset($_SESSION['pesan_sukses'])) {
     >
 
     <link rel="stylesheet" href="style.css">
+
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
+
+    <style>
+        #cari_siswa {
+            height: 38px;
+            border-radius: 8px;
+            font-size: 13px;
+            border: 1px solid #d7e3f5;
+        }
+
+        #cari_siswa:focus {
+            border-color: #86b7fe;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+        }
+
+        #hasil_siswa {
+            margin-top: 4px;
+            border-radius: 8px;
+            background: white;
+        }
+
+        #hasil_siswa .list-group-item {
+            font-size: 13px;
+            padding: 10px 12px;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+            cursor: pointer;
+        }
+
+        #hasil_siswa .list-group-item:hover {
+            background-color: #edf4ff;
+            color: #0754b8;
+        }
+
+        /* DROPDOWN JENIS PELANGGARAN */
+        #tombolPelanggaran {
+            height: 38px;
+            border-radius: 8px;
+            font-size: 13px;
+            background-color: white;
+        }
+
+        #menuPelanggaran {
+            border-radius: 8px;
+            border: 1px solid #d7e3f5;
+        }
+
+        #cari_pelanggaran {
+            font-size: 13px;
+            border-radius: 6px;
+        }
+
+        .item-pelanggaran {
+            font-size: 13px;
+            padding: 9px 10px;
+            white-space: normal;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -414,42 +476,61 @@ if (isset($_SESSION['pesan_sukses'])) {
                                         Nama Siswa
                                     </label>
 
-                                    <select name="siswa_id" class="form-select" required>
-                                        <option value="">-- Pilih Siswa --</option>
+                                    <div class="position-relative">
 
-                                        <?php
-                                        $query_siswa = mysqli_query($koneksi, "
-                                            SELECT
-                                                t_siswa.id,
-                                                t_siswa.nis,
-                                                t_siswa.nama,
-                                                t_kelas.nama AS nama_kelas
-                                            FROM t_siswa
-                                            LEFT JOIN t_kelas_siswa
-                                                ON t_siswa.id = t_kelas_siswa.siswa_id
-                                            LEFT JOIN t_kelas
-                                                ON t_kelas_siswa.kelas_id = t_kelas.id
-                                            WHERE t_siswa.status_aktif = 1
-                                              AND t_kelas_siswa.status_aktif = 1
-                                            ORDER BY t_siswa.nama ASC
-                                        ");
+                                        <!-- INPUT PENCARIAN -->
+                                        <input
+                                            type="text"
+                                            id="cari_siswa"
+                                            class="form-control"
+                                            placeholder="Cari nama atau NIS siswa..."
+                                            autocomplete="off"
+                                            required>
 
-                                        while ($row = mysqli_fetch_assoc($query_siswa)) {
-                                        ?>
-                                            <option value="<?php echo $row['id']; ?>">
-                                                <?php
-                                                echo htmlspecialchars(
-                                                    $row['nis'] . " - " . $row['nama']
-                                                );
+                                        <!-- SELECT ASLI UNTUK MENYIMPAN ID -->
+                                        <select name="siswa_id" id="siswa_id" class="d-none">
+                                            <option value="">-- Pilih Siswa --</option>
+
+                                            <?php
+                                            $query_siswa = mysqli_query($koneksi, "
+                                                SELECT
+                                                    t_siswa.id,
+                                                    t_siswa.nis,
+                                                    t_siswa.nama,
+                                                    t_kelas.nama AS nama_kelas
+                                                FROM t_siswa
+                                                LEFT JOIN t_kelas_siswa
+                                                    ON t_siswa.id = t_kelas_siswa.siswa_id
+                                                LEFT JOIN t_kelas
+                                                    ON t_kelas_siswa.kelas_id = t_kelas.id
+                                                WHERE t_siswa.status_aktif = 1
+                                                  AND t_kelas_siswa.status_aktif = 1
+                                                ORDER BY t_siswa.nama ASC
+                                            ");
+
+                                            while ($row = mysqli_fetch_assoc($query_siswa)) {
+                                                $label = $row['nis'] . " - " . $row['nama'];
 
                                                 if ($row['nama_kelas'] != "") {
-                                                    echo " (" . htmlspecialchars($row['nama_kelas']) . ")";
+                                                    $label .= " (" . $row['nama_kelas'] . ")";
                                                 }
-                                                ?>
-                                            </option>
-                                        <?php } ?>
+                                            ?>
 
-                                    </select>
+                                                <option value="<?= (int) $row['id']; ?>">
+                                                    <?= htmlspecialchars($label); ?>
+                                                </option>
+
+                                            <?php } ?>
+                                        </select>
+
+                                        <!-- HASIL PENCARIAN -->
+                                        <div
+                                            id="hasil_siswa"
+                                            class="list-group position-absolute w-100 shadow-sm"
+                                            style="z-index: 1056; display: none; max-height: 180px; overflow-y: auto;">
+                                        </div>
+
+                                    </div>
                                 </div>
 
                                 <!-- JENIS PELANGGARAN -->
@@ -458,45 +539,90 @@ if (isset($_SESSION['pesan_sukses'])) {
                                         Jenis Pelanggaran
                                     </label>
 
-                                    <select name="pelanggaran_id" class="form-select" required>
-                                        <option value="">-- Pilih Pelanggaran --</option>
+                                    <div class="dropdown w-100" id="dropdownPelanggaran">
 
-                                        <?php
-                                        $query_pelanggaran = mysqli_query($koneksi, "
-                                            SELECT
-                                                t_pelanggaran.id,
-                                                t_pelanggaran.kode,
-                                                t_pelanggaran.nama,
-                                                t_pelanggaran.poin,
-                                                t_pelanggaran_kategori.nama AS nama_kategori
-                                            FROM t_pelanggaran
-                                            INNER JOIN t_pelanggaran_kategori
-                                                ON t_pelanggaran.pelanggaran_kategori_id =
-                                                   t_pelanggaran_kategori.id
-                                            WHERE t_pelanggaran.status_aktif = 1
-                                            ORDER BY t_pelanggaran.nama ASC
-                                        ");
+                                        <!-- TOMBOL DROPDOWN -->
+                                        <button
+                                            type="button"
+                                            class="form-select text-start"
+                                            id="tombolPelanggaran"
+                                            data-bs-toggle="dropdown"
+                                            data-bs-auto-close="outside"
+                                            aria-expanded="false">
 
-                                        if (!$query_pelanggaran) {
-                                            die("Query pelanggaran gagal: " .
-                                                htmlspecialchars(mysqli_error($koneksi)));
-                                        }
+                                            <span id="teksPelanggaran">
+                                                -- Pilih Pelanggaran --
+                                            </span>
 
-                                        while ($row = mysqli_fetch_assoc($query_pelanggaran)) {
-                                        ?>
-                                            <option value="<?= (int) $row['id']; ?>">
-                                                <?= htmlspecialchars(
-                                                    $row['kode'] . " - " .
-                                                    $row['nama'] . " - " .
-                                                    $row['poin'] . " poin"
-                                                ); ?>
-                                            </option>
-                                        <?php } ?>
+                                        </button>
 
-                                    </select>
+                                        <!-- MENU DROPDOWN -->
+                                        <div
+                                            class="dropdown-menu w-100 p-2 shadow"
+                                            id="menuPelanggaran">
+
+                                            <!-- INPUT PENCARIAN DI DALAM DROPDOWN -->
+                                            <input
+                                                type="text"
+                                                id="cari_pelanggaran"
+                                                class="form-control mb-2"
+                                                placeholder="Cari kode atau nama pelanggaran..."
+                                                autocomplete="off">
+
+                                            <!-- DAFTAR JENIS PELANGGARAN -->
+                                            <div
+                                                id="hasil_pelanggaran"
+                                                style="max-height: 180px; overflow-y: auto;">
+
+                                                <?php
+                                                $query_pelanggaran = mysqli_query($koneksi, "
+                                                    SELECT
+                                                        t_pelanggaran.id,
+                                                        t_pelanggaran.kode,
+                                                        t_pelanggaran.nama,
+                                                        t_pelanggaran.poin
+                                                    FROM t_pelanggaran
+                                                    WHERE t_pelanggaran.status_aktif = 1
+                                                    ORDER BY t_pelanggaran.nama ASC
+                                                ");
+
+                                                if (!$query_pelanggaran) {
+                                                    die("Query pelanggaran gagal: " .
+                                                        htmlspecialchars(mysqli_error($koneksi)));
+                                                }
+
+                                                while ($row = mysqli_fetch_assoc($query_pelanggaran)) {
+
+                                                    $label = $row['kode'] . " - " .
+                                                             $row['nama'] . " - " .
+                                                             $row['poin'] . " poin";
+                                                ?>
+
+                                                    <button
+                                                        type="button"
+                                                        class="dropdown-item item-pelanggaran"
+                                                        data-id="<?= (int) $row['id']; ?>"
+                                                        data-nama="<?= htmlspecialchars($label, ENT_QUOTES, 'UTF-8'); ?>">
+
+                                                        <?= htmlspecialchars($label); ?>
+
+                                                    </button>
+
+                                                <?php } ?>
+
+                                            </div>
+                                        </div>
+
+                                        <!-- ID PELANGGARAN YANG DIKIRIM KE PHP -->
+                                        <input
+                                            type="hidden"
+                                            name="pelanggaran_id"
+                                            id="pelanggaran_id">
+
+                                    </div>
                                 </div>
 
-                                <!-- TANGGAL -->
+                                <!-- TANGGAL PELANGGARAN OTOMATIS -->
                                 <div class="mb-3">
                                     <label class="form-label fw-semibold">
                                         Tanggal Pelanggaran
@@ -506,6 +632,8 @@ if (isset($_SESSION['pesan_sukses'])) {
                                         type="date"
                                         name="tanggal"
                                         class="form-control"
+                                        value="<?= date('Y-m-d'); ?>"
+                                        readonly
                                         required>
                                 </div>
 
@@ -626,14 +754,219 @@ if (isset($_SESSION['pesan_sukses'])) {
     </div>
 </div>
 
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Select2 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 <!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- Pengaturan DataTables -->
 <script>
+
+    // =========================
+    // PENCARIAN SISWA
+    // =========================
+
+    const inputSiswa = document.getElementById('cari_siswa');
+    const selectSiswa = document.getElementById('siswa_id');
+    const hasilSiswa = document.getElementById('hasil_siswa');
+
+    inputSiswa.addEventListener('input', function () {
+
+        const keyword = this.value.toLowerCase().trim();
+
+        hasilSiswa.innerHTML = '';
+        selectSiswa.value = '';
+
+        if (keyword === '') {
+            hasilSiswa.style.display = 'none';
+            return;
+        }
+
+        let ditemukan = 0;
+
+        Array.from(selectSiswa.options).forEach(function (option) {
+
+            if (option.value === '') return;
+
+            if (option.text.toLowerCase().includes(keyword)) {
+
+                const item = document.createElement('button');
+
+                item.type = 'button';
+                item.className = 'list-group-item list-group-item-action';
+                item.textContent = option.text;
+
+                item.addEventListener('click', function () {
+
+                    selectSiswa.value = option.value;
+                    inputSiswa.value = option.text;
+
+                    hasilSiswa.style.display = 'none';
+
+                });
+
+                hasilSiswa.appendChild(item);
+                ditemukan++;
+            }
+        });
+
+        if (ditemukan === 0) {
+
+            const kosong = document.createElement('div');
+
+            kosong.className = 'list-group-item text-secondary';
+            kosong.textContent = 'Nama siswa tidak ditemukan';
+
+            hasilSiswa.appendChild(kosong);
+        }
+
+        hasilSiswa.style.display = 'block';
+    });
+
+    // Tutup hasil pencarian siswa jika klik di luar
+    document.addEventListener('click', function (e) {
+
+        if (!inputSiswa.contains(e.target) &&
+            !hasilSiswa.contains(e.target)) {
+
+            hasilSiswa.style.display = 'none';
+        }
+    });
+
+
+    // =========================
+    // DROPDOWN PENCARIAN PELANGGARAN
+    // =========================
+
+    const dropdownPelanggaranEl = document.getElementById('dropdownPelanggaran');
+    const tombolPelanggaran = document.getElementById('tombolPelanggaran');
+    const cariPelanggaran = document.getElementById('cari_pelanggaran');
+    const hasilPelanggaran = document.getElementById('hasil_pelanggaran');
+    const selectPelanggaran = document.getElementById('pelanggaran_id');
+    const teksPelanggaran = document.getElementById('teksPelanggaran');
+
+    const dropdownPelanggaran = new bootstrap.Dropdown(tombolPelanggaran);
+
+    // Fokus ke kolom pencarian saat dropdown dibuka
+    dropdownPelanggaranEl.addEventListener('shown.bs.dropdown', function () {
+        cariPelanggaran.focus();
+    });
+
+    // Cari kode atau nama pelanggaran
+    cariPelanggaran.addEventListener('input', function () {
+
+        const keyword = this.value.toLowerCase().trim();
+
+        const daftarPelanggaran = hasilPelanggaran.querySelectorAll('.item-pelanggaran');
+
+        let ditemukan = 0;
+
+        daftarPelanggaran.forEach(function (item) {
+
+            const cocok = item.textContent.toLowerCase().includes(keyword);
+
+            item.style.display = cocok ? '' : 'none';
+
+            if (cocok) {
+                ditemukan++;
+            }
+        });
+
+        // Hapus pesan sebelumnya
+        const pesanKosong = document.getElementById('pelanggaranKosong');
+
+        if (pesanKosong) {
+            pesanKosong.remove();
+        }
+
+        // Tampilkan pesan jika tidak ditemukan
+        if (ditemukan === 0) {
+
+            const kosong = document.createElement('div');
+
+            kosong.id = 'pelanggaranKosong';
+            kosong.className = 'text-secondary small p-2';
+            kosong.textContent = 'Jenis pelanggaran tidak ditemukan';
+
+            hasilPelanggaran.appendChild(kosong);
+        }
+    });
+
+    // Pilih jenis pelanggaran
+    hasilPelanggaran.querySelectorAll('.item-pelanggaran').forEach(function (item) {
+
+        item.addEventListener('click', function () {
+
+            selectPelanggaran.value = this.dataset.id;
+            teksPelanggaran.textContent = this.dataset.nama;
+
+            dropdownPelanggaran.hide();
+
+        });
+
+    });
+
+    // Reset pencarian saat dropdown ditutup
+    dropdownPelanggaranEl.addEventListener('hidden.bs.dropdown', function () {
+
+        cariPelanggaran.value = '';
+
+        hasilPelanggaran.querySelectorAll('.item-pelanggaran').forEach(function (item) {
+            item.style.display = '';
+        });
+
+        const pesanKosong = document.getElementById('pelanggaranKosong');
+
+        if (pesanKosong) {
+            pesanKosong.remove();
+        }
+    });
+
+
+    // =========================
+    // VALIDASI FORM
+    // =========================
+
+    document.querySelector('#modalPelanggaran form')
+        .addEventListener('submit', function (e) {
+
+            if (selectSiswa.value === '') {
+
+                e.preventDefault();
+
+                inputSiswa.focus();
+                hasilSiswa.style.display = 'block';
+
+                alert('Silakan cari dan pilih nama siswa terlebih dahulu.');
+
+                return;
+            }
+
+            if (selectPelanggaran.value === '') {
+
+                e.preventDefault();
+
+                dropdownPelanggaran.show();
+
+                alert('Silakan pilih jenis pelanggaran terlebih dahulu.');
+
+                return;
+            }
+
+        });
+
+
+    // =========================
+    // DATATABLES
+    // =========================
+
     new DataTable('#example', {
         pageLength: 10,
         lengthMenu: [5, 10, 25, 50],
@@ -660,6 +993,7 @@ if (isset($_SESSION['pesan_sukses'])) {
             }
         }
     });
+
 </script>
 
 <?php if ($buka_modal) { ?>

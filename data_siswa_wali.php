@@ -134,6 +134,7 @@ if (!empty($daftar_kelas)) {
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+    
 </head>
 
 <body>
@@ -170,7 +171,7 @@ if (!empty($daftar_kelas)) {
         <li class="nav-item mb-2">
             <a href="data_siswa_wali.php"
                class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
-                Data Siswa di Kelasnya
+                Data Siswa di Kelas
             </a>
         </li>
 

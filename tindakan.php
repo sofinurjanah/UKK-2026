@@ -15,13 +15,15 @@ if (isset($_POST['simpan'])) {
     $id = $_POST['id'];
     $tindakan = $_POST['tindakan'];
     $status = $_POST['status'];
+    $keterangan = $_POST['keterangan'];
 
     $query = mysqli_query($koneksi, "
         UPDATE t_pelanggaran_siswa
-        SET
-            tindakan = '$tindakan',
-            status = '$status'
-        WHERE id = '$id'
+SET
+    keterangan = '$keterangan',
+    tindakan = '$tindakan',
+    status = '$status'
+WHERE id = '$id'
     ");
 
     if ($query) {
@@ -291,9 +293,10 @@ if (isset($_GET['edit'])) {
                         <div class="col-12 mb-3">
                             <label class="form-label fw-semibold">Keterangan</label>
                             <textarea
-                                class="form-control"
-                                rows="3"
-                                readonly><?php echo $data_edit['keterangan']; ?></textarea>
+    name="keterangan"
+    class="form-control"
+    rows="3"
+    placeholder="Masukkan keterangan pelanggaran"><?php echo htmlspecialchars($data_edit['keterangan'] ?? ''); ?></textarea>
                         </div>
 
                         <div class="col-12 mb-3">

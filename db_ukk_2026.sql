@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 09 Nov 2026 pada 11.06
--- Versi server: 10.4.27-MariaDB
--- Versi PHP: 8.2.0
+-- Waktu pembuatan: 10 Nov 2026 pada 06.23
+-- Versi server: 10.4.32-MariaDB
+-- Versi PHP: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -451,7 +451,8 @@ INSERT INTO `t_pelanggaran_siswa` (`id`, `tahun_ajaran_id`, `siswa_id`, `nama_si
 (59, 50, 92, 'Laodra Roba Ahfiana', 20, 'X TKR 4', 27, 'Mencontek Pekerjaan Teman', 27, 24, 'Arif Kusmawan, S.Pd', '2026-11-09', '', 2, '', 'Selesai', '2026-11-09 06:59:55', '2026-11-09 06:59:55'),
 (60, 50, 115, 'Ali Rahmat Mutaqin', 21, 'XII TKR 4', 11, 'Membolos Saat Jam Pelajaran', 11, 35, 'Aanisah Putri Nur Aini, S.Pd', '2026-11-09', '', 1, '', 'Ditindaklanjuti', '2026-11-09 07:00:22', '2026-11-09 07:00:22'),
 (61, 50, 12, 'Nadia Zulfa Soraya', 13, 'XII RPL 2', 21, 'Menggunakan HP Saat Pelajaran', 21, 44, 'Rizkia Fahira, S.Pd', '2026-11-09', '', 1, '', 'Pembinaan', '2026-11-09 07:00:45', '2026-11-09 07:00:45'),
-(62, 50, 14, 'Puspita Dewi', 13, 'XII RPL 2', 47, 'Tidak Menyelesaikan Tugas Kelompok', 47, 39, 'Senny Indayani, S.Pd', '2026-11-09', '', 2, '', 'Selesai', '2026-11-09 07:01:12', '2026-11-09 07:01:12');
+(62, 50, 14, 'Puspita Dewi', 13, 'XII RPL 2', 47, 'Tidak Menyelesaikan Tugas Kelompok', 47, 39, 'Senny Indayani, S.Pd', '2026-11-09', '', 2, 'wedsfgfegtertgefsadsargfd', 'Selesai', '2026-11-09 07:01:12', '2026-11-09 07:01:12'),
+(63, 50, 21, 'Sendi Mardian', 13, 'XII RPL 2', 45, 'Mengambil Barang Milik Teman', 45, 35, 'Aanisah Putri Nur Aini, S.Pd', '2026-11-10', 'ferfasedfASERqefsdf', 5, 'edrfeqsdfAFAF', 'Pembinaan', '2026-11-10 02:17:41', '2026-11-10 02:17:41');
 
 -- --------------------------------------------------------
 
@@ -681,7 +682,7 @@ INSERT INTO `t_user` (`id`, `name`, `email`, `email_verified_at`, `password`, `r
 (19, 'Wiwid Yulianti, S.Pd', 'WiwidYulianti@gmail.com', '2026-11-06 07:09:07', '$2y$10$3wsg/z69V/MlW.t.FV5eleHDVEBNsYj1bU.itRTmtzxCrzqJZLeJ.', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
 (20, 'Ansor Muhajir, S.T', 'AnsorMuhajir@gmail.com', '2026-11-06 07:09:07', '$2y$10$sOfoGA5vQiJLmAJoF4W76OkSLJHZQ4.ERviOBatUMQYJbwHwElrG6', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
 (21, 'Ogi Gaosun Gais, S.Pd.I', 'OgiGaosunGais@gmail.com', '2026-11-06 07:09:07', '$2y$10$j2Y5Ip.N8Z8CqPBlgBhP1uOCbsQY2XFHpdt0Jyhk4Ubv/pfD3zG5S', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
-(22, '', 'SandiMulyana@gmail.com', '2026-11-06 07:09:07', '$2y$10$jnIgPea8QG8dYI5kBvhYYOhx.qZQMWaDxFEkgIeGehrXqioqU63/q', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
+(22, 'Sandi Mulyana, S.Pd', 'SandiMulyana@gmail.com', '2026-11-06 07:09:07', '$2y$10$jnIgPea8QG8dYI5kBvhYYOhx.qZQMWaDxFEkgIeGehrXqioqU63/q', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
 (75, 'Erna Suryani, S.Pd', 'ErnaSuryani@gmail.com', '2026-11-06 07:09:07', '$2y$10$Xy7ePjwFHbgoTvbMrWYNPOTTzUJri3nfE3wAMpoARwoHGRIkRMqTG', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
 (76, 'Ai Wahidah, S.Ag', 'AiWahidah@gmail.com', '2026-11-06 07:09:07', '$2y$10$/l/kEB7fWa4IlQrzO5hOdebwWEnMHS8eqQFkRykujPOTYJ6KHPs2e', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
 (77, 'Chandra Aditya Yusup, S.Pd', 'ChandraAdityaYusup@gmail.com', '2026-11-06 07:09:07', '$2y$10$UcBj0wS.gKDMMyoBA0PgC./RWIBgC.gcB8skVKA6JpQPiQ4wXOA12', '', 'wali kelas', '2026-11-06 07:09:07', '2026-11-06 07:09:07'),
@@ -880,7 +881,7 @@ ALTER TABLE `t_pelanggaran_kategori`
 -- AUTO_INCREMENT untuk tabel `t_pelanggaran_siswa`
 --
 ALTER TABLE `t_pelanggaran_siswa`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_siswa`
