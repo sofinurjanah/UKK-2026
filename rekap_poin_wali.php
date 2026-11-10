@@ -36,13 +36,14 @@ if ($guru_id <= 0 && $email !== '') {
     }
 }
 
-/* AMBIL PENUGASAN WALI KELAS AKTIF */
+/* AMBIL SEMUA PENUGASAN WALI KELAS AKTIF */
+$daftar_kelas = [];
 $data_wali = null;
 
 if ($guru_id > 0) {
     $stmt_wali = mysqli_prepare(
         $koneksi,
-        "SELECT
+        "SELECT DISTINCT
             wk.kelas_id,
             wk.tahun_ajaran_id,
             k.nama AS nama_kelas,
@@ -55,17 +56,36 @@ if ($guru_id > 0) {
          WHERE wk.guru_id = ?
            AND wk.status_aktif = 1
            AND ta.status_aktif = 1
-         ORDER BY wk.id DESC
-         LIMIT 1"
+         ORDER BY wk.kelas_id ASC"
     );
 
     mysqli_stmt_bind_param($stmt_wali, "i", $guru_id);
     mysqli_stmt_execute($stmt_wali);
 
     $hasil_wali = mysqli_stmt_get_result($stmt_wali);
-    $data_wali = mysqli_fetch_assoc($hasil_wali);
+
+    while ($row_wali = mysqli_fetch_assoc($hasil_wali)) {
+        $daftar_kelas[] = $row_wali;
+    }
 
     mysqli_stmt_close($stmt_wali);
+}
+
+/* PILIH KELAS DARI DROPDOWN */
+$kelas_dipilih = (int) ($_GET['kelas_id'] ?? 0);
+
+if (!empty($daftar_kelas)) {
+    foreach ($daftar_kelas as $kelas) {
+        if ((int) $kelas['kelas_id'] === $kelas_dipilih) {
+            $data_wali = $kelas;
+            break;
+        }
+    }
+
+    /* DEFAULT KE KELAS PERTAMA JIKA BELUM MEMILIH */
+    if (!$data_wali) {
+        $data_wali = $daftar_kelas[0];
+    }
 }
 
 /* FILTER PENCARIAN SISWA */
@@ -278,6 +298,44 @@ if ($data_wali) {
 
             <?php } else { ?>
 
+                <!-- PILIH KELAS -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+
+                        <form method="GET" action="rekap_poin_wali.php">
+
+                            <label for="kelas_id" class="form-label fw-bold">
+                                Pilih Kelas
+                            </label>
+
+                            <select
+                                name="kelas_id"
+                                id="kelas_id"
+                                class="form-select"
+                                onchange="this.form.submit()">
+
+                                <?php foreach ($daftar_kelas as $kelas) { ?>
+
+                                    <option
+                                        value="<?= (int) $kelas['kelas_id']; ?>"
+                                        <?= (
+                                            (int) $data_wali['kelas_id'] ===
+                                            (int) $kelas['kelas_id']
+                                        ) ? 'selected' : ''; ?>>
+
+                                        <?= htmlspecialchars($kelas['nama_kelas']); ?>
+
+                                    </option>
+
+                                <?php } ?>
+
+                            </select>
+
+                        </form>
+
+                    </div>
+                </div>
+
                 <!-- INFORMASI KELAS -->
                 <div class="card border-0 shadow-sm mb-4">
                     <div class="card-body">
@@ -353,6 +411,11 @@ if ($data_wali) {
                         <!-- PENCARIAN -->
                         <form method="GET" class="mb-3">
 
+                            <input
+                                type="hidden"
+                                name="kelas_id"
+                                value="<?= (int) $data_wali['kelas_id']; ?>">
+
                             <div class="row g-2">
 
                                 <div class="col-md-5">
@@ -370,7 +433,7 @@ if ($data_wali) {
                                         Cari
                                     </button>
 
-                                    <a href="rekap_poin_wali.php"
+                                    <a href="rekap_poin_wali.php?kelas_id=<?= (int) $data_wali['kelas_id']; ?>"
                                        class="btn btn-secondary">
                                         Reset
                                     </a>

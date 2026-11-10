@@ -140,7 +140,7 @@ if ($data_wali) {
             keterangan
         FROM t_pelanggaran_siswa
         WHERE kelas_id = ?
-          AND tahun_ajaran_id = ?
+        AND tahun_ajaran_id = ?
     ";
 
     $tipe = "ii";

@@ -48,11 +48,11 @@ if ($guru_id > 0) {
 
     $stmt_wali = mysqli_prepare(
         $koneksi,
-        "SELECT
-            wk.kelas_id,
-            wk.tahun_ajaran_id,
-            k.nama AS nama_kelas,
-            ta.nama AS nama_tahun
+        "SELECT DISTINCT
+        wk.kelas_id,
+        wk.tahun_ajaran_id,
+        k.nama AS nama_kelas,
+        ta.nama AS nama_tahun
          FROM t_wali_kelas wk
          INNER JOIN t_kelas k
             ON wk.kelas_id = k.id

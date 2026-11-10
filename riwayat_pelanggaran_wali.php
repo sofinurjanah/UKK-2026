@@ -38,13 +38,14 @@ if ($guru_id <= 0 && $user_id > 0) {
     }
 }
 
-/* AMBIL PENUGASAN WALI KELAS AKTIF */
+/* AMBIL SEMUA PENUGASAN WALI KELAS AKTIF */
+$daftar_kelas = [];
 $data_wali = null;
 
 if ($guru_id > 0) {
     $stmt_wali = mysqli_prepare(
         $koneksi,
-        "SELECT
+        "SELECT DISTINCT
             wk.kelas_id,
             wk.tahun_ajaran_id,
             k.nama AS nama_kelas,
@@ -57,17 +58,38 @@ if ($guru_id > 0) {
          WHERE wk.guru_id = ?
            AND wk.status_aktif = 1
            AND ta.status_aktif = 1
-         ORDER BY wk.id DESC
-         LIMIT 1"
+         ORDER BY wk.kelas_id ASC"
     );
 
     mysqli_stmt_bind_param($stmt_wali, "i", $guru_id);
     mysqli_stmt_execute($stmt_wali);
 
     $hasil_wali = mysqli_stmt_get_result($stmt_wali);
-    $data_wali = mysqli_fetch_assoc($hasil_wali);
+
+    while ($row_wali = mysqli_fetch_assoc($hasil_wali)) {
+        $daftar_kelas[] = $row_wali;
+    }
 
     mysqli_stmt_close($stmt_wali);
+}
+
+/* PILIH KELAS BERDASARKAN DROPDOWN */
+$kelas_dipilih = (int) ($_GET['kelas_id'] ?? 0);
+
+if (!empty($daftar_kelas)) {
+    foreach ($daftar_kelas as $kelas) {
+        if (
+            (int) $kelas['kelas_id'] === $kelas_dipilih
+        ) {
+            $data_wali = $kelas;
+            break;
+        }
+    }
+
+    /* DEFAULT KE KELAS PERTAMA JIKA BELUM MEMILIH */
+    if (!$data_wali) {
+        $data_wali = $daftar_kelas[0];
+    }
 }
 
 /* AMBIL RIWAYAT PELANGGARAN SESUAI KELAS WALI */
@@ -129,74 +151,74 @@ if ($data_wali) {
     <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-<aside class="col-md-3 col-lg-2 min-vh-100 p-3"
-    style="background-color: #30318B;">
+        <aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+            style="background-color: #30318B;">
 
-    <div class="mb-4 px-2">
-        <h3 class="text-white mb-1 fw-bold">
-            SIMPESMA
-        </h3>
+            <div class="mb-4 px-2">
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
 
-        <p class="text-white mb-0"
-           style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
-            Sistem Informasi Manajemen
-            Pelanggaran Siswa Muhammadiyah
-        </p>
-    </div>
+                <p class="text-white mb-0"
+                   style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
+            </div>
 
-    <ul class="nav nav-pills flex-column">
+            <ul class="nav nav-pills flex-column">
 
-        <li class="nav-item mb-2">
-            <a href="dashboard.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
-                Dashboard
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        Dashboard
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="data_siswa_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
-                Data Siswa di Kelasnya
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="data_siswa_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
+                        Data Siswa di Kelasnya
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="riwayat_pelanggaran_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
-                Riwayat Pelanggaran Siswa
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="riwayat_pelanggaran_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
+                        Riwayat Pelanggaran Siswa
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="rekap_poin_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
-                Rekap Poin Siswa
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="rekap_poin_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
+                        Rekap Poin Siswa
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="laporan_kelas.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
-                Laporan Pelanggaran Kelas
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="laporan_kelas.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
+                        Laporan Pelanggaran Kelas
+                    </a>
+                </li>
 
-        <hr class="text-secondary">
+                <hr class="text-secondary">
 
-        <li class="nav-item mb-2">
-            <a href="about_me.php" class="nav-link text-white">
-                About Me
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
 
-        <li class="nav-item">
-            <a href="logout.php" class="nav-link text-danger">
-                Logout
-            </a>
-        </li>
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
 
-    </ul>
-</aside>
+            </ul>
+        </aside>
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
@@ -213,6 +235,44 @@ if ($data_wali) {
                 </div>
 
             <?php } else { ?>
+
+                <!-- PILIH KELAS -->
+                <div class="card border-0 shadow-sm mb-4">
+                    <div class="card-body">
+
+                        <form method="GET" action="riwayat_pelanggaran_wali.php">
+
+                            <label for="kelas_id" class="form-label fw-bold">
+                                Pilih Kelas
+                            </label>
+
+                            <select
+                                name="kelas_id"
+                                id="kelas_id"
+                                class="form-select"
+                                onchange="this.form.submit()">
+
+                                <?php foreach ($daftar_kelas as $kelas) { ?>
+
+                                    <option
+                                        value="<?= (int) $kelas['kelas_id']; ?>"
+                                        <?= (
+                                            (int) $data_wali['kelas_id'] ===
+                                            (int) $kelas['kelas_id']
+                                        ) ? 'selected' : ''; ?>>
+
+                                        <?= htmlspecialchars($kelas['nama_kelas']); ?>
+
+                                    </option>
+
+                                <?php } ?>
+
+                            </select>
+
+                        </form>
+
+                    </div>
+                </div>
 
                 <!-- INFORMASI KELAS -->
                 <div class="card border-0 shadow-sm mb-4">
@@ -270,8 +330,10 @@ if ($data_wali) {
                                 <?php
                                 $no = 1;
 
-                                if ($data_riwayat &&
-                                    mysqli_num_rows($data_riwayat) > 0) {
+                                if (
+                                    $data_riwayat &&
+                                    mysqli_num_rows($data_riwayat) > 0
+                                ) {
 
                                     while ($row = mysqli_fetch_assoc($data_riwayat)) {
                                 ?>
