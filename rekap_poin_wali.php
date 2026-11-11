@@ -72,19 +72,30 @@ if ($guru_id > 0) {
 }
 
 /* PILIH KELAS DARI DROPDOWN */
-$kelas_dipilih = (int) ($_GET['kelas_id'] ?? 0);
+$kelas_dipilih = isset($_GET['kelas_id'])
+    ? (int) $_GET['kelas_id']
+    : 0;
+
+$semua_kelas = ($kelas_dipilih === 0);
 
 if (!empty($daftar_kelas)) {
-    foreach ($daftar_kelas as $kelas) {
-        if ((int) $kelas['kelas_id'] === $kelas_dipilih) {
-            $data_wali = $kelas;
-            break;
-        }
-    }
 
-    /* DEFAULT KE KELAS PERTAMA JIKA BELUM MEMILIH */
-    if (!$data_wali) {
+    if ($semua_kelas) {
         $data_wali = $daftar_kelas[0];
+    } else {
+        foreach ($daftar_kelas as $kelas) {
+            if ((int) $kelas['kelas_id'] === $kelas_dipilih) {
+                $data_wali = $kelas;
+                break;
+            }
+        }
+
+        /* JIKA KELAS TIDAK VALID */
+        if (!$data_wali) {
+            $semua_kelas = true;
+            $kelas_dipilih = 0;
+            $data_wali = $daftar_kelas[0];
+        }
     }
 }
 
@@ -98,10 +109,21 @@ $total_poin_kelas = 0;
 
 if ($data_wali) {
 
-    $kelas_id = (int) $data_wali['kelas_id'];
+    /* TAHUN AJARAN AKTIF */
     $tahun_id = (int) $data_wali['tahun_ajaran_id'];
 
-    /* REKAP POIN PER SISWA */
+    /*
+     * FILTER KELAS:
+     * 0 = SELURUH KELAS DI SEKOLAH
+     * Selain 0 = KELAS YANG DIPILIH
+     */
+    $filter_kelas = "";
+
+    if (!$semua_kelas) {
+        $filter_kelas = " AND ps.kelas_id = " . (int) $kelas_dipilih;
+    }
+
+    /* REKAP POIN SELURUH SISWA YANG MELANGGAR */
     $stmt_rekap = mysqli_prepare(
         $koneksi,
         "SELECT
@@ -110,17 +132,12 @@ if ($data_wali) {
             s.nama AS nama_siswa,
             COUNT(ps.id) AS jumlah_pelanggaran,
             COALESCE(SUM(ps.poin), 0) AS total_poin
-         FROM t_kelas_siswa ks
+         FROM t_pelanggaran_siswa ps
          INNER JOIN t_siswa s
-            ON ks.siswa_id = s.id
-         LEFT JOIN t_pelanggaran_siswa ps
             ON ps.siswa_id = s.id
-            AND ps.kelas_id = ks.kelas_id
-            AND ps.tahun_ajaran_id = ks.tahun_ajaran_id
-         WHERE ks.kelas_id = ?
-           AND ks.tahun_ajaran_id = ?
-           AND ks.status_aktif = 1
+         WHERE ps.tahun_ajaran_id = ?
            AND s.status_aktif = 1
+           $filter_kelas
            AND (
                 s.nama LIKE ?
                 OR s.nis LIKE ?
@@ -134,12 +151,11 @@ if ($data_wali) {
             s.nama ASC"
     );
 
-    $keyword = "%".$cari."%";
+    $keyword = "%" . $cari . "%";
 
     mysqli_stmt_bind_param(
         $stmt_rekap,
-        "iiss",
-        $kelas_id,
+        "iss",
         $tahun_id,
         $keyword,
         $keyword
@@ -149,30 +165,24 @@ if ($data_wali) {
 
     $data_rekap = mysqli_stmt_get_result($stmt_rekap);
 
-    /* RINGKASAN SELURUH SISWA KELAS */
+    /* RINGKASAN POIN */
     $stmt_ringkasan = mysqli_prepare(
         $koneksi,
         "SELECT
             COUNT(DISTINCT s.id) AS total_siswa,
             COUNT(ps.id) AS total_pelanggaran,
             COALESCE(SUM(ps.poin), 0) AS total_poin
-         FROM t_kelas_siswa ks
+         FROM t_pelanggaran_siswa ps
          INNER JOIN t_siswa s
-            ON ks.siswa_id = s.id
-         LEFT JOIN t_pelanggaran_siswa ps
             ON ps.siswa_id = s.id
-            AND ps.kelas_id = ks.kelas_id
-            AND ps.tahun_ajaran_id = ks.tahun_ajaran_id
-         WHERE ks.kelas_id = ?
-           AND ks.tahun_ajaran_id = ?
-           AND ks.status_aktif = 1
-           AND s.status_aktif = 1"
+         WHERE ps.tahun_ajaran_id = ?
+           AND s.status_aktif = 1
+           $filter_kelas"
     );
 
     mysqli_stmt_bind_param(
         $stmt_ringkasan,
-        "ii",
-        $kelas_id,
+        "i",
         $tahun_id
     );
 
@@ -213,74 +223,86 @@ if ($data_wali) {
     <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-<aside class="col-md-3 col-lg-2 min-vh-100 p-3"
-    style="background-color: #30318B;">
+        <aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+            style="background-color: #30318B;">
 
-    <div class="mb-4 px-2">
-        <h3 class="text-white mb-1 fw-bold">
-            SIMPESMA
-        </h3>
+            <div class="mb-4 px-2">
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
 
-        <p class="text-white mb-0"
-           style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
-            Sistem Informasi Manajemen
-            Pelanggaran Siswa Muhammadiyah
-        </p>
-    </div>
+                <p class="text-white mb-0"
+                   style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
+            </div>
 
-    <ul class="nav nav-pills flex-column">
+            <ul class="nav nav-pills flex-column">
 
-        <li class="nav-item mb-2">
-            <a href="dashboard.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
-                Dashboard
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        Dashboard
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="data_siswa_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
-                Data Siswa di Kelasnya
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="catat_pelanggaran.php" class="nav-link text-white">
+                        Catat Pelanggaran
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="riwayat_pelanggaran_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
-                Riwayat Pelanggaran Siswa
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                        <a href="tindakan_wali.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
 
-        <li class="nav-item mb-2">
-            <a href="rekap_poin_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
-                Rekap Poin Siswa
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="data_siswa_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
+                        Data Siswa di Kelasnya
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="laporan_kelas.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
-                Laporan Pelanggaran Kelas
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="riwayat_pelanggaran_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
+                        Riwayat Pelanggaran Siswa
+                    </a>
+                </li>
 
-        <hr class="text-secondary">
+                <li class="nav-item mb-2">
+                    <a href="rekap_poin_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
+                        Rekap Poin Siswa
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="about_me.php" class="nav-link text-white">
-                About Me
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="laporan_kelas.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
+                        Laporan Pelanggaran Kelas
+                    </a>
+                </li>
 
-        <li class="nav-item">
-            <a href="logout.php" class="nav-link text-danger">
-                Logout
-            </a>
-        </li>
+                <hr class="text-secondary">
 
-    </ul>
-</aside>
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+        </aside>
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
@@ -314,11 +336,18 @@ if ($data_wali) {
                                 class="form-select"
                                 onchange="this.form.submit()">
 
+                                <option
+                                    value="0"
+                                    <?= $semua_kelas ? 'selected' : ''; ?>>
+                                    Semua Kelas
+                                </option>
+
                                 <?php foreach ($daftar_kelas as $kelas) { ?>
 
                                     <option
                                         value="<?= (int) $kelas['kelas_id']; ?>"
                                         <?= (
+                                            !$semua_kelas &&
                                             (int) $data_wali['kelas_id'] ===
                                             (int) $kelas['kelas_id']
                                         ) ? 'selected' : ''; ?>>
@@ -342,7 +371,9 @@ if ($data_wali) {
 
                         <h5 class="mb-2">
                             Kelas:
-                            <?= htmlspecialchars($data_wali['nama_kelas']); ?>
+                            <?= $semua_kelas
+                                ? 'Semua Kelas'
+                                : htmlspecialchars($data_wali['nama_kelas']); ?>
                         </h5>
 
                         <p class="text-secondary mb-0">
@@ -360,7 +391,7 @@ if ($data_wali) {
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
                                 <p class="text-secondary mb-2">
-                                    Jumlah Siswa
+                                    Jumlah Siswa Melanggar
                                 </p>
                                 <h3 class="fw-bold text-primary mb-0">
                                     <?= $total_siswa; ?>
@@ -386,7 +417,7 @@ if ($data_wali) {
                         <div class="card border-0 shadow-sm h-100">
                             <div class="card-body">
                                 <p class="text-secondary mb-2">
-                                    Total Poin Kelas
+                                    Total Poin
                                 </p>
                                 <h3 class="fw-bold text-primary mb-0">
                                     <?= $total_poin_kelas; ?>
@@ -414,7 +445,9 @@ if ($data_wali) {
                             <input
                                 type="hidden"
                                 name="kelas_id"
-                                value="<?= (int) $data_wali['kelas_id']; ?>">
+                                value="<?= $semua_kelas
+                                    ? 0
+                                    : (int) $data_wali['kelas_id']; ?>">
 
                             <div class="row g-2">
 
@@ -433,7 +466,7 @@ if ($data_wali) {
                                         Cari
                                     </button>
 
-                                    <a href="rekap_poin_wali.php?kelas_id=<?= (int) $data_wali['kelas_id']; ?>"
+                                    <a href="rekap_poin_wali.php?kelas_id=<?= $semua_kelas ? 0 : (int) $data_wali['kelas_id']; ?>"
                                        class="btn btn-secondary">
                                         Reset
                                     </a>
@@ -510,7 +543,7 @@ if ($data_wali) {
 
                         <p class="text-secondary small mb-0">
                             Data poin dihitung otomatis dari seluruh
-                            pelanggaran siswa pada kelas dan tahun ajaran aktif.
+                            catatan pelanggaran siswa pada tahun ajaran aktif.
                         </p>
 
                     </div>

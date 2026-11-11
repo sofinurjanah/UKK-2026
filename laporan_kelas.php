@@ -135,9 +135,8 @@ if ($data_wali) {
             nama_pelanggaran,
             nama_guru,
             poin,
-            tindakan,
-            status,
-            keterangan
+            keterangan,
+            status
         FROM t_pelanggaran_siswa
         WHERE kelas_id = ?
         AND tahun_ajaran_id = ?
@@ -241,6 +240,70 @@ if ($data_wali) {
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+
+    <link rel="stylesheet"
+        href="https://cdn.datatables.net/2.3.4/css/dataTables.dataTables.min.css">
+
+    <link rel="stylesheet"
+        href="https://cdn.datatables.net/buttons/3.2.5/css/buttons.dataTables.min.css">
+
+    <style>
+        /* FILTER */
+        .filter-laporan .form-control {
+            height: 42px;
+        }
+
+        .filter-laporan .btn {
+            height: 42px;
+            white-space: nowrap;
+        }
+
+        /* TABEL */
+        #tabelLaporan {
+            width: 100% !important;
+        }
+
+        #tabelLaporan th,
+        #tabelLaporan td {
+            vertical-align: middle;
+        }
+
+        /* TAMPILAN HP */
+        @media (max-width: 767px) {
+            main {
+                padding: 15px !important;
+            }
+
+            .filter-laporan .btn {
+                flex: 1;
+            }
+        }
+
+        /* CETAK */
+        @media print {
+            aside,
+            form,
+            .btn,
+            .card-header,
+            .dt-layout-row {
+                display: none !important;
+            }
+
+            main {
+                width: 100% !important;
+                padding: 10px !important;
+            }
+
+            body {
+                background: white !important;
+            }
+
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
@@ -250,74 +313,90 @@ if ($data_wali) {
     <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-<aside class="col-md-3 col-lg-2 min-vh-100 p-3"
-    style="background-color: #30318B;">
+        <aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+            style="background-color: #30318B;">
 
-    <div class="mb-4 px-2">
-        <h3 class="text-white mb-1 fw-bold">
-            SIMPESMA
-        </h3>
+            <div class="mb-4 px-2">
 
-        <p class="text-white mb-0"
-           style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
-            Sistem Informasi Manajemen
-            Pelanggaran Siswa Muhammadiyah
-        </p>
-    </div>
+                <h3 class="text-white mb-1 fw-bold">
+                    SIMPESMA
+                </h3>
 
-    <ul class="nav nav-pills flex-column">
+                <p class="text-white mb-0"
+                   style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                    Sistem Informasi Manajemen
+                    Pelanggaran Siswa Muhammadiyah
+                </p>
 
-        <li class="nav-item mb-2">
-            <a href="dashboard.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
-                Dashboard
-            </a>
-        </li>
+            </div>
 
-        <li class="nav-item mb-2">
-            <a href="data_siswa_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
-                Data Siswa di Kelasnya
-            </a>
-        </li>
+            <ul class="nav nav-pills flex-column">
 
-        <li class="nav-item mb-2">
-            <a href="riwayat_pelanggaran_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
-                Riwayat Pelanggaran Siswa
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="dashboard.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                        Dashboard
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="rekap_poin_wali.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
-                Rekap Poin Siswa
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="catat_pelanggaran.php"
+                       class="nav-link text-white">
+                        Catat Pelanggaran
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="laporan_kelas.php"
-               class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
-                Laporan Pelanggaran Kelas
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                        <a href="tindakan_wali.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
 
-        <hr class="text-secondary">
+                <li class="nav-item mb-2">
+                    <a href="data_siswa_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
+                        Data Siswa di Kelasnya
+                    </a>
+                </li>
 
-        <li class="nav-item mb-2">
-            <a href="about_me.php" class="nav-link text-white">
-                About Me
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="riwayat_pelanggaran_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
+                        Riwayat Pelanggaran Siswa
+                    </a>
+                </li>
 
-        <li class="nav-item">
-            <a href="logout.php" class="nav-link text-danger">
-                Logout
-            </a>
-        </li>
+                <li class="nav-item mb-2">
+                    <a href="rekap_poin_wali.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
+                        Rekap Poin Siswa
+                    </a>
+                </li>
 
-    </ul>
-</aside>
+                <li class="nav-item mb-2">
+                    <a href="laporan_kelas.php"
+                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
+                        Laporan Pelanggaran Kelas
+                    </a>
+                </li>
+
+                <hr class="text-secondary">
+
+                <li class="nav-item mb-2">
+                    <a href="about_me.php" class="nav-link text-white">
+                        About Me
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a href="logout.php" class="nav-link text-danger">
+                        Logout
+                    </a>
+                </li>
+
+            </ul>
+
+        </aside>
 
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
@@ -362,9 +441,7 @@ if ($data_wali) {
                 <div class="row g-3 mb-4">
 
                     <div class="col-md-4">
-
                         <div class="card border-0 shadow-sm h-100">
-
                             <div class="card-body">
 
                                 <p class="text-secondary mb-2">
@@ -376,15 +453,11 @@ if ($data_wali) {
                                 </h3>
 
                             </div>
-
                         </div>
-
                     </div>
 
                     <div class="col-md-4">
-
                         <div class="card border-0 shadow-sm h-100">
-
                             <div class="card-body">
 
                                 <p class="text-secondary mb-2">
@@ -396,15 +469,11 @@ if ($data_wali) {
                                 </h3>
 
                             </div>
-
                         </div>
-
                     </div>
 
                     <div class="col-md-4">
-
                         <div class="card border-0 shadow-sm h-100">
-
                             <div class="card-body">
 
                                 <p class="text-secondary mb-2">
@@ -416,9 +485,7 @@ if ($data_wali) {
                                 </h3>
 
                             </div>
-
                         </div>
-
                     </div>
 
                 </div>
@@ -436,48 +503,69 @@ if ($data_wali) {
 
                     <div class="card-body">
 
-                        <!-- FILTER TANGGAL -->
-                        <form method="GET" class="mb-4">
+                        <!-- FILTER TANGGAL DAN PENCARIAN -->
+                        <form method="GET"
+                              class="row g-3 align-items-end mb-4 filter-laporan"
+                              id="formFilterLaporan">
 
-                            <div class="row g-3 align-items-end">
+                            <!-- TANGGAL AWAL -->
+                            <div class="col-12 col-md-6 col-xl-3">
 
-                                <div class="col-md-3">
+                                <label for="tanggal_awal" class="form-label">
+                                    Tanggal Awal
+                                </label>
 
-                                    <label class="form-label">
-                                        Tanggal Awal
-                                    </label>
+                                <input
+                                    type="date"
+                                    id="tanggal_awal"
+                                    name="tanggal_awal"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars($tanggal_awal); ?>">
 
-                                    <input
-                                        type="date"
-                                        name="tanggal_awal"
-                                        class="form-control"
-                                        value="<?= htmlspecialchars($tanggal_awal); ?>">
+                            </div>
 
-                                </div>
+                            <!-- TANGGAL AKHIR -->
+                            <div class="col-12 col-md-6 col-xl-3">
 
-                                <div class="col-md-3">
+                                <label for="tanggal_akhir" class="form-label">
+                                    Tanggal Akhir
+                                </label>
 
-                                    <label class="form-label">
-                                        Tanggal Akhir
-                                    </label>
+                                <input
+                                    type="date"
+                                    id="tanggal_akhir"
+                                    name="tanggal_akhir"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars($tanggal_akhir); ?>">
 
-                                    <input
-                                        type="date"
-                                        name="tanggal_akhir"
-                                        class="form-control"
-                                        value="<?= htmlspecialchars($tanggal_akhir); ?>">
+                            </div>
 
-                                </div>
+                            <!-- PENCARIAN NAMA SISWA -->
+                            <div class="col-12 col-md-6 col-xl-3">
 
-                                <div class="col-auto">
+                                <label for="cariLaporan" class="form-label">
+                                    Cari Nama Siswa
+                                </label>
 
-                                    <button type="submit"
-                                            class="btn btn-primary">
+                                <input
+                                    type="search"
+                                    id="cariLaporan"
+                                    class="form-control"
+                                    placeholder="Masukkan nama siswa..."
+                                    autocomplete="off">
+
+                            </div>
+
+                            <!-- TOMBOL FILTER -->
+                            <div class="col-12 col-md-6 col-xl-3">
+
+                                <div class="d-flex gap-2">
+
+                                    <button type="submit" class="btn btn-primary">
                                         Tampilkan
                                     </button>
 
-                                    <a href="laporan_kelas.php"
-                                       class="btn btn-secondary">
+                                    <a href="laporan_kelas.php" class="btn btn-secondary">
                                         Reset
                                     </a>
 
@@ -487,24 +575,30 @@ if ($data_wali) {
 
                         </form>
 
-                        <!-- TOMBOL CETAK -->
-                        <div class="d-flex justify-content-end mb-3">
+                        <!-- TOMBOL CETAK DAN EXPORT -->
+                        <div class="d-flex justify-content-end gap-2 mb-3">
 
                             <button
                                 type="button"
                                 onclick="window.print()"
                                 class="btn btn-success">
-
                                 Cetak Laporan
+                            </button>
 
+                            <button
+                                type="button"
+                                onclick="exportExcel()"
+                                class="btn btn-primary">
+                                Export Excel
                             </button>
 
                         </div>
 
-                        <!-- TABEL -->
+                        <!-- TABEL LAPORAN -->
                         <div class="table-responsive">
 
-                            <table class="table table-bordered table-striped table-hover align-middle">
+                            <table id="tabelLaporan"
+                                   class="table table-bordered table-striped table-hover align-middle">
 
                                 <thead class="table-primary">
 
@@ -512,10 +606,10 @@ if ($data_wali) {
                                         <th>No</th>
                                         <th>Tanggal</th>
                                         <th>Nama Siswa</th>
+                                        <th>Kelas</th>
                                         <th>Jenis Pelanggaran</th>
                                         <th>Poin</th>
                                         <th>Guru</th>
-                                        <th>Tindakan</th>
                                         <th>Status</th>
                                     </tr>
 
@@ -543,21 +637,19 @@ if ($data_wali) {
                                         </td>
 
                                         <td>
-                                            <?= htmlspecialchars(
-                                                $row['tanggal']
-                                            ); ?>
+                                            <?= htmlspecialchars($row['tanggal']); ?>
                                         </td>
 
                                         <td>
-                                            <?= htmlspecialchars(
-                                                $row['nama_siswa']
-                                            ); ?>
+                                            <?= htmlspecialchars($row['nama_siswa']); ?>
                                         </td>
 
                                         <td>
-                                            <?= htmlspecialchars(
-                                                $row['nama_pelanggaran']
-                                            ); ?>
+                                            <?= htmlspecialchars($data_wali['nama_kelas']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($row['nama_pelanggaran']); ?>
                                         </td>
 
                                         <td class="text-center fw-bold">
@@ -565,44 +657,18 @@ if ($data_wali) {
                                         </td>
 
                                         <td>
-                                            <?= htmlspecialchars(
-                                                $row['nama_guru']
-                                            ); ?>
+                                            <?= htmlspecialchars($row['nama_guru']); ?>
                                         </td>
 
                                         <td>
-                                            <?= htmlspecialchars(
-                                                $row['tindakan'] ?: '-'
-                                            ); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars(
-                                                $row['status']
-                                            ); ?>
+                                            <?= htmlspecialchars($row['status'] ?? '-'); ?>
                                         </td>
 
                                     </tr>
 
                                 <?php
                                     }
-
-                                } else {
-                                ?>
-
-                                    <tr>
-
-                                        <td colspan="8"
-                                            class="text-center">
-
-                                            Belum ada data pelanggaran
-                                            pada periode ini.
-
-                                        </td>
-
-                                    </tr>
-
-                                <?php } ?>
+                                } ?>
 
                                 </tbody>
 
@@ -626,30 +692,143 @@ if ($data_wali) {
 
 </div>
 
-<style>
-@media print {
-    aside,
-    form,
-    .btn,
-    .card-header {
-        display: none !important;
+<!-- JAVASCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script src="https://cdn.datatables.net/2.3.4/js/dataTables.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/3.2.5/js/dataTables.buttons.min.js"></script>
+
+<script src="https://cdn.datatables.net/buttons/3.2.5/js/buttons.html5.min.js"></script>
+
+
+<script>
+
+/* EXPORT EXCEL */
+function exportExcel() {
+
+    const tabel = document.getElementById("tabelLaporan");
+
+    if (typeof XLSX === "undefined") {
+        alert("Library Excel belum berhasil dimuat.");
+        return;
     }
 
-    main {
-        width: 100% !important;
-        padding: 10px !important;
+    if (!tabel || tabel.querySelectorAll("tbody tr").length === 0) {
+        alert("Belum ada data untuk diexport.");
+        return;
     }
 
-    body {
-        background: white !important;
-    }
+    const workbook = XLSX.utils.table_to_book(tabel, {
+        sheet: "Laporan Pelanggaran"
+    });
 
-    .card {
-        box-shadow: none !important;
-        border: 1px solid #ddd !important;
-    }
+    XLSX.writeFile(
+        workbook,
+        "Laporan_Pelanggaran_Kelas.xlsx"
+    );
+
 }
-</style>
+
+
+/* PENCARIAN DAN DATATABLES */
+document.addEventListener('DOMContentLoaded', function () {
+
+    const inputCari = document.getElementById('cariLaporan');
+    const tabelHTML = document.getElementById('tabelLaporan');
+
+    if (!inputCari || !tabelHTML) {
+        console.error('Input pencarian atau tabel tidak ditemukan');
+        return;
+    }
+
+    let tabelDT = null;
+
+    if (typeof DataTable !== 'undefined') {
+
+        try {
+
+            tabelDT = new DataTable('#tabelLaporan', {
+
+                searching: true,
+
+                pageLength: 10,
+
+                lengthMenu: [5, 10, 25, 50],
+
+                layout: {
+                    topStart: null,
+                    topEnd: null,
+                    bottomStart: 'info',
+                    bottomEnd: 'paging'
+                },
+
+                language: {
+
+                    lengthMenu: 'Tampilkan _MENU_ data',
+
+                    info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+
+                    infoEmpty: 'Tidak ada data',
+
+                    infoFiltered: '(disaring dari _MAX_ total data)',
+
+                    zeroRecords: 'Nama siswa tidak ditemukan',
+
+                    emptyTable: 'Belum ada data pelanggaran',
+
+                    paginate: {
+                        first: 'Pertama',
+                        last: 'Terakhir',
+                        next: 'Berikutnya',
+                        previous: 'Sebelumnya'
+                    }
+
+                }
+
+            });
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+
+    /* PENCARIAN NAMA SISWA */
+    inputCari.addEventListener('input', function () {
+
+        const kataKunci = this.value.trim();
+
+        if (tabelDT) {
+
+            tabelDT.column(2).search(kataKunci).draw();
+
+        } else {
+
+            const baris = tabelHTML.querySelectorAll('tbody tr');
+
+            baris.forEach(function (row) {
+
+                const nama = row.cells[2]?.textContent || '';
+
+                row.style.display = nama
+                    .toLowerCase()
+                    .includes(kataKunci.toLowerCase())
+                    ? ''
+                    : 'none';
+
+            });
+
+        }
+
+    });
+
+});
+
+</script>
 
 </body>
 </html>

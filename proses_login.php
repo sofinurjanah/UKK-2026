@@ -18,6 +18,31 @@ if (isset($_POST['login'])) {
     if ($user && password_verify($password, $user['password'])) {
 
         $role = strtolower(trim($user['role']));
+        // CEK STATUS AKTIF GURU
+    if ($role == "guru") {
+
+        $user_id = (int) $user['id'];
+
+        $cek_guru = mysqli_query(
+            $koneksi,
+            "SELECT id, status_aktif
+            FROM t_guru
+            WHERE user_id = '$user_id'
+            LIMIT 1"
+        );
+
+        $guru = mysqli_fetch_assoc($cek_guru);
+
+        if (!$guru || (int) $guru['status_aktif'] !== 1) {
+            echo "<script>
+                alert('Akun guru tidak aktif. Silakan hubungi admin.');
+                window.location='login.php';
+            </script>";
+            exit;
+        }
+
+    $_SESSION['guru_id'] = $guru['id'];
+}
 
         $_SESSION['id_user'] = $user['id'];
         $_SESSION['nama'] = $user['name'];

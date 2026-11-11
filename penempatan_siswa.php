@@ -5,6 +5,18 @@ include "includes/cek_session.php";
 $role = $_SESSION['role'] ?? '';
 $pesan = '';
 
+// MENGAMBIL TAHUN AJARAN YANG AKTIF
+$query_tahun_aktif = mysqli_query(
+    $koneksi,
+    "SELECT id, nama
+     FROM t_tahun_ajaran
+     WHERE status_aktif = 1
+     ORDER BY tanggal_mulai DESC
+     LIMIT 1"
+);
+
+$tahun_aktif = mysqli_fetch_assoc($query_tahun_aktif);
+
 // MENGAMBIL NOTIFIKASI DARI SESSION
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
@@ -17,7 +29,8 @@ if (isset($_SESSION['pesan'])) {
 if (isset($_POST['tambah']) && $role == "admin") {
 
     $siswa_id = (int)($_POST['siswa_id'] ?? 0);
-    $tahun_ajaran_id = (int)($_POST['tahun_ajaran_id'] ?? 0);
+    // TAHUN AJARAN OTOMATIS MENGAMBIL YANG AKTIF
+    $tahun_ajaran_id = (int)($tahun_aktif['id'] ?? 0);
     $kelas_id = (int)($_POST['kelas_id'] ?? 0);
     $tanggal_mulai = trim($_POST['tanggal_mulai'] ?? '');
     $tanggal_selesai = trim($_POST['tanggal_selesai'] ?? '');
@@ -612,35 +625,30 @@ if (isset($_GET['edit']) && $role == "admin") {
                                         </div>
 
 
-                                        <!-- TAHUN AJARAN -->
+                                       <!-- TAHUN AJARAN -->
                                         <div class="col-md-6">
 
                                             <label class="form-label">
                                                 Tahun Ajaran
                                             </label>
 
-                                            <select name="tahun_ajaran_id"
-                                                    class="form-select"
-                                                    required>
+                                            <?php if ($data_edit != null) { ?>
 
-                                                <option value="">
-                                                    -- Pilih Tahun Ajaran --
-                                                </option>
+                                                <!-- TAHUN AJARAN SAAT UBAH DATA -->
+                                                <select name="tahun_ajaran_id"
+                                                        class="form-select"
+                                                        required>
 
-                                                <?php
-
-                                                $tahun = mysqli_query(
-                                                    $koneksi,
-                                                    "SELECT * FROM t_tahun_ajaran
-                                                     ORDER BY tanggal_mulai DESC"
-                                                );
-
-                                                if ($tahun) {
+                                                    <?php
+                                                    $tahun = mysqli_query(
+                                                        $koneksi,
+                                                        "SELECT * FROM t_tahun_ajaran
+                                                        ORDER BY tanggal_mulai DESC"
+                                                    );
 
                                                     while ($row_tahun = mysqli_fetch_assoc($tahun)) {
 
                                                         $selected = (
-                                                            $data_edit != null &&
                                                             $data_edit['tahun_ajaran_id'] == $row_tahun['id']
                                                         ) ? 'selected' : '';
 
@@ -650,11 +658,19 @@ if (isset($_GET['edit']) && $role == "admin") {
                                                             htmlspecialchars($row_tahun['nama']) .
                                                             '</option>';
                                                     }
-                                                }
+                                                    ?>
 
-                                                ?>
+                                                </select>
 
-                                            </select>
+                                            <?php } else { ?>
+
+                                                <!-- TAHUN AJARAN OTOMATIS SAAT TAMBAH DATA -->
+                                                <input type="text"
+                                                    class="form-control"
+                                                    value="<?= htmlspecialchars($tahun_aktif['nama'] ?? 'Belum ada tahun ajaran aktif'); ?>"
+                                                    readonly>
+
+                                            <?php } ?>
 
                                         </div>
 

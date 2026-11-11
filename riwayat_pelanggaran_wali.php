@@ -14,94 +14,86 @@ if ($role !== 'wali_kelas') {
     exit;
 }
 
-/* IDENTITAS GURU YANG LOGIN */
-$guru_id = (int) ($_SESSION['guru_id'] ?? 0);
+// =====================================
+// IDENTITAS GURU YANG LOGIN
+// =====================================
+
 $user_id = (int) ($_SESSION['id_user'] ?? 0);
+$guru_id_session = (int) ($_SESSION['guru_id'] ?? 0);
 
-/* CARI ID GURU DARI AKUN LOGIN */
-if ($guru_id <= 0 && $user_id > 0) {
-    $stmt_guru = mysqli_prepare(
-        $koneksi,
-        "SELECT id FROM t_guru WHERE user_id = ? LIMIT 1"
-    );
+$guru_id = 0;
+$nama_guru = '';
 
-    mysqli_stmt_bind_param($stmt_guru, "i", $user_id);
-    mysqli_stmt_execute($stmt_guru);
+if ($user_id > 0) {
 
-    $hasil_guru = mysqli_stmt_get_result($stmt_guru);
-    $data_guru = mysqli_fetch_assoc($hasil_guru);
+    $stmt_guru = mysqli_prepare($koneksi, "
+        SELECT id, nama
+        FROM t_guru
+        WHERE user_id = ?
+        LIMIT 1
+    ");
 
-    mysqli_stmt_close($stmt_guru);
+    if ($stmt_guru) {
 
-    if ($data_guru) {
-        $guru_id = (int) $data_guru['id'];
-    }
-}
+        mysqli_stmt_bind_param($stmt_guru, "i", $user_id);
+        mysqli_stmt_execute($stmt_guru);
 
-/* AMBIL SEMUA PENUGASAN WALI KELAS AKTIF */
-$daftar_kelas = [];
-$data_wali = null;
+        $hasil_guru = mysqli_stmt_get_result($stmt_guru);
+        $data_guru = mysqli_fetch_assoc($hasil_guru);
 
-if ($guru_id > 0) {
-    $stmt_wali = mysqli_prepare(
-        $koneksi,
-        "SELECT DISTINCT
-            wk.kelas_id,
-            wk.tahun_ajaran_id,
-            k.nama AS nama_kelas,
-            ta.nama AS nama_tahun
-         FROM t_wali_kelas wk
-         INNER JOIN t_kelas k
-            ON wk.kelas_id = k.id
-         INNER JOIN t_tahun_ajaran ta
-            ON wk.tahun_ajaran_id = ta.id
-         WHERE wk.guru_id = ?
-           AND wk.status_aktif = 1
-           AND ta.status_aktif = 1
-         ORDER BY wk.kelas_id ASC"
-    );
+        mysqli_stmt_close($stmt_guru);
 
-    mysqli_stmt_bind_param($stmt_wali, "i", $guru_id);
-    mysqli_stmt_execute($stmt_wali);
-
-    $hasil_wali = mysqli_stmt_get_result($stmt_wali);
-
-    while ($row_wali = mysqli_fetch_assoc($hasil_wali)) {
-        $daftar_kelas[] = $row_wali;
-    }
-
-    mysqli_stmt_close($stmt_wali);
-}
-
-/* PILIH KELAS BERDASARKAN DROPDOWN */
-$kelas_dipilih = (int) ($_GET['kelas_id'] ?? 0);
-
-if (!empty($daftar_kelas)) {
-    foreach ($daftar_kelas as $kelas) {
-        if (
-            (int) $kelas['kelas_id'] === $kelas_dipilih
-        ) {
-            $data_wali = $kelas;
-            break;
+        if ($data_guru) {
+            $guru_id = (int) $data_guru['id'];
+            $nama_guru = $data_guru['nama'];
+            $_SESSION['guru_id'] = $guru_id;
         }
     }
+}
 
-    /* DEFAULT KE KELAS PERTAMA JIKA BELUM MEMILIH */
-    if (!$data_wali) {
-        $data_wali = $daftar_kelas[0];
+// Cadangan jika guru_id tidak ditemukan
+if ($guru_id <= 0 && $guru_id_session > 0) {
+
+    $stmt_guru = mysqli_prepare($koneksi, "
+        SELECT id, nama
+        FROM t_guru
+        WHERE id = ?
+        LIMIT 1
+    ");
+
+    if ($stmt_guru) {
+
+        mysqli_stmt_bind_param(
+            $stmt_guru,
+            "i",
+            $guru_id_session
+        );
+
+        mysqli_stmt_execute($stmt_guru);
+
+        $hasil_guru = mysqli_stmt_get_result($stmt_guru);
+        $data_guru = mysqli_fetch_assoc($hasil_guru);
+
+        mysqli_stmt_close($stmt_guru);
+
+        if ($data_guru) {
+            $guru_id = (int) $data_guru['id'];
+            $nama_guru = $data_guru['nama'];
+        }
     }
 }
 
-/* AMBIL RIWAYAT PELANGGARAN SESUAI KELAS WALI */
+// =====================================
+// AMBIL RIWAYAT PELANGGARAN
+// BERDASARKAN GURU YANG LOGIN
+// =====================================
+
 $data_riwayat = false;
 
-if ($data_wali) {
-    $kelas_id = (int) $data_wali['kelas_id'];
-    $tahun_id = (int) $data_wali['tahun_ajaran_id'];
+if ($guru_id > 0) {
 
-    $stmt_riwayat = mysqli_prepare(
-        $koneksi,
-        "SELECT
+    $stmt_riwayat = mysqli_prepare($koneksi, "
+        SELECT
             tanggal,
             nama_siswa,
             nama_kelas,
@@ -111,28 +103,32 @@ if ($data_wali) {
             keterangan,
             tindakan,
             status
-         FROM t_pelanggaran_siswa
-         WHERE kelas_id = ?
-           AND tahun_ajaran_id = ?
-         ORDER BY tanggal DESC, id DESC"
-    );
+        FROM t_pelanggaran_siswa
+        WHERE guru_id = ?
+        ORDER BY tanggal DESC, id DESC
+    ");
 
-    mysqli_stmt_bind_param(
-        $stmt_riwayat,
-        "ii",
-        $kelas_id,
-        $tahun_id
-    );
+    if ($stmt_riwayat) {
 
-    mysqli_stmt_execute($stmt_riwayat);
-    $data_riwayat = mysqli_stmt_get_result($stmt_riwayat);
+        mysqli_stmt_bind_param(
+            $stmt_riwayat,
+            "i",
+            $guru_id
+        );
+
+        mysqli_stmt_execute($stmt_riwayat);
+
+        $data_riwayat = mysqli_stmt_get_result($stmt_riwayat);
+    }
 }
+
 ?>
 
 <!DOCTYPE html>
 <html lang="id">
 
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -143,62 +139,84 @@ if ($data_wali) {
         rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
+
 </head>
 
 <body>
 
 <div class="container-fluid">
+
     <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-        <aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+
+        <aside
+            class="col-md-3 col-lg-2 min-vh-100 p-3"
             style="background-color: #30318B;">
 
             <div class="mb-4 px-2">
+
                 <h3 class="text-white mb-1 fw-bold">
                     SIMPESMA
                 </h3>
 
                 <p class="text-white mb-0"
                    style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+
                     Sistem Informasi Manajemen
                     Pelanggaran Siswa Muhammadiyah
+
                 </p>
+
             </div>
 
             <ul class="nav nav-pills flex-column">
 
                 <li class="nav-item mb-2">
                     <a href="dashboard.php"
-                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'dashboard.php' ? 'active' : 'text-white'; ?>">
+                       class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
+                    <a href="catat_pelanggaran.php"
+                       class="nav-link text-white">
+                        Catat Pelanggaran
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
+                    <a href="tindakan_wali.php"
+                       class="nav-link text-white">
+                        Tindakan
+                    </a>
+                </li>
+
+                <li class="nav-item mb-2">
                     <a href="data_siswa_wali.php"
-                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
+                       class="nav-link text-white">
                         Data Siswa di Kelasnya
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="riwayat_pelanggaran_wali.php"
-                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'riwayat_pelanggaran_wali.php' ? 'active' : 'text-white'; ?>">
+                       class="nav-link active">
                         Riwayat Pelanggaran Siswa
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="rekap_poin_wali.php"
-                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'rekap_poin_wali.php' ? 'active' : 'text-white'; ?>">
+                       class="nav-link text-white">
                         Rekap Poin Siswa
                     </a>
                 </li>
 
                 <li class="nav-item mb-2">
                     <a href="laporan_kelas.php"
-                       class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'laporan_kelas.php' ? 'active' : 'text-white'; ?>">
+                       class="nav-link text-white">
                         Laporan Pelanggaran Kelas
                     </a>
                 </li>
@@ -206,94 +224,50 @@ if ($data_wali) {
                 <hr class="text-secondary">
 
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
+                    <a href="about_me.php"
+                       class="nav-link text-white">
                         About Me
                     </a>
                 </li>
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
+                    <a href="logout.php"
+                       class="nav-link text-danger">
                         Logout
                     </a>
                 </li>
 
             </ul>
+
         </aside>
 
         <!-- KONTEN UTAMA -->
+
         <main class="col-md-9 col-lg-10 p-4">
 
-            <h3 class="fw-bold mb-4">
+            <h3 class="fw-bold mb-2">
                 Riwayat Pelanggaran Siswa
             </h3>
 
-            <?php if (!$data_wali) { ?>
+            <p class="text-secondary mb-4">
+                Guru:
+                <?= htmlspecialchars(
+                    $nama_guru ?: 'Data guru tidak ditemukan',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ); ?>
+            </p>
+
+            <?php if ($guru_id <= 0) { ?>
 
                 <div class="alert alert-warning">
-                    Belum ditemukan penugasan wali kelas aktif
-                    untuk akun ini pada tahun ajaran aktif.
+                    Data guru yang login tidak ditemukan.
                 </div>
 
             <?php } else { ?>
 
-                <!-- PILIH KELAS -->
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-body">
-
-                        <form method="GET" action="riwayat_pelanggaran_wali.php">
-
-                            <label for="kelas_id" class="form-label fw-bold">
-                                Pilih Kelas
-                            </label>
-
-                            <select
-                                name="kelas_id"
-                                id="kelas_id"
-                                class="form-select"
-                                onchange="this.form.submit()">
-
-                                <?php foreach ($daftar_kelas as $kelas) { ?>
-
-                                    <option
-                                        value="<?= (int) $kelas['kelas_id']; ?>"
-                                        <?= (
-                                            (int) $data_wali['kelas_id'] ===
-                                            (int) $kelas['kelas_id']
-                                        ) ? 'selected' : ''; ?>>
-
-                                        <?= htmlspecialchars($kelas['nama_kelas']); ?>
-
-                                    </option>
-
-                                <?php } ?>
-
-                            </select>
-
-                        </form>
-
-                    </div>
-                </div>
-
-                <!-- INFORMASI KELAS -->
-                <div class="card border-0 shadow-sm mb-4">
-
-                    <div class="card-body">
-
-                        <h5 class="mb-2">
-                            Kelas:
-                            <?= htmlspecialchars($data_wali['nama_kelas']); ?>
-                        </h5>
-
-                        <p class="text-secondary mb-0">
-                            Tahun Ajaran:
-                            <?= htmlspecialchars($data_wali['nama_tahun']); ?>
-                        </p>
-
-                    </div>
-
-                </div>
-
                 <!-- TABEL RIWAYAT -->
+
                 <div class="card border-0 shadow-sm">
 
                     <div class="card-header bg-white py-3">
@@ -315,7 +289,8 @@ if ($data_wali) {
                                     <tr>
                                         <th>No</th>
                                         <th>Tanggal</th>
-                                        <th>NIS / Nama Siswa</th>
+                                        <th>Nama Siswa</th>
+                                        <th>Kelas</th>
                                         <th>Pelanggaran</th>
                                         <th>Poin</th>
                                         <th>Guru</th>
@@ -328,6 +303,7 @@ if ($data_wali) {
                                 <tbody>
 
                                 <?php
+
                                 $no = 1;
 
                                 if (
@@ -336,54 +312,93 @@ if ($data_wali) {
                                 ) {
 
                                     while ($row = mysqli_fetch_assoc($data_riwayat)) {
+
+                                        $status = $row['status'] ?? '';
+
+                                        if (strtolower(trim($status)) == 'selesai') {
+                                            $badge = 'success';
+                                        } elseif (
+                                            strtolower(trim($status)) == 'ditindaklanjuti'
+                                        ) {
+                                            $badge = 'warning';
+                                        } elseif (
+                                            strtolower(trim($status)) == 'pembinaan'
+                                        ) {
+                                            $badge = 'info';
+                                        } else {
+                                            $badge = 'secondary';
+                                        }
+
                                 ?>
 
                                     <tr>
 
-                                        <td><?= $no++; ?></td>
-
                                         <td>
-                                            <?= htmlspecialchars($row['tanggal']); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($row['nama_siswa']); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($row['nama_pelanggaran']); ?>
-                                        </td>
-
-                                        <td>
-                                            <?= (int) $row['poin']; ?>
-                                        </td>
-
-                                        <td>
-                                            <?= htmlspecialchars($row['nama_guru']); ?>
+                                            <?= $no++; ?>
                                         </td>
 
                                         <td>
                                             <?= htmlspecialchars(
-                                                $row['tindakan'] ?: '-'
+                                                $row['tanggal'] ?? '',
+                                                ENT_QUOTES,
+                                                'UTF-8'
                                             ); ?>
                                         </td>
 
                                         <td>
-                                            <?php
-                                            $status = $row['status'];
+                                            <?= htmlspecialchars(
+                                                $row['nama_siswa'] ?? '',
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </td>
 
-                                            if ($status == 'Selesai') {
-                                                $badge = 'success';
-                                            } elseif ($status == 'Ditindaklanjuti') {
-                                                $badge = 'warning';
-                                            } else {
-                                                $badge = 'secondary';
-                                            }
-                                            ?>
+                                        <td>
+                                            <?= htmlspecialchars(
+                                                $row['nama_kelas'] ?? '',
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars(
+                                                $row['nama_pelanggaran'] ?? '',
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= (int) ($row['poin'] ?? 0); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars(
+                                                $row['nama_guru'] ?? '',
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars(
+                                                $row['tindakan'] ?: '-',
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ); ?>
+                                        </td>
+
+                                        <td>
 
                                             <span class="badge bg-<?= $badge; ?>">
-                                                <?= htmlspecialchars($status); ?>
+                                                <?= htmlspecialchars(
+                                                    $status ?: 'Belum ada status',
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ); ?>
                                             </span>
+
                                         </td>
 
                                     </tr>
@@ -395,10 +410,11 @@ if ($data_wali) {
                                 ?>
 
                                     <tr>
-                                        <td colspan="8" class="text-center">
-                                            Belum ada riwayat pelanggaran
-                                            siswa di kelas ini.
+
+                                        <td colspan="9" class="text-center">
+                                            Belum ada riwayat pelanggaran yang dicatat oleh Anda.
                                         </td>
+
                                     </tr>
 
                                 <?php } ?>
@@ -422,7 +438,20 @@ if ($data_wali) {
         </main>
 
     </div>
+
 </div>
 
 </body>
 </html>
+
+<?php 
+
+    session_start();
+
+    if ( !isset($_SESSION['id'])) {
+        header("Location: login.php");
+    }
+
+    
+
+?>

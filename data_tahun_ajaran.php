@@ -514,6 +514,7 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                                 $query_tahun = mysqli_query($koneksi, "
                                     SELECT * FROM t_tahun_ajaran
+                                    WHERE status_aktif = 1
                                     ORDER BY tanggal_mulai DESC
                                 ");
 

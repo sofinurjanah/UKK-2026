@@ -131,21 +131,68 @@ if (isset($_POST['ubah']) && $role == "admin") {
 }
 
 
-/* NONAKTIFKAN GURU */
+/* HAPUS GURU BESERTA AKUN LOGIN */
 if (isset($_GET['hapus']) && $role == "admin") {
     $id = (int) $_GET['hapus'];
 
-    $query = mysqli_query($koneksi, "UPDATE t_guru
-        SET status_aktif = 0
-        WHERE id = '$id'");
+    // Ambil user_id guru sebelum dihapus
+    $cek_guru = mysqli_query($koneksi, "
+        SELECT user_id
+        FROM t_guru
+        WHERE id = '$id'
+    ");
 
-    if ($query) {
-        $pesan = "Data guru berhasil dinonaktifkan.";
-        $tipe_pesan = "success";
+    if ($cek_guru && mysqli_num_rows($cek_guru) > 0) {
+
+        $guru = mysqli_fetch_assoc($cek_guru);
+        $user_id = (int) $guru['user_id'];
+
+        mysqli_begin_transaction($koneksi);
+
+        try {
+
+            // Hapus data guru
+            $hapus_guru = mysqli_query($koneksi, "
+                DELETE FROM t_guru
+                WHERE id = '$id'
+            ");
+
+            if (!$hapus_guru) {
+                throw new Exception("Gagal menghapus data guru.");
+            }
+
+            // Hapus akun login guru
+            if ($user_id > 0) {
+                $hapus_user = mysqli_query($koneksi, "
+                    DELETE FROM t_user
+                    WHERE id = '$user_id'
+                ");
+
+                if (!$hapus_user) {
+                    throw new Exception("Gagal menghapus akun login guru.");
+                }
+            }
+
+            mysqli_commit($koneksi);
+
+            $_SESSION['pesan'] = "Data guru dan akun login berhasil dihapus.";
+            $_SESSION['tipe_pesan'] = "success";
+
+        } catch (Throwable $e) {
+
+            mysqli_rollback($koneksi);
+
+            $_SESSION['pesan'] = "Data guru gagal dihapus.";
+            $_SESSION['tipe_pesan'] = "danger";
+        }
+
     } else {
-        $pesan = "Data guru gagal dinonaktifkan.";
-        $tipe_pesan = "danger";
+        $_SESSION['pesan'] = "Data guru tidak ditemukan.";
+        $_SESSION['tipe_pesan'] = "danger";
     }
+
+    header("Location: data_guru.php");
+    exit;
 }
 
 /* DATA GURU UNTUK DIEDIT */
@@ -569,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                                     <a
                                                         href="data_guru.php?hapus=<?= e($guru['id']); ?>"
                                                         class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('Yakin ingin menonaktifkan data guru ini?')">
+                                                        onclick=onclick="return confirm('Yakin ingin menghapus data guru beserta akun login secara permanen?')">
                                                         Hapus
                                                     </a>
 

@@ -17,7 +17,7 @@ $role = strtolower($_SESSION['role']);
 $guru_id = (int)($_SESSION['guru_id'] ?? 0);
 
 // Ambil ID guru untuk akun guru
-if ($role == 'guru' && $guru_id == 0) {
+if (in_array($role, ['guru', 'wali_kelas'], true) && $guru_id == 0) {
     $id_user = (int)$_SESSION['id_user'];
 
     $query_id_guru = mysqli_query(
@@ -45,7 +45,7 @@ $total_poin_wali = 0;
 // Statistik guru
 if ($role == 'guru') {
 
-        $q = mysqli_query($koneksi, "
+    $q = mysqli_query($koneksi, "
         SELECT COUNT(*) AS total
         FROM t_pelanggaran_siswa
     ");
@@ -180,25 +180,23 @@ if ($query_jenis) {
 
     <title>Dashboard SIMPESMA</title>
 
-    <!-- Bootstrap -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
 
-    <!-- CSS yang sudah ada -->
     <link rel="stylesheet" href="style.css">
 
     <style>
         body {
             background-color: #f5f9ff;
         }
+
         .sidebar-description {
             font-size: 10px;
             line-height: 1.7;
             opacity: 0.8;
         }
 
-        /* JUDUL DASHBOARD */
         .dashboard-title {
             font-size: 24px;
             font-weight: 700;
@@ -210,7 +208,6 @@ if ($query_jenis) {
             font-size: 14px;
         }
 
-        /* KOTAK SAMBUTAN */
         .welcome-card {
             background-color: #ffffff;
             border: 1px solid #e1eaf7;
@@ -232,7 +229,6 @@ if ($query_jenis) {
             line-height: 1.7;
         }
 
-        /* KARTU STATISTIK */
         .stat-card {
             background: #ffffff;
             border: 1px solid #e1eaf7;
@@ -284,7 +280,6 @@ if ($query_jenis) {
             color: #ffffff;
         }
 
-        /* RINGKASAN PELANGGARAN */
         .summary-card {
             background-color: #ffffff;
             border: 1px solid #e1eaf7;
@@ -323,7 +318,6 @@ if ($query_jenis) {
             margin-bottom: 0;
         }
 
-        /* COPYRIGHT */
         .dashboard-footer {
             font-size: 11px;
             margin-top: auto;
@@ -373,7 +367,6 @@ if ($query_jenis) {
 
                 <?php if ($role == 'admin') { ?>
 
-                    <!-- MENU ADMIN -->
                     <li class="nav-item mb-2">
                         <a href="data_siswa.php" class="nav-link text-white">
                             Data Siswa
@@ -430,7 +423,6 @@ if ($query_jenis) {
 
                 <?php } elseif ($role == 'guru') { ?>
 
-                    <!-- MENU GURU -->
                     <li class="nav-item mb-2">
                         <a href="catat_pelanggaran.php" class="nav-link text-white">
                             Catat Pelanggaran
@@ -457,33 +449,43 @@ if ($query_jenis) {
 
                 <?php } elseif ($role == 'wali_kelas') { ?>
 
-    <!-- MENU WALI KELAS -->
+                    <li class="nav-item mb-2">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
+                            Catat Pelanggaran
+                        </a>
+                    </li>
 
-    <li class="nav-item mb-2">
-        <a href="data_siswa_wali.php" class="nav-link text-white">
-            Data Siswa di Kelasnya
-        </a>
-    </li>
+                    <li class="nav-item mb-2">
+                        <a href="tindakan_wali.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
 
-    <li class="nav-item mb-2">
-        <a href="riwayat_pelanggaran_wali.php" class="nav-link text-white">
-            Riwayat Pelanggaran Siswa
-        </a>
-    </li>
+                    <li class="nav-item mb-2">
+                        <a href="data_siswa_wali.php" class="nav-link text-white">
+                            Data Siswa di Kelasnya
+                        </a>
+                    </li>
 
-    <li class="nav-item mb-2">
-        <a href="rekap_poin_wali.php" class="nav-link text-white">
-            Rekap Poin Siswa
-        </a>
-    </li>
+                    <li class="nav-item mb-2">
+                        <a href="riwayat_pelanggaran_wali.php" class="nav-link text-white">
+                            Riwayat Pelanggaran Siswa
+                        </a>
+                    </li>
 
-    <li class="nav-item mb-2">
-        <a href="laporan_kelas.php" class="nav-link text-white">
-            Laporan Pelanggaran Kelas
-        </a>
-    </li>
+                    <li class="nav-item mb-2">
+                        <a href="rekap_poin_wali.php" class="nav-link text-white">
+                            Rekap Poin Siswa
+                        </a>
+                    </li>
 
-<?php } ?>
+                    <li class="nav-item mb-2">
+                        <a href="laporan_kelas.php" class="nav-link text-white">
+                            Laporan Pelanggaran Kelas
+                        </a>
+                    </li>
+
+                <?php } ?>
 
                 <hr class="text-secondary">
 
@@ -505,7 +507,6 @@ if ($query_jenis) {
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4 d-flex flex-column">
 
-            <!-- JUDUL DASHBOARD -->
             <div class="mb-3">
                 <h2 class="dashboard-title mb-2">
                     Dashboard <?= $role == 'wali_kelas' ? 'Wali Kelas' : ucfirst(htmlspecialchars($role)); ?>
@@ -517,7 +518,6 @@ if ($query_jenis) {
                 </p>
             </div>
 
-            <!-- SAMBUTAN -->
             <div class="welcome-card">
                 <h5>Selamat datang di SIMPESMA!</h5>
 
@@ -536,15 +536,8 @@ if ($query_jenis) {
                         <div class="card stat-card">
                             <div class="card-body">
                                 <h6>Data Siswa</h6>
-
-                                <h3 class="stat-number">
-                                    <?= $jumlah_siswa; ?>
-                                </h3>
-
-                                <p class="stat-description">
-                                    Jumlah seluruh siswa.
-                                </p>
-
+                                <h3 class="stat-number"><?= $jumlah_siswa; ?></h3>
+                                <p class="stat-description">Jumlah seluruh siswa.</p>
                                 <a href="data_siswa.php" class="btn btn-dashboard">
                                     Lihat Data
                                 </a>
@@ -556,15 +549,8 @@ if ($query_jenis) {
                         <div class="card stat-card">
                             <div class="card-body">
                                 <h6>Data Guru</h6>
-
-                                <h3 class="stat-number">
-                                    <?= $jumlah_guru; ?>
-                                </h3>
-
-                                <p class="stat-description">
-                                    Jumlah seluruh guru.
-                                </p>
-
+                                <h3 class="stat-number"><?= $jumlah_guru; ?></h3>
+                                <p class="stat-description">Jumlah seluruh guru.</p>
                                 <a href="data_guru.php" class="btn btn-dashboard">
                                     Lihat Data
                                 </a>
@@ -576,15 +562,8 @@ if ($query_jenis) {
                         <div class="card stat-card">
                             <div class="card-body">
                                 <h6>Data Kelas</h6>
-
-                                <h3 class="stat-number">
-                                    <?= $jumlah_kelas; ?>
-                                </h3>
-
-                                <p class="stat-description">
-                                    Kelola data kelas.
-                                </p>
-
+                                <h3 class="stat-number"><?= $jumlah_kelas; ?></h3>
+                                <p class="stat-description">Kelola data kelas.</p>
                                 <a href="data_kelas.php" class="btn btn-dashboard">
                                     Lihat Data
                                 </a>
@@ -595,159 +574,171 @@ if ($query_jenis) {
                 <?php } elseif ($role == 'guru') { ?>
 
                     <div class="col-md-4">
-    <div class="card stat-card">
-        <div class="card-body">
-            <h6>Catat Pelanggaran</h6>
-            <h3 class="stat-number"><?= $jumlah_catatan_guru; ?></h3>
-            <p class="stat-description">Jumlah pelanggaran yang dicatat guru.</p>
-            <a href="catat_pelanggaran.php" class="btn btn-dashboard">
-                Catat Sekarang
-            </a>
-        </div>
-    </div>
-</div>
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Catat Pelanggaran</h6>
+                                <h3 class="stat-number"><?= $jumlah_catatan_guru; ?></h3>
+                                <p class="stat-description">Jumlah pelanggaran yang dicatat guru.</p>
+                                <a href="catat_pelanggaran.php" class="btn btn-dashboard">
+                                    Catat Sekarang
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col-md-4">
-    <div class="card stat-card">
-        <div class="card-body">
-            <h6>Tindakan</h6>
-            <h3 class="stat-number"><?= $jumlah_tindakan_guru; ?></h3>
-            <p class="stat-description">Jumlah pelanggaran yang sudah diberi tindakan.</p>
-            <a href="tindakan.php" class="btn btn-dashboard">
-                Lihat Data
-            </a>
-        </div>
-    </div>
-</div>
+                    <div class="col-md-4">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Tindakan</h6>
+                                <h3 class="stat-number"><?= $jumlah_tindakan_guru; ?></h3>
+                                <p class="stat-description">Jumlah pelanggaran yang sudah diberi tindakan.</p>
+                                <a href="tindakan.php" class="btn btn-dashboard">
+                                    Lihat Data
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col-md-4">
-    <div class="card stat-card">
-        <div class="card-body">
-            <h6>Riwayat</h6>
-            <h3 class="stat-number"><?= $jumlah_riwayat_guru; ?></h3>
-            <p class="stat-description">Jumlah seluruh riwayat pelanggaran.</p>
-            <a href="riwayat_pelanggaran.php" class="btn btn-dashboard">
-                Lihat Riwayat
-            </a>
-        </div>
-    </div>
-</div>
+                    <div class="col-md-4">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Riwayat</h6>
+                                <h3 class="stat-number"><?= $jumlah_riwayat_guru; ?></h3>
+                                <p class="stat-description">Jumlah seluruh riwayat pelanggaran.</p>
+                                <a href="riwayat_pelanggaran.php" class="btn btn-dashboard">
+                                    Lihat Riwayat
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col-md-4">
-    <div class="card stat-card">
-        <div class="card-body">
-            <h6>Rekap Poin</h6>
-            <h3 class="stat-number"><?= $jumlah_siswa_bermasalah; ?></h3>
-            <p class="stat-description">Jumlah siswa yang memiliki pelanggaran.</p>
-            <a href="rekap_poin.php" class="btn btn-dashboard">
-                Lihat Rekap
-            </a>
-        </div>
-    </div>
-</div>
+                    <div class="col-md-4">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Rekap Poin</h6>
+                                <h3 class="stat-number"><?= $jumlah_siswa_bermasalah; ?></h3>
+                                <p class="stat-description">Jumlah siswa yang memiliki pelanggaran.</p>
+                                <a href="rekap_poin.php" class="btn btn-dashboard">
+                                    Lihat Rekap
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-                    <?php } elseif ($role == 'wali_kelas') { ?>
+                <?php } elseif ($role == 'wali_kelas') { ?>
 
-    <div class="col-md-4">
-    <div class="card stat-card">
-        <div class="card-body">
-            <h6>Data Siswa di Kelasnya</h6>
-            <h3 class="stat-number"><?= $jumlah_siswa_wali; ?></h3>
-            <p class="stat-description">Jumlah siswa aktif di kelas sendiri.</p>
-            <a href="data_siswa_wali.php" class="btn btn-dashboard">
-                Lihat Siswa
-            </a>
-        </div>
-    </div>
-</div>
+                    <div class="col-md-4">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Catat Pelanggaran</h6>
+                                <h3 class="stat-number"><?= $jumlah_pelanggaran_wali; ?></h3>
+                                <p class="stat-description">Jumlah pelanggaran yang tercatat di kelas sendiri.</p>
+                                <a href="catat_pelanggaran.php" class="btn btn-dashboard">
+                                    Catat Sekarang
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col-md-4">
-    <div class="card stat-card">
-        <div class="card-body">
-            <h6>Riwayat Pelanggaran Siswa</h6>
-            <h3 class="stat-number"><?= $jumlah_pelanggaran_wali; ?></h3>
-            <p class="stat-description">Jumlah pelanggaran di kelas sendiri.</p>
-            <a href="riwayat_pelanggaran_wali.php" class="btn btn-dashboard">
-                Lihat Riwayat
-            </a>
-        </div>
-    </div>
-</div>
+                    <div class="col-md-4">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Data Siswa di Kelasnya</h6>
+                                <h3 class="stat-number"><?= $jumlah_siswa_wali; ?></h3>
+                                <p class="stat-description">Jumlah siswa aktif di kelas sendiri.</p>
+                                <a href="data_siswa_wali.php" class="btn btn-dashboard">
+                                    Lihat Siswa
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
-<div class="col-md-4">
-    <div class="card stat-card">
-        <div class="card-body">
-            <h6>Rekap Poin Siswa</h6>
-            <h3 class="stat-number"><?= $jumlah_siswa_berpoin_wali; ?></h3>
-            <p class="stat-description">Jumlah siswa yang memiliki pelanggaran.</p>
-            <a href="rekap_poin_wali.php" class="btn btn-dashboard">
-                Lihat Rekap
-            </a>
-        </div>
-    </div>
-</div>
+                    <div class="col-md-4">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Riwayat Pelanggaran Siswa</h6>
+                                <h3 class="stat-number"><?= $jumlah_pelanggaran_wali; ?></h3>
+                                <p class="stat-description">Jumlah pelanggaran di kelas sendiri.</p>
+                                <a href="riwayat_pelanggaran_wali.php" class="btn btn-dashboard">
+                                    Lihat Riwayat
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card stat-card">
+                            <div class="card-body">
+                                <h6>Rekap Poin Siswa</h6>
+                                <h3 class="stat-number"><?= $jumlah_siswa_berpoin_wali; ?></h3>
+                                <p class="stat-description">Jumlah siswa yang memiliki pelanggaran.</p>
+                                <a href="rekap_poin_wali.php" class="btn btn-dashboard">
+                                    Lihat Rekap
+                                </a>
+                            </div>
+                        </div>
+                    </div>
 
                 <?php } ?>
 
             </div>
 
+            <!-- RINGKASAN -->
             <?php if ($role == 'admin') { ?>
 
-    <div class="card summary-card">
-        <div class="card-body">
-            <h5 class="summary-title">Ringkasan Pelanggaran</h5>
+                <div class="card summary-card">
+                    <div class="card-body">
+                        <h5 class="summary-title">Ringkasan Pelanggaran</h5>
 
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <p class="summary-label">Total pelanggaran tercatat</p>
-                    <h4 class="summary-number"><?= $jumlah_pelanggaran; ?></h4>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <p class="summary-label">Total pelanggaran tercatat</p>
+                                <h4 class="summary-number"><?= $jumlah_pelanggaran; ?></h4>
+                            </div>
+
+                            <div class="col-md-6">
+                                <p class="summary-label">Jenis pelanggaran aktif</p>
+                                <h4 class="summary-number"><?= $jumlah_jenis_pelanggaran; ?></h4>
+                            </div>
+                        </div>
+
+                        <p class="summary-note">
+                            Data ringkasan diambil dari database SIMPESMA.
+                        </p>
+                    </div>
                 </div>
 
-                <div class="col-md-6">
-                    <p class="summary-label">Jenis pelanggaran aktif</p>
-                    <h4 class="summary-number"><?= $jumlah_jenis_pelanggaran; ?></h4>
+            <?php } elseif ($role == 'wali_kelas') { ?>
+
+                <div class="card summary-card">
+                    <div class="card-body">
+                        <h5 class="summary-title">Ringkasan Pelanggaran Kelas</h5>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <p class="summary-label">Total pelanggaran kelas</p>
+                                <h4 class="summary-number"><?= $jumlah_pelanggaran_wali; ?></h4>
+                            </div>
+
+                            <div class="col-md-6">
+                                <p class="summary-label">Total poin pelanggaran</p>
+                                <h4 class="summary-number"><?= $total_poin_wali; ?></h4>
+                            </div>
+                        </div>
+
+                        <p class="summary-note">
+                            Data ringkasan berdasarkan kelas dan tahun ajaran aktif.
+                        </p>
+                    </div>
                 </div>
-            </div>
 
-            <p class="summary-note">
-                Data ringkasan diambil dari database SIMPESMA.
-            </p>
-        </div>
-    </div>
+            <?php } ?>
 
-<?php } elseif ($role == 'wali_kelas') { ?>
-
-    <div class="card summary-card">
-        <div class="card-body">
-            <h5 class="summary-title">Ringkasan Pelanggaran Kelas</h5>
-
-            <div class="row g-3">
-                <div class="col-md-6">
-                    <p class="summary-label">Total pelanggaran kelas</p>
-                    <h4 class="summary-number"><?= $jumlah_pelanggaran_wali; ?></h4>
-                </div>
-
-                <div class="col-md-6">
-                    <p class="summary-label">Total poin pelanggaran</p>
-                    <h4 class="summary-number"><?= $total_poin_wali; ?></h4>
-                </div>
-            </div>
-
-            <p class="summary-note">
-                Data ringkasan berdasarkan kelas dan tahun ajaran aktif.
-            </p>
-        </div>
-    </div>
-
-<?php } ?>
-
-            <!-- COPYRIGHT -->
             <p class="text-center text-secondary dashboard-footer">
                 ©Sofinurjanah
             </p>
 
         </main>
-
     </div>
 </div>
 

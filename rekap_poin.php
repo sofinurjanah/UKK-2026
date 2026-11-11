@@ -4,50 +4,170 @@
 include "config/koneksi.php";
 include "includes/cek_session.php";
 
-$role = $_SESSION['role'];
+$role = $_SESSION['role'] ?? '';
 
 // =====================================
 // FILTER NAMA SISWA
 // =====================================
 
-$nama_siswa = isset($_GET['nama_siswa'])
-    ? $_GET['nama_siswa']
-    : "";
+$nama_siswa = trim($_GET['nama_siswa'] ?? '');
 
 // =====================================
-// WHERE
+// TAHUN AJARAN AKTIF
 // =====================================
 
-$where = "";
-
-if ($nama_siswa != "") {
-    $where = "WHERE nama_siswa LIKE '%$nama_siswa%'";
-}
-
-// =====================================
-// REKAP POIN
-// =====================================
-
-$query = mysqli_query($koneksi, "
-
-    SELECT
-        nama_siswa,
-        nama_kelas,
-        COUNT(*) AS jumlah_pelanggaran,
-        SUM(poin) AS total_poin
-
-    FROM t_pelanggaran_siswa
-
-    $where
-
-    GROUP BY
-        nama_siswa,
-        nama_kelas
-
-    ORDER BY total_poin DESC,
-             nama_siswa ASC
-
+$query_tahun = mysqli_query($koneksi, "
+    SELECT id, nama
+    FROM t_tahun_ajaran
+    WHERE status_aktif = 1
+    LIMIT 1
 ");
+
+$tahun_aktif = mysqli_fetch_assoc($query_tahun);
+
+$query = false;
+
+// =====================================
+// REKAP SELURUH SISWA
+// BERDASARKAN TAHUN AJARAN AKTIF
+// =====================================
+
+if ($tahun_aktif) {
+
+    $tahun_id = (int) $tahun_aktif['id'];
+
+    $sql = "
+
+        SELECT
+            s.id AS siswa_id,
+            s.nama AS nama_siswa,
+
+            COALESCE(k.nama, '-') AS nama_kelas,
+
+            COALESCE(p.jumlah_pelanggaran, 0)
+                AS jumlah_pelanggaran,
+
+            COALESCE(p.total_poin, 0)
+                AS total_poin,
+
+            CASE
+                WHEN COALESCE(p.total_poin, 0) >= 75
+                    THEN 'SP 3'
+
+                WHEN COALESCE(p.total_poin, 0) >= 50
+                    THEN 'SP 2'
+
+                WHEN COALESCE(p.total_poin, 0) >= 30
+                    THEN 'SP 1'
+
+                WHEN COALESCE(p.total_poin, 0) > 0
+                    THEN 'Pembinaan / Teguran'
+
+                ELSE 'Belum Ada Pelanggaran'
+            END AS sanksi
+
+        FROM t_siswa s
+
+        LEFT JOIN (
+
+            SELECT
+                ks1.siswa_id,
+                ks1.kelas_id
+
+            FROM t_kelas_siswa ks1
+
+            INNER JOIN (
+
+                SELECT
+                    siswa_id,
+                    MAX(id) AS id_terbaru
+
+                FROM t_kelas_siswa
+
+                WHERE tahun_ajaran_id = ?
+                AND status_aktif = 1
+
+                GROUP BY siswa_id
+
+            ) terbaru
+                ON terbaru.id_terbaru = ks1.id
+
+        ) ks
+            ON ks.siswa_id = s.id
+
+        LEFT JOIN t_kelas k
+            ON k.id = ks.kelas_id
+
+        LEFT JOIN (
+
+            SELECT
+                siswa_id,
+                COUNT(*) AS jumlah_pelanggaran,
+                SUM(poin) AS total_poin
+
+            FROM t_pelanggaran_siswa
+
+            WHERE tahun_ajaran_id = ?
+
+            GROUP BY siswa_id
+
+        ) p
+            ON p.siswa_id = s.id
+
+        WHERE s.status_aktif = 1
+
+    ";
+
+    // =====================================
+    // PENCARIAN NAMA SISWA
+    // =====================================
+
+    if ($nama_siswa !== '') {
+        $sql .= " AND s.nama LIKE ?";
+    }
+
+    $sql .= "
+
+        ORDER BY
+            total_poin DESC,
+            s.nama ASC
+
+    ";
+
+    $stmt = mysqli_prepare($koneksi, $sql);
+
+    if ($stmt) {
+
+        if ($nama_siswa !== '') {
+
+            $cari = "%{$nama_siswa}%";
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "iis",
+                $tahun_id,
+                $tahun_id,
+                $cari
+            );
+
+        } else {
+
+            mysqli_stmt_bind_param(
+                $stmt,
+                "ii",
+                $tahun_id,
+                $tahun_id
+            );
+
+        }
+
+        mysqli_stmt_execute($stmt);
+
+        $query = mysqli_stmt_get_result($stmt);
+
+    }
+
+}
 
 ?>
 
@@ -57,20 +177,22 @@ $query = mysqli_query($koneksi, "
 <head>
 
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Rekap Poin Pelanggaran</title>
 
-     <link
+    <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
         rel="stylesheet"
     >
 
-    <!-- DataTables CSS -->
     <link
         href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
         rel="stylesheet"
     >
+
     <link rel="stylesheet" href="style.css">
 
 </head>
@@ -78,113 +200,190 @@ $query = mysqli_query($koneksi, "
 <body class="bg-light">
 
 <div class="container-fluid">
+
     <div class="row">
 
         <!-- SIDEBAR -->
+
         <aside
             class="col-md-3 col-lg-2 min-vh-100 p-3"
             style="background-color: #30318B;"
         >
 
             <div class="mb-4 px-2">
+
                 <h3 class="text-white mb-1 fw-bold">
                     SIMPESMA
                 </h3>
 
-                <p class="text-white mb-0" style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                <p class="text-white mb-0"
+                   style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+
                     Sistem Informasi Manajemen
                     Pelanggaran Siswa Muhammadiyah
+
                 </p>
+
             </div>
 
             <ul class="nav nav-pills flex-column">
 
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php" class="nav-link text-white">
+
+                    <a href="dashboard.php"
+                       class="nav-link text-white">
+
                         Dashboard
+
                     </a>
+
                 </li>
 
                 <?php if ($role == 'admin') { ?>
 
                     <li class="nav-item mb-2">
-                        <a href="data_siswa.php" class="nav-link text-white">
+
+                        <a href="data_siswa.php"
+                           class="nav-link text-white">
+
                             Data Siswa
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_guru.php" class="nav-link text-white">
+
+                        <a href="data_guru.php"
+                           class="nav-link text-white">
+
                             Data Guru
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_kelas.php" class="nav-link text-white">
+
+                        <a href="data_kelas.php"
+                           class="nav-link text-white">
+
                             Kelas
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_tahun_ajaran.php" class="nav-link text-white">
+
+                        <a href="data_tahun_ajaran.php"
+                           class="nav-link text-white">
+
                             Tahun Ajaran
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="penempatan_siswa.php" class="nav-link text-white">
+
+                        <a href="penempatan_siswa.php"
+                           class="nav-link text-white">
+
                             Penempatan Siswa
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="wali_kelas.php" class="nav-link text-white">
+
+                        <a href="wali_kelas.php"
+                           class="nav-link text-white">
+
                             Wali Kelas
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="kategori_pelanggaran.php" class="nav-link text-white">
+
+                        <a href="kategori_pelanggaran.php"
+                           class="nav-link text-white">
+
                             Kategori Pelanggaran
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="jenis_pelanggaran.php" class="nav-link text-white">
+
+                        <a href="jenis_pelanggaran.php"
+                           class="nav-link text-white">
+
                             Jenis Pelanggaran
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="laporan.php" class="nav-link text-white">
+
+                        <a href="laporan.php"
+                           class="nav-link text-white">
+
                             Laporan
+
                         </a>
+
                     </li>
 
                 <?php } elseif ($role == 'guru') { ?>
 
                     <li class="nav-item mb-2">
-                        <a href="catat_pelanggaran.php" class="nav-link text-white">
+
+                        <a href="catat_pelanggaran.php"
+                           class="nav-link text-white">
+
                             Catat Pelanggaran
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="tindakan.php" class="nav-link text-white">
+
+                        <a href="tindakan.php"
+                           class="nav-link text-white">
+
                             Tindakan
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="riwayat_pelanggaran.php" class="nav-link text-white">
+
+                        <a href="riwayat_pelanggaran.php"
+                           class="nav-link text-white">
+
                             Riwayat
+
                         </a>
+
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="rekap_poin.php" class="nav-link active">
+
+                        <a href="rekap_poin.php"
+                           class="nav-link active">
+
                             Rekap Poin
+
                         </a>
+
                     </li>
 
                 <?php } ?>
@@ -192,15 +391,25 @@ $query = mysqli_query($koneksi, "
                 <hr class="text-white-50">
 
                 <li class="nav-item mb-2">
-                    <a href="about_me.php" class="nav-link text-white">
+
+                    <a href="about_me.php"
+                       class="nav-link text-white">
+
                         About Me
+
                     </a>
+
                 </li>
 
                 <li class="nav-item">
-                    <a href="logout.php" class="nav-link text-danger">
+
+                    <a href="logout.php"
+                       class="nav-link text-danger">
+
                         Logout
+
                     </a>
+
                 </li>
 
             </ul>
@@ -208,135 +417,259 @@ $query = mysqli_query($koneksi, "
         </aside>
 
         <!-- KONTEN UTAMA -->
+
         <main class="col-md-9 col-lg-10 p-4">
 
             <!-- JUDUL -->
+
             <div class="mb-4">
+
                 <h2 class="fw-bold mb-1">
+
                     Rekap Poin Pelanggaran Siswa
+
                 </h2>
+
+                <?php if ($tahun_aktif) { ?>
+
+                    <p class="text-secondary mb-0">
+
+                        Tahun Ajaran:
+                        <?= htmlspecialchars($tahun_aktif['nama']); ?>
+
+                    </p>
+
+                <?php } ?>
 
             </div>
 
-
             <!-- TABEL REKAP -->
+
             <div class="card border-0 shadow-sm">
 
                 <div class="card-header bg-white py-3">
+
                     <h5 class="mb-0">
+
                         Daftar Rekap Poin
+
                     </h5>
+
                 </div>
 
                 <div class="card-body">
 
-                    <div class="table-responsive">
+                    <?php if (!$tahun_aktif) { ?>
 
-                        <table
-                            id="example"
-                            class="table table-bordered table-hover align-middle"
-                        >
+                        <div class="alert alert-warning">
 
-                            <thead class="table-primary">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Nama Siswa</th>
-                                    <th>Kelas</th>
-                                    <th>Jumlah Pelanggaran</th>
-                                    <th>Total Poin</th>
-                                </tr>
-                            </thead>
+                            Belum ada tahun ajaran yang aktif.
 
-                            <tbody>
+                        </div>
 
-                                <?php
+                    <?php } else { ?>
 
-                                $no = 1;
+                        <div class="table-responsive">
 
-                                while ($row = mysqli_fetch_assoc($query)) {
+                            <table
+                                id="example"
+                                class="table table-bordered table-hover align-middle"
+                            >
 
-                                ?>
+                                <thead class="table-primary">
 
                                     <tr>
 
-                                        <td>
-                                            <?php echo $no++; ?>
-                                        </td>
+                                        <th>No</th>
 
-                                        <td>
-                                            <?php echo htmlspecialchars($row['nama_siswa']); ?>
-                                        </td>
+                                        <th>Nama Siswa</th>
 
-                                        <td>
-                                            <?php echo htmlspecialchars($row['nama_kelas']); ?>
-                                        </td>
+                                        <th>Kelas</th>
 
-                                        <td class="text-center">
-                                            <?php echo $row['jumlah_pelanggaran']; ?>
-                                        </td>
+                                        <th>Jumlah Pelanggaran</th>
 
-                                        <td class="text-center">
-                                            <?php echo $row['total_poin']; ?>
-                                        </td>
+                                        <th>Total Poin</th>
+
+                                        <th>Sanksi</th>
 
                                     </tr>
 
-                                <?php } ?>
+                                </thead>
 
-                            </tbody>
+                                <tbody>
 
-                        </table>
+                                    <?php
 
-                    </div>
+                                    $no = 1;
+
+                                    if ($query) {
+
+                                        while ($row = mysqli_fetch_assoc($query)) {
+
+                                            $total = (int) $row['total_poin'];
+
+                                    ?>
+
+                                        <tr>
+
+                                            <td>
+                                                <?= $no++; ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($row['nama_siswa']); ?>
+                                            </td>
+
+                                            <td>
+                                                <?= htmlspecialchars($row['nama_kelas']); ?>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <?= (int) $row['jumlah_pelanggaran']; ?>
+                                            </td>
+
+                                            <td class="text-center">
+                                                <?= $total; ?>
+                                            </td>
+
+                                            <td class="text-center">
+
+                                                <?php if ($total >= 75) { ?>
+
+                                                    <span class="badge bg-danger">
+                                                        SP 3
+                                                    </span>
+
+                                                <?php } elseif ($total >= 50) { ?>
+
+                                                    <span class="badge bg-warning text-dark">
+                                                        SP 2
+                                                    </span>
+
+                                                <?php } elseif ($total >= 30) { ?>
+
+                                                    <span class="badge bg-primary">
+                                                        SP 1
+                                                    </span>
+
+                                                <?php } elseif ($total > 0) { ?>
+
+                                                    <span class="badge bg-success">
+                                                        Pembinaan / Teguran
+                                                    </span>
+
+                                                <?php } else { ?>
+
+                                                    <span class="badge bg-secondary">
+                                                        Belum Ada Pelanggaran
+                                                    </span>
+
+                                                <?php } ?>
+
+                                            </td>
+
+                                        </tr>
+
+                                    <?php
+
+                                        }
+
+                                    }
+
+                                    ?>
+
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    <?php } ?>
 
                 </div>
+
             </div>
 
             <p class="text-center text-secondary small mt-4">
+
                 ©Sofinurjanah
+
             </p>
 
         </main>
+
         <!-- AKHIR KONTEN UTAMA -->
 
     </div>
+
 </div>
 
-<!-- Bootstrap JavaScript -->
+<!-- BOOTSTRAP JAVASCRIPT -->
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript -->
+<!-- DATATABLES JAVASCRIPT -->
+
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- Pengaturan DataTables -->
+<!-- PENGATURAN DATATABLES -->
+
 <script>
+
     new DataTable('#example', {
+
         pageLength: 10,
+
         lengthMenu: [5, 10, 25, 50],
+
         order: [],
+
         layout: {
+
             topStart: 'info',
+
             topEnd: 'search',
+
             bottomStart: 'paging',
+
             bottomEnd: 'pageLength'
+
         },
+
         language: {
+
             search: 'Cari:',
+
             info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+
             infoEmpty: 'Tidak ada data',
+
             infoFiltered: '(difilter dari _MAX_ seluruh data)',
+
             zeroRecords: 'Data tidak ditemukan',
+
             emptyTable: 'Belum ada data siswa',
+
             lengthMenu: 'Tampilkan _MENU_ data',
+
             paginate: {
+
                 first: 'Pertama',
+
                 last: 'Terakhir',
+
                 next: '›',
+
                 previous: '‹'
+
             }
+
         }
+
     });
+
 </script>
 
 </body>
+
 </html>

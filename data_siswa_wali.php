@@ -169,6 +169,18 @@ if (!empty($daftar_kelas)) {
         </li>
 
         <li class="nav-item mb-2">
+            <a href="catat_pelanggaran.php" class="nav-link text-white">
+                Catat Pelanggaran
+            </a>
+        </li>
+
+        <li class="nav-item mb-2">
+                        <a href="tindakan_wali.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
+
+        <li class="nav-item mb-2">
             <a href="data_siswa_wali.php"
                class="nav-link <?= basename($_SERVER['PHP_SELF']) == 'data_siswa_wali.php' ? 'active' : 'text-white'; ?>">
                 Data Siswa di Kelas

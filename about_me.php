@@ -140,6 +140,18 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
                 <?php } elseif ($role == 'wali_kelas') { ?>
 
                     <li class="nav-item mb-2">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
+                            Catat Pelanggaran
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
+                        <a href="tindakan_wali.php" class="nav-link text-white">
+                            Tindakan
+                        </a>
+                    </li>
+
+                    <li class="nav-item mb-2">
                         <a href="data_siswa_wali.php" class="nav-link text-white">
                             Data Siswa di Kelasnya
                         </a>

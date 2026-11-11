@@ -12,73 +12,171 @@ if (!isset($_SESSION['role'])) {
 $nama = $_SESSION['nama'];
 $role = strtolower($_SESSION['role']);
 
-
 /* =========================
-   DATA SISWA UNTUK PILIHAN
+   FILTER TANGGAL
    ========================= */
 
-$data_siswa = mysqli_query(
-    $koneksi,
-    "SELECT DISTINCT siswa_id, nama_siswa
-     FROM t_pelanggaran_siswa
-     ORDER BY nama_siswa ASC"
-);
+$tanggal_awal = $_GET['tanggal_awal'] ?? '';
+$tanggal_akhir = $_GET['tanggal_akhir'] ?? '';
 
+if (
+    ($tanggal_awal !== '' &&
+     !preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_awal))
+    ||
+    ($tanggal_akhir !== '' &&
+     !preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggal_akhir))
+    ||
+    ($tanggal_awal !== '' &&
+     $tanggal_akhir !== '' &&
+     $tanggal_awal > $tanggal_akhir)
+) {
+    $tanggal_awal = '';
+    $tanggal_akhir = '';
+}
 
 /* =========================
-   PILIHAN SISWA
+   QUERY LAPORAN
    ========================= */
 
-$siswa_id = isset($_GET['siswa_id']) ? $_GET['siswa_id'] : '';
+$sql = "
+    SELECT
+        tps.*,
+        COALESCE(tp.poin, tps.poin) AS poin_jenis
+    FROM t_pelanggaran_siswa tps
+    LEFT JOIN t_pelanggaran tp
+        ON tp.id = tps.pelanggaran_id
+    WHERE 1=1
+";
 
-$data_laporan = null;
+$tipe = "";
+$parameter = [];
 
-if ($siswa_id != '') {
+if ($tanggal_awal !== '') {
+    $sql .= " AND tps.tanggal >= ?";
+    $tipe .= "s";
+    $parameter[] = $tanggal_awal;
+}
 
-    $data_laporan = mysqli_query(
-        $koneksi,
-        "SELECT *
-         FROM t_pelanggaran_siswa
-         WHERE siswa_id = '$siswa_id'
-         ORDER BY tanggal DESC"
+if ($tanggal_akhir !== '') {
+    $sql .= " AND tps.tanggal <= ?";
+    $tipe .= "s";
+    $parameter[] = $tanggal_akhir;
+}
+
+$sql .= " ORDER BY tps.tanggal DESC, tps.id DESC";
+
+$stmt_laporan = mysqli_prepare($koneksi, $sql);
+
+if (!empty($parameter)) {
+    mysqli_stmt_bind_param(
+        $stmt_laporan,
+        $tipe,
+        ...$parameter
     );
 }
 
+mysqli_stmt_execute($stmt_laporan);
+
+$data_laporan = mysqli_stmt_get_result($stmt_laporan);
 
 /* =========================
-   DATA UNTUK CETAK
+   RINGKASAN
+   ========================= */
+
+$sql_ringkasan = "
+    SELECT
+        COUNT(*) AS jumlah_pelanggaran,
+        COALESCE(SUM(COALESCE(tp.poin, tps.poin)), 0) AS total_poin,
+        COUNT(DISTINCT tps.siswa_id) AS jumlah_siswa
+    FROM t_pelanggaran_siswa tps
+    LEFT JOIN t_pelanggaran tp
+        ON tp.id = tps.pelanggaran_id
+    WHERE 1=1
+";
+
+$tipe_ringkasan = "";
+$parameter_ringkasan = [];
+
+/* FILTER TANGGAL AWAL */
+if ($tanggal_awal !== '') {
+    $sql_ringkasan .= " AND tps.tanggal >= ?";
+    $tipe_ringkasan .= "s";
+    $parameter_ringkasan[] = $tanggal_awal;
+}
+
+/* FILTER TANGGAL AKHIR */
+if ($tanggal_akhir !== '') {
+    $sql_ringkasan .= " AND tps.tanggal <= ?";
+    $tipe_ringkasan .= "s";
+    $parameter_ringkasan[] = $tanggal_akhir;
+}
+
+$stmt_ringkasan = mysqli_prepare(
+    $koneksi,
+    $sql_ringkasan
+);
+
+/* BIND PARAMETER */
+if (!empty($parameter_ringkasan)) {
+    mysqli_stmt_bind_param(
+        $stmt_ringkasan,
+        $tipe_ringkasan,
+        ...$parameter_ringkasan
+    );
+}
+
+mysqli_stmt_execute($stmt_ringkasan);
+
+$hasil_ringkasan = mysqli_stmt_get_result($stmt_ringkasan);
+
+$ringkasan = mysqli_fetch_assoc($hasil_ringkasan);
+
+$total_pelanggaran = (int) $ringkasan['jumlah_pelanggaran'];
+$total_poin = (int) $ringkasan['total_poin'];
+$total_siswa = (int) $ringkasan['jumlah_siswa'];
+
+/* =========================
+   DATA UNTUK CETAK DAN EXPORT
    ========================= */
 
 $data_cetak = [];
 
-if ($siswa_id != '') {
+mysqli_data_seek($data_laporan, 0);
 
-    $query_cetak = mysqli_query(
-        $koneksi,
-        "SELECT *
-         FROM t_pelanggaran_siswa
-         WHERE siswa_id = '$siswa_id'
-         ORDER BY tanggal ASC"
-    );
-
-    while ($row_cetak = mysqli_fetch_assoc($query_cetak)) {
-        $data_cetak[] = $row_cetak;
-    }
+while ($row = mysqli_fetch_assoc($data_laporan)) {
+    $data_cetak[] = $row;
 }
 
+mysqli_data_seek($data_laporan, 0);
+
+$json_cetak = json_encode(
+    $data_cetak,
+    JSON_HEX_TAG |
+    JSON_HEX_APOS |
+    JSON_HEX_QUOT |
+    JSON_HEX_AMP
+);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
     <title>Laporan Pelanggaran</title>
 
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
         rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
 </head>
 
@@ -86,21 +184,26 @@ if ($siswa_id != '') {
 
 <div class="container-fluid">
 
-    <div class="row">
+    <div class="row min-vh-100">
 
         <!-- SIDEBAR -->
-        <div class="col-md-3 col-lg-2 min-vh-100 p-3"
-             style="background-color: #30318B;">
+        <aside class="col-md-3 col-lg-2 min-vh-100 p-3"
+               style="background-color: #30318B;">
 
             <div class="mb-4 px-2">
+
                 <h3 class="text-white mb-1 fw-bold">
                     SIMPESMA
                 </h3>
 
-                <p class="text-white mb-0" style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+                <p class="text-white mb-0"
+                   style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
+
                     Sistem Informasi Manajemen
                     Pelanggaran Siswa Muhammadiyah
+
                 </p>
+
             </div>
 
             <ul class="nav nav-pills flex-column">
@@ -220,7 +323,6 @@ if ($siswa_id != '') {
                     </a>
                 </li>
 
-                <!-- LOGOUT -->
                 <li class="nav-item">
                     <a href="logout.php"
                        class="nav-link text-danger">
@@ -230,242 +332,274 @@ if ($siswa_id != '') {
 
             </ul>
 
-        </div>
+        </aside>
 
 
-        <!-- KONTEN -->
+        <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <!-- JUDUL HALAMAN -->
-            <div class="d-flex justify-content-between
-                        align-items-center mb-4">
+            <h3 class="fw-bold mb-4">
+                Laporan Pelanggaran
+            </h3>
 
-                <h3 class="fw-bold mb-0">
-                    Laporan Pelanggaran
-                </h3>
+
+            <!-- RINGKASAN -->
+            <div class="row g-3 mb-4">
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+
+                            <p class="text-secondary mb-2">
+                                Total Pelanggaran
+                            </p>
+
+                            <h3 class="fw-bold text-primary mb-0">
+                                <?= $total_pelanggaran; ?>
+                            </h3>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+
+                            <p class="text-secondary mb-2">
+                                Siswa Terlibat
+                            </p>
+
+                            <h3 class="fw-bold text-primary mb-0">
+                                <?= $total_siswa; ?>
+                            </h3>
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm h-100">
+                        <div class="card-body">
+
+                            <p class="text-secondary mb-2">
+                                Total Poin Pelanggaran
+                            </p>
+
+                            <h3 class="fw-bold text-primary mb-0">
+                                <?= $total_poin; ?>
+                            </h3>
+
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
-            <!-- PILIH SISWA -->
-            <form method="GET">
 
-                <div class="row">
+            <!-- DAFTAR LAPORAN -->
+            <div class="card border-0 shadow-sm">
 
-                    <div class="col-md-6">
+                <div class="card-header bg-white py-3">
 
-                        <label class="form-label">
-                            Pilih Siswa
-                        </label>
+                    <h5 class="mb-0">
+                        Daftar Laporan Pelanggaran
+                    </h5>
 
-                        <select
-                            name="siswa_id"
-                            class="form-select"
-                            required>
+                </div>
 
-                            <option value="">
-                                -- Pilih Siswa --
-                            </option>
+                <div class="card-body">
 
-                            <?php while ($siswa = mysqli_fetch_assoc($data_siswa)) { ?>
 
-                                <option
-                                    value="<?= $siswa['siswa_id']; ?>"
-                                    <?= ($siswa_id == $siswa['siswa_id']) ? 'selected' : ''; ?>>
+                    <!-- FILTER TANGGAL DAN PENCARIAN NAMA -->
+                    <form method="GET" class="mb-4 filter-laporan">
 
-                                    <?= htmlspecialchars($siswa['nama_siswa']); ?>
+                        <div class="row g-3 align-items-end">
 
-                                </option>
+                            <!-- TANGGAL AWAL -->
+                            <div class="col-md-3">
 
-                            <?php } ?>
+                                <label class="form-label">
+                                    Tanggal Awal
+                                </label>
 
-                        </select>
+                                <input
+                                    type="date"
+                                    name="tanggal_awal"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars($tanggal_awal); ?>">
 
-                    </div>
+                            </div>
 
-                    <div class="col-md-6">
+                            <!-- TANGGAL AKHIR -->
+                            <div class="col-md-3">
 
-                        <label class="form-label">
-                            &nbsp;
-                        </label>
+                                <label class="form-label">
+                                    Tanggal Akhir
+                                </label>
 
-                        <br>
+                                <input
+                                    type="date"
+                                    name="tanggal_akhir"
+                                    class="form-control"
+                                    value="<?= htmlspecialchars($tanggal_akhir); ?>">
+
+                            </div>
+
+                            <!-- CARI NAMA SISWA -->
+                            <div class="col-md-3">
+
+                                <label class="form-label">
+                                    Cari Nama Siswa
+                                </label>
+
+                                <input
+                                    type="search"
+                                    id="cariNamaLaporan"
+                                    class="form-control"
+                                    placeholder="Masukkan nama siswa...">
+
+                            </div>
+
+                            <!-- TOMBOL -->
+                            <div class="col-md-3 d-flex gap-2">
+
+                                <button type="submit" class="btn btn-primary">
+                                    Tampilkan
+                                </button>
+
+                                <a href="laporan.php" class="btn btn-secondary">
+                                    Reset
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </form>
+
+
+                    <!-- TOMBOL CETAK DAN EXPORT -->
+                    <div class="d-flex justify-content-end gap-2 mb-3">
 
                         <button
-                            type="submit"
+                            type="button"
+                            onclick="cetakLaporan()"
+                            class="btn btn-success">
+
+                            Cetak Laporan
+
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="exportExcel()"
                             class="btn btn-primary">
 
-                            Tampilkan Laporan
+                            <i class="bi bi-file-earmark-excel"></i>
+                            Export Excel
 
                         </button>
 
                     </div>
 
-                </div>
 
-            </form>
+                    <!-- TABEL -->
+                    <div class="table-responsive">
 
-            <br>
+                        <table
+                            id="tabelLaporan"
+                            class="table table-bordered table-striped table-hover align-middle">
 
-            <?php if ($data_laporan != null) { ?>
+                            <thead class="table-primary">
 
-                <?php
+                                <tr>
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>Jenis Pelanggaran</th>
+                                    <th>Poin</th>
+                                    <th>Guru</th>
+                                    <th>Status</th>
+                                </tr>
 
-                $data_pertama = mysqli_fetch_assoc($data_laporan);
+                            </thead>
 
-                if ($data_pertama) {
+                            <tbody>
 
-                ?>
+                                <?php
+                                $no = 1;
 
-                    <!-- INFORMASI SISWA -->
-                    <div class="card">
+                                if (mysqli_num_rows($data_laporan) > 0) {
 
-                        <div class="card-body">
+                                    while ($row = mysqli_fetch_assoc($data_laporan)) {
+                                ?>
 
-                            <h4>
-                                <?= htmlspecialchars($data_pertama['nama_siswa']); ?>
-                            </h4>
+                                    <tr>
 
-                            <p class="mb-1">
-                                Kelas :
-                                <b>
-                                    <?= htmlspecialchars($data_pertama['nama_kelas']); ?>
-                                </b>
-                            </p>
+                                        <td><?= $no++; ?></td>
 
-                            <p class="mb-0">
-                                Total Poin :
-                                <b>
-                                    <?php
-                                    $total_poin = $data_pertama['poin'];
-                                    ?>
-                                    <?= $total_poin; ?>
-                                </b>
-                            </p>
+                                        <td>
+                                            <?= htmlspecialchars($row['tanggal']); ?>
+                                        </td>
 
-                        </div>
+                                        <td>
+                                            <?= htmlspecialchars($row['nama_siswa']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($row['nama_kelas']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($row['nama_pelanggaran']); ?>
+                                        </td>
+
+                                        <td class="text-center fw-bold">
+                                            <?= (int) $row['poin_jenis']; ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($row['nama_guru']); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($row['status']); ?>
+                                        </td>
+
+                                    </tr>
+
+                                <?php
+                                    }
+
+                                } else {
+                                ?>
+
+                                    <tr>
+                                        <td colspan="8" class="text-center">
+                                            Belum ada data pelanggaran pada periode ini.
+                                        </td>
+                                    </tr>
+
+                                <?php } ?>
+
+                            </tbody>
+
+                        </table>
 
                     </div>
 
-                    <br>
+                </div>
 
-                    <!-- RIWAYAT PELANGGARAN -->
-                    <h5>
-                        Riwayat Pelanggaran
-                    </h5>
+            </div>
 
-                    <table class="table table-bordered">
 
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Pelanggaran</th>
-                                <th>Tanggal</th>
-                                <th>Poin</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-
-                            <?php
-                            $no = 1;
-                            $total_poin = $data_pertama['poin'];
-                            ?>
-
-                            <tr>
-                                <td>
-                                    <?= $no++; ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($data_pertama['nama_pelanggaran']); ?>
-                                </td>
-
-                                <td>
-                                    <?= $data_pertama['tanggal']; ?>
-                                </td>
-
-                                <td>
-                                    <?= $data_pertama['poin']; ?>
-                                </td>
-
-                                <td>
-                                    <?= htmlspecialchars($data_pertama['status']); ?>
-                                </td>
-                            </tr>
-
-                            <?php while ($row = mysqli_fetch_assoc($data_laporan)) { ?>
-
-                                <?php
-                                $total_poin += $row['poin'];
-                                ?>
-
-                                <tr>
-                                    <td>
-                                        <?= $no++; ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($row['nama_pelanggaran']); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= $row['tanggal']; ?>
-                                    </td>
-
-                                    <td>
-                                        <?= $row['poin']; ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($row['status']); ?>
-                                    </td>
-                                </tr>
-
-                            <?php } ?>
-
-                            <tr>
-                                <td colspan="3">
-                                    <b>TOTAL POIN</b>
-                                </td>
-
-                                <td colspan="2">
-                                    <b><?= $total_poin; ?></b>
-                                </td>
-                            </tr>
-
-                        </tbody>
-
-                    </table>
-
-                    <br>
-
-                    <!-- TOMBOL -->
-                    <button
-                        onclick="cetakLaporan()"
-                        class="btn btn-primary">
-
-                        Cetak
-
-                    </button>
-
-                    <button
-                        onclick="exportCSV()"
-                        class="btn btn-success">
-
-                        Export
-
-                    </button>
-
-                <?php } ?>
-
-            <?php } ?>
+            <p class="text-center text-secondary small mt-4">
+                ©Sofinurjanah
+            </p>
 
         </main>
-
-        <p class="text-center text-secondary small mt-4">
-            ©Sofinurjanah
-        </p>
 
     </div>
 
@@ -476,387 +610,115 @@ if ($siswa_id != '') {
 
 function cetakLaporan() {
 
-    let data = <?= json_encode($data_cetak ?? []); ?>;
+    let data = <?= $json_cetak ?: '[]'; ?>;
 
     if (data.length === 0) {
-        alert("Pilih siswa terlebih dahulu.");
+        alert("Belum ada data untuk dicetak.");
         return;
     }
 
-    let siswa = data[0];
+    let halaman = window.open("", "_blank", "width=900,height=800");
 
-    let halaman = window.open(
-        "",
-        "_blank",
-        "width=700,height=800"
-    );
+    if (!halaman) {
+        alert("Izinkan pop-up pada browser untuk mencetak.");
+        return;
+    }
 
     let totalPoin = 0;
-
-    data.forEach(function(row) {
-        totalPoin += parseInt(row.poin) || 0;
-    });
-
     let isiTabel = "";
 
     data.forEach(function(row, index) {
 
+        let poin = parseInt(row.poin_jenis) || 0;
+        totalPoin += poin;
+
         isiTabel += `
             <tr>
-                <td align="center">
-                    ${index + 1}
-                </td>
-
-                <td align="center">
-                    ${row.tanggal}
-                </td>
-
-                <td>
-                    ${row.nama_pelanggaran}
-                </td>
-
-                <td align="center">
-                    ${row.poin}
-                </td>
-
-                <td align="center">
-                    ${row.status}
-                </td>
+                <td>${index + 1}</td>
+                <td>${row.tanggal ?? ''}</td>
+                <td>${row.nama_siswa ?? ''}</td>
+                <td>${row.nama_kelas ?? ''}</td>
+                <td>${row.nama_pelanggaran ?? ''}</td>
+                <td>${poin}</td>
+                <td>${row.nama_guru ?? ''}</td>
+                <td>${row.status ?? ''}</td>
             </tr>
         `;
     });
 
-
     halaman.document.write(`
-
         <!DOCTYPE html>
         <html>
-
         <head>
+            <title>Laporan Pelanggaran Siswa</title>
 
-            <title>Kartu Pelanggaran Siswa</title>
+            <style>
+                body {
+                    font-family: Arial, sans-serif;
+                    margin: 25px;
+                    color: #26374a;
+                }
 
-            
-<style>
-    * {
-        box-sizing: border-box;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-    }
+                h2, p {
+                    text-align: center;
+                }
 
-    body {
-        margin: 22px;
-        font-family: Arial, sans-serif;
-        color: #26374a;
-        font-size: 12px;
-        background: #ffffff;
-    }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                    font-size: 11px;
+                }
 
-    body > table {
-        width: 92%;
-        border: 1px solid #dce5ef;
-        border-spacing: 0;
-        border-radius: 8px;
-        overflow: hidden;
-        padding: 0;
-    }
+                th, td {
+                    border: 1px solid #999;
+                    padding: 8px 5px;
+                    text-align: center;
+                }
 
-    /* Judul kartu */
-    body > table > tbody > tr:first-child > td {
-        background: #174675;
-        color: #ffffff;
-        padding: 20px 10px;
-        border-bottom: 3px solid #e5b85c;
-    }
+                th {
+                    background: #eaf1f8;
+                }
 
-    body > table > tbody > tr:first-child font {
-        color: #ffffff;
-    }
+                .total {
+                    text-align: right;
+                    font-weight: bold;
+                    margin-top: 15px;
+                }
 
-    /* Informasi siswa */
-    body > table > tbody > tr:nth-child(2) > td {
-        padding: 14px 12px;
-        background: #f4f7fb;
-    }
-
-    body > table > tbody > tr:nth-child(2) table {
-        border-collapse: collapse;
-    }
-
-    body > table > tbody > tr:nth-child(2) table td {
-        padding: 5px 6px;
-    }
-
-    /* Tabel pelanggaran */
-    body > table > tbody > tr:nth-child(3) > td > table {
-        width: 100%;
-        border-collapse: collapse;
-        border: 1px solid #dce5ef;
-    }
-
-    body > table > tbody > tr:nth-child(3) th {
-        background: #eaf1f8;
-        color: #174675;
-        padding: 9px 6px;
-        border-bottom: 1px solid #cbd8e6;
-    }
-
-    body > table > tbody > tr:nth-child(3) td {
-        padding: 8px 6px;
-        border-bottom: 1px solid #e5eaf0;
-    }
-
-    /* Baris tabel selang-seling */
-    body > table > tbody > tr:nth-child(3) tr:nth-child(even) td {
-        background: #f7f9fc;
-    }
-
-    /* Total poin */
-    body > table > tbody > tr:nth-child(4) > td {
-        padding: 12px;
-        color: #174675;
-        background: #f0f5fa;
-        text-align: right;
-        border-top: 1px solid #dce5ef;
-    }
-
-    /* Tanda tangan */
-    body > table > tbody > tr:nth-child(5) > td {
-        padding: 35px 10px 20px;
-    }
-
-    body > table > tbody > tr:nth-child(5) table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    body > table > tbody > tr:nth-child(5) table td {
-        padding: 10px 6px;
-        background: #ffffff;
-        color: #26374a;
-        border: none;
-    }
-
-    @media print {
-        body {
-            margin: 10mm;
-        }
-
-        body > table {
-            width: 100%;
-        }
-    }
-</style>
-
-
+                @media print {
+                    body {
+                        margin: 10mm;
+                    }
+                }
+            </style>
         </head>
 
         <body>
 
-            <table
-                width="92%"
-                align="center"
-                cellpadding="0"
-                cellspacing="0">
+            <h2>LAPORAN PELANGGARAN SISWA</h2>
+            <p>SISTEM INFORMASI MANAJEMEN PELANGGARAN SISWA MUHAMMADIYAH</p>
 
-                <!-- JUDUL -->
-                <tr>
-                    <td align="center">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Tanggal</th>
+                        <th>Nama Siswa</th>
+                        <th>Kelas</th>
+                        <th>Pelanggaran</th>
+                        <th>Poin</th>
+                        <th>Guru</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
 
-                        <font face="Arial" size="4">
-                            <b>KARTU PELANGGARAN SISWA</b>
-                        </font>
-
-                        <br>
-
-                        <font face="Arial" size="2">
-                            SISTEM PELANGGARAN SISWA
-                        </font>
-
-                        <br>
-
-                        <font face="Arial" size="2">
-                            TAHUN PELAJARAN 2026-2027
-                        </font>
-
-                        <br><br><br>
-
-                    </td>
-                </tr>
-
-                <!-- DATA SISWA -->
-                <tr>
-                    <td>
-
-                        <table
-                            width="100%"
-                            cellpadding="3"
-                            cellspacing="0">
-
-                            <tr>
-                                <td width="18%">
-                                    <font face="Arial" size="2">
-                                        <b>NAMA</b>
-                                    </font>
-                                </td>
-
-                                <td width="5%">
-                                    <font face="Arial" size="2">:</font>
-                                </td>
-
-                                <td>
-                                    <font face="Arial" size="2">
-                                        ${siswa.nama_siswa}
-                                    </font>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <font face="Arial" size="2">
-                                        <b>KELAS</b>
-                                    </font>
-                                </td>
-
-                                <td>
-                                    <font face="Arial" size="2">:</font>
-                                </td>
-
-                                <td>
-                                    <font face="Arial" size="2">
-                                        ${siswa.nama_kelas}
-                                    </font>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td>
-                                    <font face="Arial" size="2">
-                                        <b>GURU</b>
-                                    </font>
-                                </td>
-
-                                <td>
-                                    <font face="Arial" size="2">:</font>
-                                </td>
-
-                                <td>
-                                    <font face="Arial" size="2">
-                                        ${siswa.nama_guru}
-                                    </font>
-                                </td>
-                            </tr>
-
-                        </table>
-
-                    </td>
-                </tr>
-
-                <!-- TABEL PELANGGARAN -->
-                <tr>
-                    <td>
-
-                        <br><br>
-
-                        <table
-                            width="100%"
-                            border="1"
-                            cellpadding="6"
-                            cellspacing="0">
-
-                            <tr>
-                                <th width="7%">
-                                    <font face="Arial" size="2">No</font>
-                                </th>
-
-                                <th width="21%">
-                                    <font face="Arial" size="2">TANGGAL</font>
-                                </th>
-
-                                <th width="43%">
-                                    <font face="Arial" size="2">
-                                        JENIS PELANGGARAN
-                                    </font>
-                                </th>
-
-                                <th width="10%">
-                                    <font face="Arial" size="2">POIN</font>
-                                </th>
-
-                                <th width="19%">
-                                    <font face="Arial" size="2">STATUS</font>
-                                </th>
-                            </tr>
-
-                            ${isiTabel}
-
-                        </table>
-
-                    </td>
-                </tr>
-
-                <!-- TOTAL POIN -->
-                <tr>
-                    <td align="right">
-
-                        <br>
-
-                        <font face="Arial" size="2">
-                            <b>
-                                TOTAL POIN : ${totalPoin}
-                            </b>
-                        </font>
-
-                    </td>
-                </tr>
-
-                <!-- TANDA TANGAN -->
-                <tr>
-                    <td>
-
-                        <br><br><br><br><br>
-
-                        <table
-                            width="100%"
-                            cellpadding="3"
-                            cellspacing="0">
-
-                            <tr>
-                                <td align="center">
-                                    <font face="Arial" size="2">
-                                        <b>Orang Tua / Wali Murid</b>
-                                    </font>
-                                </td>
-
-                                <td align="center">
-                                    <font face="Arial" size="2">
-                                        <b>Wali Kelas</b>
-                                    </font>
-                                </td>
-                            </tr>
-
-                            <tr>
-                                <td align="center">
-                                    <br><br><br><br>
-                                    <font face="Arial" size="2">
-                                        (................................)
-                                    </font>
-                                </td>
-
-                                <td align="center">
-                                    <br><br><br><br>
-                                    <font face="Arial" size="2">
-                                        (................................)
-                                    </font>
-                                </td>
-                            </tr>
-
-                        </table>
-
-                    </td>
-                </tr>
-
+                <tbody>
+                    ${isiTabel}
+                </tbody>
             </table>
+
+            <p class="total">TOTAL POIN: ${totalPoin}</p>
 
             <script>
                 window.onload = function() {
@@ -866,78 +728,142 @@ function cetakLaporan() {
 
         </body>
         </html>
-
     `);
 
     halaman.document.close();
 }
 
 
-function exportCSV() {
+function exportExcel() {
 
-    let table =
-        document.querySelector("table");
+    let table = document.getElementById("tabelLaporan");
 
-    if (!table) {
-
-        alert(
-            "Pilih siswa terlebih dahulu."
-        );
-
+    if (!table || table.querySelectorAll("tbody tr").length === 0) {
+        alert("Belum ada data untuk diexport.");
         return;
-
     }
 
-    let rows =
-        table.querySelectorAll("tr");
-
-    let csv = [];
-
-    rows.forEach(function(row) {
-
-        let cols =
-            row.querySelectorAll("th, td");
-
-        let data = [];
-
-        cols.forEach(function(col) {
-
-            data.push(
-                '"' +
-                col.innerText.replace(/"/g, '""') +
-                '"'
-            );
-
-        });
-
-        csv.push(
-            data.join(",")
-        );
-
+    let workbook = XLSX.utils.table_to_book(table, {
+        sheet: "Laporan Pelanggaran"
     });
 
-    let file =
-        new Blob(
-            [csv.join("\n")],
-            {
-                type: "text/csv"
-            }
-        );
-
-    let link =
-        document.createElement("a");
-
-    link.href =
-        URL.createObjectURL(file);
-
-    link.download =
-        "laporan_pelanggaran.csv";
-
-    link.click();
+    XLSX.writeFile(
+        workbook,
+        "Laporan_Pelanggaran.xlsx"
+    );
 
 }
 
+
+/* =========================
+   PENCARIAN NAMA SISWA
+   ========================= */
+
+document.addEventListener('DOMContentLoaded', function () {
+
+    const inputCari = document.getElementById('cariNamaLaporan');
+    const tabel = document.getElementById('tabelLaporan');
+
+    if (!inputCari || !tabel) {
+        return;
+    }
+
+    const tbody = tabel.querySelector('tbody');
+
+    const semuaBaris = Array.from(
+        tbody.querySelectorAll('tr')
+    ).filter(function(row) {
+        return row.cells.length === 8;
+    });
+
+    const barisTidakDitemukan = document.createElement('tr');
+
+    barisTidakDitemukan.innerHTML = `
+        <td colspan="8" class="text-center text-danger py-3">
+            Nama siswa tidak ditemukan.
+        </td>
+    `;
+
+    barisTidakDitemukan.style.display = 'none';
+
+    tbody.appendChild(barisTidakDitemukan);
+
+    inputCari.addEventListener('input', function () {
+
+        const kataKunci = this.value.trim().toLowerCase();
+
+        let jumlahCocok = 0;
+
+        semuaBaris.forEach(function(row) {
+
+            const namaSiswa = row.cells[2].textContent
+                .trim()
+                .toLowerCase();
+
+            if (namaSiswa.includes(kataKunci)) {
+
+                row.style.display = '';
+                jumlahCocok++;
+
+            } else {
+
+                row.style.display = 'none';
+
+            }
+
+        });
+
+        barisTidakDitemukan.style.display =
+            kataKunci !== '' &&
+            jumlahCocok === 0 &&
+            semuaBaris.length > 0
+                ? ''
+                : 'none';
+
+    });
+
+});
+
 </script>
+
+
+<style>
+
+.filter-laporan .form-control {
+    height: 42px;
+}
+
+.filter-laporan .btn {
+    height: 42px;
+    white-space: nowrap;
+}
+
+@media print {
+
+    aside,
+    form,
+    .btn,
+    .card-header {
+        display: none !important;
+    }
+
+    main {
+        width: 100% !important;
+        padding: 10px !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+    .card {
+        box-shadow: none !important;
+        border: 1px solid #ddd !important;
+    }
+
+}
+
+</style>
 
 </body>
 </html>

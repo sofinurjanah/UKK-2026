@@ -1,3 +1,4 @@
+
 <?php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
@@ -120,55 +121,17 @@ $jumlah_data = ($query) ? mysqli_num_rows($query) : 0;
     <link rel="stylesheet" href="style.css">
 
     <style>
-        body {
-            background-color: #f5f6fa;
+        /* TABEL RESPONSIF */
+        .table-responsive {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .sidebar {
-            background-color: #30318B;
-            min-height: 100vh;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding: 25px 15px;
-            color: white;
-        }
-
-        .sidebar h5 {
-            font-weight: 700;
-            margin-bottom: 35px;
-            padding: 0 10px;
-        }
-
-        .sidebar a {
-            display: block;
-            color: #e4e4f5;
-            text-decoration: none;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 5px;
-            font-size: 14px;
-        }
-
-        .sidebar a:hover,
-        .sidebar a.active {
-            background-color: rgba(255, 255, 255, 0.17);
-            color: white;
-        }
-
-        .sidebar .logout {
-            color: #ffb3b3;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            padding: 30px;
-        }
-
-        .card {
-            border: none;
-            border-radius: 12px;
+        #example {
+            width: 100% !important;
+            min-width: 900px;
         }
 
         .table th {
@@ -181,24 +144,41 @@ $jumlah_data = ($query) ? mysqli_num_rows($query) : 0;
             vertical-align: middle;
         }
 
-        .filter-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        /* RESPONSIF TABLET DAN HP */
+        @media (max-width: 767.98px) {
+            .main-content,
+            main.col-md-9 {
+                padding: 16px !important;
+            }
+
+            .filter-card .row > div {
+                width: 100%;
+            }
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                min-height: auto;
-                position: relative;
+        /* HP KECIL */
+        @media (max-width: 420px) {
+            main.col-md-9 {
+                padding: 12px !important;
             }
+        }
 
-            .main-content {
-                margin-left: 0;
-                padding: 15px;
-            }
+        /* JARAK ANTARA FILTER DAN TABEL */
+        .filter-card {
+            background: #fff;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 25px !important;
+        }
+
+        /* JARAK BAGIAN TABEL */
+        .filter-card + .card {
+            margin-top: 0 !important;
+        }
+
+        /* JARAK JUDUL TABEL */
+        .card-body h5 {
+            margin-bottom: 20px !important;
         }
     </style>
 </head>
@@ -335,292 +315,287 @@ $jumlah_data = ($query) ? mysqli_num_rows($query) : 0;
 
         </aside>
 
+        <!-- KONTEN UTAMA -->
+        <main class="col-md-9 col-lg-10 p-4">
 
-    <!-- KONTEN UTAMA -->
-    <div class="main-content">
+            <!-- JUDUL -->
+            <div class="mb-4">
 
-        <!-- JUDUL -->
-        <div class="mb-4">
+                <h4 class="fw-bold mb-1">
+                    Riwayat Pelanggaran
+                </h4>
 
-            <h4 class="fw-bold mb-1">
-                Riwayat Pelanggaran
-            </h4>
+                <p class="text-secondary mb-0">
+                    Daftar pelanggaran siswa yang telah diselesaikan dan dicatat oleh Anda.
+                </p>
 
-            <p class="text-secondary mb-0">
-                Daftar pelanggaran siswa yang telah diselesaikan dan dicatat oleh Anda.
-            </p>
+            </div>
 
-        </div>
+            <!-- TOTAL DATA -->
+            <div class="row mb-4">
 
+                <div class="col-md-4">
 
-        <!-- TOTAL DATA -->
-        <div class="row mb-4">
+                    <div class="card shadow-sm">
 
-            <div class="col-md-4">
+                        <div class="card-body">
 
-                <div class="card shadow-sm">
+                            <div class="text-secondary small mb-2">
+                                Total Riwayat Selesai
+                            </div>
 
-                    <div class="card-body">
+                            <h3 class="fw-bold mb-0">
+                                <?= $jumlah_data; ?>
+                            </h3>
 
-                        <div class="text-secondary small mb-2">
-                            Total Riwayat Selesai
                         </div>
 
-                        <h3 class="fw-bold mb-0">
-                            <?= $jumlah_data; ?>
-                        </h3>
-
                     </div>
 
                 </div>
 
             </div>
 
-        </div>
+            <!-- FILTER -->
+            <div class="filter-card shadow-sm">
 
+                <form method="GET" action="">
 
-        <!-- FILTER -->
-        <div class="filter-card shadow-sm">
+                    <div class="row g-3 align-items-end">
 
-            <form method="GET" action="">
+                        <div class="col-md-4">
 
-                <div class="row g-3 align-items-end">
+                            <label class="form-label fw-semibold">
+                                Nama Siswa
+                            </label>
 
-                    <div class="col-md-4">
+                            <input
+                                type="text"
+                                name="nama_siswa"
+                                class="form-control"
+                                placeholder="Cari nama siswa..."
+                                value="<?= htmlspecialchars($nama_siswa); ?>"
+                            >
 
-                        <label class="form-label fw-semibold">
-                            Nama Siswa
-                        </label>
+                        </div>
 
-                        <input
-                            type="text"
-                            name="nama_siswa"
-                            class="form-control"
-                            placeholder="Cari nama siswa..."
-                            value="<?= htmlspecialchars($nama_siswa); ?>"
-                        >
+                        <div class="col-md-3">
 
-                    </div>
+                            <label class="form-label fw-semibold">
+                                Tanggal Awal
+                            </label>
 
+                            <input
+                                type="date"
+                                name="tanggal_awal"
+                                class="form-control"
+                                value="<?= htmlspecialchars($tanggal_awal); ?>"
+                            >
 
-                    <div class="col-md-3">
+                        </div>
 
-                        <label class="form-label fw-semibold">
-                            Tanggal Awal
-                        </label>
+                        <div class="col-md-3">
 
-                        <input
-                            type="date"
-                            name="tanggal_awal"
-                            class="form-control"
-                            value="<?= htmlspecialchars($tanggal_awal); ?>"
-                        >
+                            <label class="form-label fw-semibold">
+                                Tanggal Akhir
+                            </label>
 
-                    </div>
+                            <input
+                                type="date"
+                                name="tanggal_akhir"
+                                class="form-control"
+                                value="<?= htmlspecialchars($tanggal_akhir); ?>"
+                            >
 
+                        </div>
 
-                    <div class="col-md-3">
+                        <div class="col-md-2 d-flex gap-2">
 
-                        <label class="form-label fw-semibold">
-                            Tanggal Akhir
-                        </label>
+                            <button type="submit" class="btn btn-primary w-100">
+                                Cari
+                            </button>
 
-                        <input
-                            type="date"
-                            name="tanggal_akhir"
-                            class="form-control"
-                            value="<?= htmlspecialchars($tanggal_akhir); ?>"
-                        >
+                            <a href="riwayat_pelanggaran.php" class="btn btn-light border">
+                                Reset
+                            </a>
 
-                    </div>
-
-
-                    <div class="col-md-2 d-flex gap-2">
-
-                        <button type="submit" class="btn btn-primary w-100">
-                            Cari
-                        </button>
-
-                        <a href="riwayat_pelanggaran.php" class="btn btn-light border">
-                            Reset
-                        </a>
+                        </div>
 
                     </div>
 
-                </div>
+                </form>
 
-            </form>
+            </div>
 
-        </div>
+            <!-- TABEL RIWAYAT -->
+            <div class="card shadow-sm">
 
+                <div class="card-body">
 
-        <!-- TABEL RIWAYAT -->
-        <div class="card shadow-sm">
+                    <div class="mb-3">
 
-            <div class="card-body">
+                        <h5 class="fw-bold mb-0">
+                            Data Riwayat Pelanggaran
+                        </h5>
 
-                <div class="mb-3">
-
-                    <h5 class="fw-bold mb-0">
-                        Data Riwayat Pelanggaran
-                    </h5>
-
-                </div>
-
-
-                <?php if ($guru_id <= 0) { ?>
-
-                    <div class="alert alert-warning">
-                        Akun guru belum terhubung dengan data guru.
-                        Periksa hubungan antara kolom
-                        <strong>t_guru.user_id</strong> dan akun yang sedang login.
                     </div>
 
-                <?php } ?>
+                    <?php if ($guru_id <= 0) { ?>
 
+                        <div class="alert alert-warning">
+                            Akun guru belum terhubung dengan data guru.
+                            Periksa hubungan antara kolom
+                            <strong>t_guru.user_id</strong> dan akun yang sedang login.
+                        </div>
 
-                <div class="table-responsive">
+                    <?php } ?>
 
-                    <table id="example" class="table table-bordered table-striped table-hover w-100">
+                    <div class="table-responsive">
 
-                        <thead class="table-light">
+                        <table id="example" class="table table-bordered table-striped table-hover w-100">
 
-                            <tr>
-                                <th>No</th>
-                                <th>Tanggal</th>
-                                <th>Nama Siswa</th>
-                                <th>Kelas</th>
-                                <th>Pelanggaran</th>
-                                <th>Poin</th>
-                                <th>Guru</th>
-                                <th>Keterangan</th>
-                                <th>Tindakan</th>
-                                <th>Status</th>
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            <?php
-                            $no = 1;
-
-                            if ($query && mysqli_num_rows($query) > 0) {
-
-                                while ($data = mysqli_fetch_assoc($query)) {
-                            ?>
+                            <thead class="table-light">
 
                                 <tr>
-
-                                    <td><?= $no++; ?></td>
-
-                                    <td>
-                                        <?= !empty($data['tanggal'])
-                                            ? date('d-m-Y', strtotime($data['tanggal']))
-                                            : '-'; ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['poin'] ?? '0'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <?= htmlspecialchars($data['tindakan'] ?? '-'); ?>
-                                    </td>
-
-                                    <td>
-                                        <span class="badge bg-success">
-                                            <?= htmlspecialchars($data['status'] ?? '-'); ?>
-                                        </span>
-                                    </td>
-
+                                    <th>No</th>
+                                    <th>Tanggal</th>
+                                    <th>Nama Siswa</th>
+                                    <th>Kelas</th>
+                                    <th>Pelanggaran</th>
+                                    <th>Poin</th>
+                                    <th>Guru</th>
+                                    <th>Keterangan</th>
+                                    <th>Tindakan</th>
+                                    <th>Status</th>
                                 </tr>
 
-                            <?php
+                            </thead>
+
+                            <tbody>
+
+                                <?php
+                                $no = 1;
+
+                                if ($query && mysqli_num_rows($query) > 0) {
+
+                                    while ($data = mysqli_fetch_assoc($query)) {
+                                ?>
+
+                                    <tr>
+
+                                        <td><?= $no++; ?></td>
+
+                                        <td>
+                                            <?= !empty($data['tanggal'])
+                                                ? date('d-m-Y', strtotime($data['tanggal']))
+                                                : '-'; ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_siswa'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_kelas'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_pelanggaran'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['poin'] ?? '0'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['nama_guru'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['keterangan'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <?= htmlspecialchars($data['tindakan'] ?? '-'); ?>
+                                        </td>
+
+                                        <td>
+                                            <span class="badge bg-success">
+                                                <?= htmlspecialchars($data['status'] ?? '-'); ?>
+                                            </span>
+                                        </td>
+
+                                    </tr>
+
+                                <?php
+                                    }
                                 }
-                            }
-                            ?>
+                                ?>
 
-                        </tbody>
+                            </tbody>
 
-                    </table>
+                        </table>
+
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
+        </main>
 
     </div>
+</div>
 
+<!-- JAVASCRIPT -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
-    <!-- JAVASCRIPT -->
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-    <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).ready(function () {
 
+        $('#example').DataTable({
 
-    <script>
-        $(document).ready(function () {
+            pageLength: 10,
 
-            $('#example').DataTable({
+            ordering: true,
 
-                pageLength: 10,
+            searching: true,
 
-                ordering: true,
+            scrollX: true,
 
-                searching: true,
+            autoWidth: false,
 
-                language: {
+            language: {
 
-                    search: "Cari:",
+                search: "Cari:",
 
-                    lengthMenu: "Tampilkan _MENU_ data",
+                lengthMenu: "Tampilkan _MENU_ data",
 
-                    info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
 
-                    infoEmpty: "Tidak ada data",
+                infoEmpty: "Tidak ada data",
 
-                    zeroRecords: "Data tidak ditemukan",
+                zeroRecords: "Data tidak ditemukan",
 
-                    emptyTable: "Belum ada riwayat pelanggaran",
+                emptyTable: "Belum ada riwayat pelanggaran",
 
-                    paginate: {
-                        first: "Pertama",
-                        last: "Terakhir",
-                        next: "Selanjutnya",
-                        previous: "Sebelumnya"
-                    }
-
+                paginate: {
+                    first: "Pertama",
+                    last: "Terakhir",
+                    next: "Selanjutnya",
+                    previous: "Sebelumnya"
                 }
 
-            });
+            }
 
         });
-    </script>
+
+    });
+</script>
 
 </body>
 </html>
