@@ -85,7 +85,7 @@ if ($guru_id <= 0 && $guru_id_session > 0) {
 
 // =====================================
 // AMBIL RIWAYAT PELANGGARAN
-// BERDASARKAN GURU YANG LOGIN
+// HANYA STATUS SELESAI
 // =====================================
 
 $data_riwayat = false;
@@ -105,6 +105,7 @@ if ($guru_id > 0) {
             status
         FROM t_pelanggaran_siswa
         WHERE guru_id = ?
+          AND LOWER(TRIM(COALESCE(status, ''))) = 'selesai'
         ORDER BY tanggal DESC, id DESC
     ");
 
