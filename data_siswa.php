@@ -576,21 +576,6 @@ function e($teks) {
                                    required>
                         </div>
 
-                        <div class="col-md-6 mb-3">
-                        <label class="form-label">Kelas</label>
-
-                        <select name="kelas_id" class="form-select" required>
-                            <option value="">-- Pilih Kelas --</option>
-
-                            <?php while ($kelas = mysqli_fetch_assoc($kelas_edit)) { ?>
-                                <option value="<?= e($kelas['id']); ?>"
-                                    <?= ($data_kelas_edit && $data_kelas_edit['kelas_id'] == $kelas['id']) ? "selected" : ""; ?>>
-                                    <?= e($kelas['nama']); ?>
-                                </option>
-                            <?php } ?>
-
-                            </select>
-                        </div>
 
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Jenis Kelamin</label>

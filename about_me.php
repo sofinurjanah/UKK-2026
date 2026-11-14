@@ -10,6 +10,11 @@ if (!isset($_SESSION['role'])) {
 $nama = 'Sofi Nurjanah';
 $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
+// Mengubah nama role agar lebih rapi
+$nama_role = ($role === 'wali_kelas')
+    ? 'Wali Kelas'
+    : ucfirst($role);
+
 ?>
 
 <!DOCTYPE html>
@@ -218,7 +223,7 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
                     </h2>
 
                     <span class="profile-role">
-                        <?= htmlspecialchars(ucfirst($role)); ?>
+                        Admin
                     </span>
 
                     <div class="profile-details">
@@ -229,7 +234,7 @@ $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
                         <p>
                             <strong>Role:</strong>
-                            <?= htmlspecialchars(ucfirst($role)); ?>
+                            <?= htmlspecialchars($nama_role); ?>
                         </p>
                     </div>
 

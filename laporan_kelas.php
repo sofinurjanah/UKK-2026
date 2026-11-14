@@ -61,8 +61,9 @@ if ($guru_id <= 0) {
     }
 }
 
-/* AMBIL DATA WALI KELAS AKTIF */
-$data_wali = null;
+/* AMBIL SEMUA DATA WALI KELAS AKTIF */
+$daftar_wali = [];
+$nama_kelas_wali = '';
 
 if ($guru_id > 0) {
 
@@ -81,19 +82,29 @@ if ($guru_id > 0) {
          WHERE wk.guru_id = ?
            AND wk.status_aktif = 1
            AND ta.status_aktif = 1
-         ORDER BY wk.id DESC
-         LIMIT 1"
+         ORDER BY wk.id DESC"
     );
 
     mysqli_stmt_bind_param($stmt_wali, "i", $guru_id);
     mysqli_stmt_execute($stmt_wali);
 
     $hasil_wali = mysqli_stmt_get_result($stmt_wali);
-    $data_wali = mysqli_fetch_assoc($hasil_wali);
+
+    while ($row_wali = mysqli_fetch_assoc($hasil_wali)) {
+        $daftar_wali[] = $row_wali;
+    }
 
     mysqli_stmt_close($stmt_wali);
-}
 
+    // Gabungkan nama semua kelas
+    $nama_semua_kelas = [];
+
+    foreach ($daftar_wali as $wali) {
+        $nama_semua_kelas[] = $wali['nama_kelas'];
+    }
+
+    $nama_kelas_wali = implode(' dan ', $nama_semua_kelas);
+}
 /* FILTER TANGGAL */
 $tanggal_awal = $_GET['tanggal_awal'] ?? '';
 $tanggal_akhir = $_GET['tanggal_akhir'] ?? '';
@@ -120,70 +131,106 @@ $total_pelanggaran = 0;
 $total_poin = 0;
 $total_siswa = 0;
 
-if ($data_wali) {
+if (!empty($daftar_wali)) {
 
-    $kelas_id = (int) $data_wali['kelas_id'];
-    $tahun_id = (int) $data_wali['tahun_ajaran_id'];
+    /*
+    =====================================
+    MEMBUAT FILTER UNTUK SEMUA KELAS
+    =====================================
+    */
 
-    /* QUERY LAPORAN */
+    $kondisi_kelas = [];
+    $parameter_kelas = [];
+
+    foreach ($daftar_wali as $wali) {
+
+        $kondisi_kelas[] = "(kelas_id = ? AND tahun_ajaran_id = ?)";
+
+        $parameter_kelas[] = (int) $wali['kelas_id'];
+        $parameter_kelas[] = (int) $wali['tahun_ajaran_id'];
+    }
+
+    $filter_kelas = "(" . implode(" OR ", $kondisi_kelas) . ")";
+
+    /*
+    =====================================
+    QUERY LAPORAN
+    =====================================
+    */
+
     $sql = "
         SELECT
-            id,
-            tanggal,
-            siswa_id,
-            nama_siswa,
-            nama_pelanggaran,
-            nama_guru,
-            poin,
-            keterangan,
-            status
-        FROM t_pelanggaran_siswa
-        WHERE kelas_id = ?
-        AND tahun_ajaran_id = ?
-    ";
+            ps.id,
+            ps.tanggal,
+            ps.siswa_id,
+            ps.nama_siswa,
+            k.nama AS nama_kelas,
+            ps.nama_pelanggaran,
+            ps.nama_guru,
+            ps.poin,
+            ps.keterangan,
+            ps.status
+        FROM t_pelanggaran_siswa ps
+        INNER JOIN t_kelas k
+            ON ps.kelas_id = k.id
+        WHERE " . str_replace(
+            ['kelas_id', 'tahun_ajaran_id'],
+            ['ps.kelas_id', 'ps.tahun_ajaran_id'],
+            $filter_kelas
+        );
 
-    $tipe = "ii";
-    $parameter = [$kelas_id, $tahun_id];
+    $tipe = str_repeat("i", count($parameter_kelas));
+    $parameter = $parameter_kelas;
 
     if ($tanggal_awal !== '') {
-        $sql .= " AND tanggal >= ?";
+        $sql .= " AND ps.tanggal >= ?";
         $tipe .= "s";
         $parameter[] = $tanggal_awal;
     }
 
     if ($tanggal_akhir !== '') {
-        $sql .= " AND tanggal <= ?";
+        $sql .= " AND ps.tanggal <= ?";
         $tipe .= "s";
         $parameter[] = $tanggal_akhir;
     }
 
-    $sql .= " ORDER BY tanggal DESC, id DESC";
+    $sql .= " ORDER BY ps.tanggal DESC, ps.id DESC";
 
     $stmt_laporan = mysqli_prepare($koneksi, $sql);
 
-    mysqli_stmt_bind_param(
-        $stmt_laporan,
-        $tipe,
-        ...$parameter
-    );
+    if ($stmt_laporan) {
 
-    mysqli_stmt_execute($stmt_laporan);
+        mysqli_stmt_bind_param(
+            $stmt_laporan,
+            $tipe,
+            ...$parameter
+        );
 
-    $data_laporan = mysqli_stmt_get_result($stmt_laporan);
+        mysqli_stmt_execute($stmt_laporan);
 
-    /* HITUNG RINGKASAN */
+        $data_laporan = mysqli_stmt_get_result($stmt_laporan);
+    }
+
+    /*
+    =====================================
+    HITUNG RINGKASAN SEMUA KELAS
+    =====================================
+    */
+
     $sql_ringkasan = "
         SELECT
             COUNT(*) AS jumlah_pelanggaran,
             COALESCE(SUM(poin), 0) AS total_poin,
             COUNT(DISTINCT siswa_id) AS jumlah_siswa
         FROM t_pelanggaran_siswa
-        WHERE kelas_id = ?
-          AND tahun_ajaran_id = ?
-    ";
+        WHERE " . $filter_kelas;
 
-    $tipe_ringkasan = "ii";
-    $parameter_ringkasan = [$kelas_id, $tahun_id];
+    $tipe_ringkasan = str_repeat(
+        "i",
+        count($parameter_kelas)
+    );
+
+    $parameter_ringkasan = $parameter_kelas;
 
     if ($tanggal_awal !== '') {
         $sql_ringkasan .= " AND tanggal >= ?";
@@ -202,25 +249,28 @@ if ($data_wali) {
         $sql_ringkasan
     );
 
-    mysqli_stmt_bind_param(
-        $stmt_ringkasan,
-        $tipe_ringkasan,
-        ...$parameter_ringkasan
-    );
+    if ($stmt_ringkasan) {
 
-    mysqli_stmt_execute($stmt_ringkasan);
+        mysqli_stmt_bind_param(
+            $stmt_ringkasan,
+            $tipe_ringkasan,
+            ...$parameter_ringkasan
+        );
 
-    $hasil_ringkasan = mysqli_stmt_get_result(
-        $stmt_ringkasan
-    );
+        mysqli_stmt_execute($stmt_ringkasan);
 
-    $ringkasan = mysqli_fetch_assoc($hasil_ringkasan);
+        $hasil_ringkasan = mysqli_stmt_get_result(
+            $stmt_ringkasan
+        );
 
-    $total_pelanggaran = (int) $ringkasan['jumlah_pelanggaran'];
-    $total_poin = (int) $ringkasan['total_poin'];
-    $total_siswa = (int) $ringkasan['jumlah_siswa'];
+        $ringkasan = mysqli_fetch_assoc($hasil_ringkasan);
 
-    mysqli_stmt_close($stmt_ringkasan);
+        $total_pelanggaran = (int) $ringkasan['jumlah_pelanggaran'];
+        $total_poin = (int) $ringkasan['total_poin'];
+        $total_siswa = (int) $ringkasan['jumlah_siswa'];
+
+        mysqli_stmt_close($stmt_ringkasan);
+    }
 }
 ?>
 
@@ -405,7 +455,7 @@ if ($data_wali) {
                 Laporan Pelanggaran Kelas
             </h3>
 
-            <?php if (!$data_wali) { ?>
+            <?php if (empty($daftar_wali)) { ?>
 
                 <div class="alert alert-warning">
                     Belum ditemukan penugasan wali kelas aktif
@@ -419,17 +469,17 @@ if ($data_wali) {
 
                     <div class="card-body">
 
-                        <h5 class="mb-2">
+                       <h5 class="mb-2">
                             Kelas:
-                            <?= htmlspecialchars(
-                                $data_wali['nama_kelas']
-                            ); ?>
+                            <?= htmlspecialchars($nama_kelas_wali); ?>
                         </h5>
 
                         <p class="text-secondary mb-0">
                             Tahun Ajaran:
                             <?= htmlspecialchars(
-                                $data_wali['nama_tahun']
+                                implode(', ', array_unique(
+                                    array_column($daftar_wali, 'nama_tahun')
+                                ))
                             ); ?>
                         </p>
 
@@ -645,7 +695,7 @@ if ($data_wali) {
                                         </td>
 
                                         <td>
-                                            <?= htmlspecialchars($data_wali['nama_kelas']); ?>
+                                            <?= htmlspecialchars($row['nama_kelas']); ?>
                                         </td>
 
                                         <td>

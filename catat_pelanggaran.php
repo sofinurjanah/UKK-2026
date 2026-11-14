@@ -83,6 +83,7 @@ if ($guru_id <= 0) {
     }
 }
 
+
 // =====================================
 // KELAS AKTIF WALI KELAS
 // =====================================
@@ -103,26 +104,35 @@ if ($role === 'wali_kelas' && $guru_id > 0) {
         WHERE wk.guru_id = ?
           AND wk.status_aktif = 1
           AND ta.status_aktif = 1
-        LIMIT 1
+        ORDER BY k.nama ASC
     ");
 
     if ($stmt_wali) {
         mysqli_stmt_bind_param($stmt_wali, "i", $guru_id);
         mysqli_stmt_execute($stmt_wali);
 
-        $data_wali_login = mysqli_fetch_assoc(
-            mysqli_stmt_get_result($stmt_wali)
-        );
+        $hasil_wali = mysqli_stmt_get_result($stmt_wali);
+
+        $daftar_kelas_wali = [];
+        $daftar_kelas_id = [];
+
+        while ($data_wali_login = mysqli_fetch_assoc($hasil_wali)) {
+
+            $daftar_kelas_wali[] = $data_wali_login['nama_kelas'];
+            $daftar_kelas_id[] = (int) $data_wali_login['kelas_id'];
+
+            if ($wali_kelas_id <= 0) {
+                $wali_kelas_id = (int) $data_wali_login['kelas_id'];
+                $wali_tahun_ajaran_id = (int) $data_wali_login['tahun_ajaran_id'];
+            }
+        }
+
+        $nama_kelas_wali = implode(' dan ', $daftar_kelas_wali);
 
         mysqli_stmt_close($stmt_wali);
-
-        if ($data_wali_login) {
-            $wali_kelas_id = (int) $data_wali_login['kelas_id'];
-            $wali_tahun_ajaran_id = (int) $data_wali_login['tahun_ajaran_id'];
-            $nama_kelas_wali = $data_wali_login['nama_kelas'];
-        }
     }
 }
+
 
 // =====================================
 // PROSES SIMPAN PELANGGARAN
