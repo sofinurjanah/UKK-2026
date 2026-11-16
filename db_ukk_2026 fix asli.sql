@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 16 Nov 2026 pada 03.34
+-- Waktu pembuatan: 16 Nov 2026 pada 07.54
 -- Versi server: 10.4.27-MariaDB
 -- Versi PHP: 8.2.0
 
@@ -85,9 +85,9 @@ INSERT INTO `t_guru` (`id`, `nip`, `nama`, `email`, `status_aktif`, `user_id`, `
 (40, 'NIP20260040', 'Ilma Amalia, S.Pd', 'IlmaAmalia@gmail.com', 1, 104, '2026-04-12 01:00:00', '2026-04-12 01:00:00'),
 (41, 'NIP20260041', 'Alvira Sofwatunnisa, S.Pd', 'AlviraSofwatunnisa@gmail.com', 1, 102, '2026-05-13 01:00:00', '2026-05-13 01:00:00'),
 (42, 'NIP20260042', 'Risna Andriyani, S.Pd', 'RisnaAndriyani@gmail.com', 1, 115, '2026-06-14 01:00:00', '2026-06-14 01:00:00'),
-(43, 'NIP20260043', 'Dra. Tintin Noerhayati', 'TintinNoerhayati@gmail.com', 1, 43, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
+(43, 'NIP20260043', 'Dra. Tintin Noerhayati', 'TintinNoerhayati@gmail.com', 1, 119, '2026-07-15 01:00:00', '2026-07-15 01:00:00'),
 (44, 'NIP20260044', 'Rizkia Fahira, S.Pd', 'RizkiaFahira@gmail.com', 1, 106, '2026-08-16 01:00:00', '2026-08-16 01:00:00'),
-(45, 'NIP20260045', 'Frasetio', 'Frasetio@gmail.com', 1, 45, '2026-09-17 01:00:00', '2026-09-17 01:00:00'),
+(45, 'NIP20260045', 'Frasetio', 'Frasetio@gmail.com', 1, 120, '2026-09-17 01:00:00', '2026-09-17 01:00:00'),
 (46, 'NIP20260046', 'Ratnaningsih Hatil Aeni, S.Pd', 'RatnaningsihHatilAeni@gmail.com', 1, 109, '2026-10-18 01:00:00', '2026-10-18 01:00:00'),
 (47, 'NIP20260047', 'Dheny Darajatul Hasani, S.Pd', 'DhenyDarajatulHasani@gmail.com', 1, 105, '2026-11-19 01:00:00', '2026-11-19 01:00:00'),
 (48, 'NIP20260048', 'Fahrullah, S.Pd', 'Fahrullah@gmail.com', 1, 103, '2026-12-20 01:00:00', '2026-12-20 01:00:00'),
@@ -699,7 +699,9 @@ INSERT INTO `t_user` (`id`, `name`, `email`, `email_verified_at`, `password`, `r
 (113, 'Sri Nurrizki Putri Krisnadi, S', 'SriNurrizkiPutriKrisnad@gmail.com', '2026-11-10 10:18:33', '$2y$10$3OtVIt/2Z5oTw7ZtgpIOie1oxeQI/dXXxOgFjbyl/5g24Iat5uJuW', '', 'wali kelas', '2026-11-10 10:18:33', '2026-11-10 10:18:33'),
 (114, 'Rurry Febriani Maryadi, S.Pd', 'RurryFebrianiMaryadi@gmail.com', '2026-11-10 10:18:33', '$2y$10$3OtVIt/2Z5oTw7ZtgpIOie1oxeQI/dXXxOgFjbyl/5g24Iat5uJuW', '', 'wali kelas', '2026-11-10 10:18:33', '2026-11-10 10:18:33'),
 (115, 'Risna Andriyani, S.Pd', 'RisnaAndriyani@gmail.com', '2026-11-10 10:18:33', '$2y$10$3OtVIt/2Z5oTw7ZtgpIOie1oxeQI/dXXxOgFjbyl/5g24Iat5uJuW', '', 'wali kelas', '2026-11-10 10:18:33', '2026-11-10 10:18:33'),
-(118, 'fggwtwrfgsr', 'fdafqaegf@gmail.com', '2026-11-16 01:47:44', '$2y$12$4vItasDG7Z6NABJWeKG3MudmOEMnisHTw1M0z.YoXZY0tSQE0.4IC', '', 'guru', '2026-11-16 01:47:44', '2026-11-16 01:47:44');
+(118, 'fggwtwrfgsr', 'fdafqaegf@gmail.com', '2026-11-16 01:47:44', '$2y$12$4vItasDG7Z6NABJWeKG3MudmOEMnisHTw1M0z.YoXZY0tSQE0.4IC', '', 'guru', '2026-11-16 01:47:44', '2026-11-16 01:47:44'),
+(119, 'Dra. Tintin Noerhayati', 'TintinNoerhayati@gmail.com', '2026-11-16 06:25:28', '$2y$10$pXCJovL4Azpm9TW30WljCuN3MPj6B15IDQ1fBT9wNJaNtu2R6Cg8.', '', 'guru', '2026-11-16 06:25:28', '2026-11-16 06:25:28'),
+(120, 'Frasetio', 'Frasetio@gmail.com', '2026-11-16 06:25:28', '$2y$10$pXCJovL4Azpm9TW30WljCuN3MPj6B15IDQ1fBT9wNJaNtu2R6Cg8.', '', 'guru', '2026-11-16 06:25:28', '2026-11-16 06:25:28');
 
 -- --------------------------------------------------------
 
@@ -771,7 +773,8 @@ INSERT INTO `t_wali_kelas` (`id`, `tahun_ajaran_id`, `kelas_id`, `guru_id`, `tan
 -- Indeks untuk tabel `t_guru`
 --
 ALTER TABLE `t_guru`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_t_guru_user_id` (`user_id`);
 
 --
 -- Indeks untuk tabel `t_kelas`
@@ -897,7 +900,7 @@ ALTER TABLE `t_tahun_ajaran`
 -- AUTO_INCREMENT untuk tabel `t_user`
 --
 ALTER TABLE `t_user`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=119;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=121;
 
 --
 -- AUTO_INCREMENT untuk tabel `t_wali_kelas`
@@ -908,6 +911,12 @@ ALTER TABLE `t_wali_kelas`
 --
 -- Ketidakleluasaan untuk tabel pelimpahan (Dumped Tables)
 --
+
+--
+-- Ketidakleluasaan untuk tabel `t_guru`
+--
+ALTER TABLE `t_guru`
+  ADD CONSTRAINT `fk_t_guru_user` FOREIGN KEY (`user_id`) REFERENCES `t_user` (`id`) ON UPDATE CASCADE;
 
 --
 -- Ketidakleluasaan untuk tabel `t_kelas_siswa`
