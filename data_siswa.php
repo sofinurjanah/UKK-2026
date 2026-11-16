@@ -1,3 +1,4 @@
+
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
@@ -131,13 +132,12 @@ if (isset($_POST['ubah']) && $role == "admin") {
     $tanggal_lahir = $_POST['tanggal_lahir'] ?? '';
     $alamat = trim($_POST['alamat'] ?? '');
     $status_aktif = isset($_POST['status_aktif']) ? (int) $_POST['status_aktif'] : -1;
-    $kelas_id = (int) ($_POST['kelas_id'] ?? 0);
 
     try {
         if (
             $id <= 0 || $nis === '' || $nisn === '' || $nama === '' ||
             $jenis_kelamin === '' || $tanggal_lahir === '' ||
-            $alamat === '' || $kelas_id <= 0 || !in_array($status_aktif, [0, 1], true)
+            $alamat === '' || !in_array($status_aktif, [0, 1], true)
         ) {
             $_SESSION['pesan'] = "Data siswa belum lengkap atau tidak valid.";
             $_SESSION['tipe_pesan'] = "danger";
@@ -182,37 +182,44 @@ if (isset($_POST['ubah']) && $role == "admin") {
             );
 
             $query = mysqli_stmt_execute($stmt);
-            mysqli_stmt_close($stmt);
+mysqli_stmt_close($stmt);
 
-            if ($query) {
-                $stmt_kelas = mysqli_prepare(
-                    $koneksi,
-                    "UPDATE t_kelas_siswa
-                     SET kelas_id = ?
-                     WHERE siswa_id = ?
-                     AND status_aktif = 1"
-                );
+if ($query) {
 
-                if (!$stmt_kelas) {
-                    $_SESSION['pesan'] = "Data siswa berhasil diubah, tetapi kelas gagal diperbarui.";
-                    $_SESSION['tipe_pesan'] = "danger";
-                } else {
-                    mysqli_stmt_bind_param($stmt_kelas, "ii", $kelas_id, $id);
-                    $query_kelas = mysqli_stmt_execute($stmt_kelas);
-                    mysqli_stmt_close($stmt_kelas);
+    // SINKRONISASI STATUS SISWA DENGAN PENEMPATAN
+    $stmt_penempatan = mysqli_prepare(
+        $koneksi,
+        "UPDATE t_kelas_siswa
+         SET status_aktif = ?
+         WHERE siswa_id = ?"
+    );
 
-                    if ($query_kelas) {
-                        $_SESSION['pesan'] = "Data siswa berhasil diubah.";
-                        $_SESSION['tipe_pesan'] = "success";
-                    } else {
-                        $_SESSION['pesan'] = "Data siswa berhasil diubah, tetapi kelas gagal diperbarui.";
-                        $_SESSION['tipe_pesan'] = "danger";
-                    }
-                }
-            } else {
-                $_SESSION['pesan'] = "Data siswa gagal diubah.";
-                $_SESSION['tipe_pesan'] = "danger";
-            }
+    if (!$stmt_penempatan) {
+        throw new Exception("Sinkronisasi status penempatan gagal.");
+    }
+
+    mysqli_stmt_bind_param(
+        $stmt_penempatan,
+        "ii",
+        $status_aktif,
+        $id
+    );
+
+    $sinkron = mysqli_stmt_execute($stmt_penempatan);
+    mysqli_stmt_close($stmt_penempatan);
+
+    if ($sinkron) {
+        $_SESSION['pesan'] = "Data siswa dan status penempatannya berhasil diubah.";
+        $_SESSION['tipe_pesan'] = "success";
+    } else {
+        $_SESSION['pesan'] = "Status penempatan siswa gagal diperbarui.";
+        $_SESSION['tipe_pesan'] = "danger";
+    }
+
+} else {
+    $_SESSION['pesan'] = "Data siswa gagal diubah.";
+    $_SESSION['tipe_pesan'] = "danger";
+}
         }
     } catch (Throwable $e) {
         $_SESSION['pesan'] = "Data siswa gagal diubah. Periksa kembali data yang dimasukkan.";
@@ -290,22 +297,6 @@ if (isset($_GET['edit']) && $role == "admin") {
         WHERE id = '$id_edit'");
 
     $data_edit = mysqli_fetch_assoc($query_edit);
-
-    $kelas_edit = mysqli_query($koneksi, "
-    SELECT id, nama FROM t_kelas
-    ORDER BY nama ASC
-");
-
-$query_kelas_siswa = mysqli_query($koneksi, "
-    SELECT kelas_id
-    FROM t_kelas_siswa
-    WHERE siswa_id = '$id_edit'
-    AND status_aktif = 1
-    ORDER BY id DESC
-    LIMIT 1
-");
-
-$data_kelas_edit = mysqli_fetch_assoc($query_kelas_siswa);
 }
 
 /* MENAMPILKAN TEKS DENGAN AMAN */
@@ -358,17 +349,14 @@ function e($teks) {
 
             <ul class="nav nav-pills flex-column">
 
-                <!-- DASHBOARD -->
                 <li class="nav-item mb-2">
-                    <a href="dashboard.php"
-                       class="nav-link text-white">
+                    <a href="dashboard.php" class="nav-link text-white">
                         Dashboard
                     </a>
                 </li>
 
                 <?php if ($role == 'admin') { ?>
 
-                    <!-- MENU ADMIN -->
                     <li class="nav-item mb-2">
                         <a href="data_siswa.php"
                            class="nav-link active"
@@ -378,88 +366,75 @@ function e($teks) {
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_guru.php"
-                           class="nav-link text-white">
+                        <a href="data_guru.php" class="nav-link text-white">
                             Data Guru
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_kelas.php"
-                           class="nav-link text-white">
+                        <a href="data_kelas.php" class="nav-link text-white">
                             Kelas
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="data_tahun_ajaran.php"
-                           class="nav-link text-white">
+                        <a href="data_tahun_ajaran.php" class="nav-link text-white">
                             Tahun Ajaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="penempatan_siswa.php"
-                           class="nav-link text-white">
+                        <a href="penempatan_siswa.php" class="nav-link text-white">
                             Penempatan Siswa
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="wali_kelas.php"
-                           class="nav-link text-white">
+                        <a href="wali_kelas.php" class="nav-link text-white">
                             Wali Kelas
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="kategori_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="kategori_pelanggaran.php" class="nav-link text-white">
                             Kategori Pelanggaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="jenis_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="jenis_pelanggaran.php" class="nav-link text-white">
                             Jenis Pelanggaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="laporan.php"
-                           class="nav-link text-white">
+                        <a href="laporan.php" class="nav-link text-white">
                             Laporan
                         </a>
                     </li>
 
                 <?php } elseif ($role == 'guru') { ?>
 
-                    <!-- MENU GURU -->
                     <li class="nav-item mb-2">
-                        <a href="catat_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="catat_pelanggaran.php" class="nav-link text-white">
                             Catat Pelanggaran
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="tindakan.php"
-                           class="nav-link text-white">
+                        <a href="tindakan.php" class="nav-link text-white">
                             Tindakan
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="riwayat_pelanggaran.php"
-                           class="nav-link text-white">
+                        <a href="riwayat_pelanggaran.php" class="nav-link text-white">
                             Riwayat
                         </a>
                     </li>
 
                     <li class="nav-item mb-2">
-                        <a href="rekap_poin.php"
-                           class="nav-link text-white">
+                        <a href="rekap_poin.php" class="nav-link text-white">
                             Rekap Poin
                         </a>
                     </li>
@@ -469,16 +444,13 @@ function e($teks) {
                 <hr class="text-secondary">
 
                 <li class="nav-item mb-2">
-                    <a href="about_me.php"
-                       class="nav-link text-white">
+                    <a href="about_me.php" class="nav-link text-white">
                         About Me
                     </a>
                 </li>
 
-                <!-- LOGOUT -->
                 <li class="nav-item">
-                    <a href="logout.php"
-                       class="nav-link text-danger">
+                    <a href="logout.php" class="nav-link text-danger">
                         Logout
                     </a>
                 </li>
@@ -489,9 +461,7 @@ function e($teks) {
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4">
 
-            <!-- JUDUL HALAMAN -->
-            <div class="d-flex justify-content-between
-                        align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
 
                 <h3 class="fw-bold mb-0">Data Siswa</h3>
 
@@ -508,6 +478,15 @@ function e($teks) {
             </div>
 
             <!-- NOTIFIKASI -->
+            <?php
+            if (isset($_SESSION['pesan'])) {
+                $pesan = $_SESSION['pesan'];
+                $tipe_pesan = $_SESSION['tipe_pesan'] ?? 'success';
+
+                unset($_SESSION['pesan'], $_SESSION['tipe_pesan']);
+            }
+            ?>
+
             <?php if ($pesan != "") { ?>
                 <div class="alert alert-<?php echo $tipe_pesan; ?> alert-dismissible fade show text-center mt-3 mb-3"
                      role="alert">
@@ -523,149 +502,149 @@ function e($teks) {
             <?php } ?>
 
             <!-- MODAL UBAH DATA SISWA -->
-<?php if ($role == "admin" && $data_edit != null) { ?>
+            <?php if ($role == "admin" && $data_edit != null) { ?>
 
-<div class="modal fade" id="modalUbah" tabindex="-1"
-     aria-labelledby="judulModalUbah" aria-hidden="true">
+            <div class="modal fade" id="modalUbah" tabindex="-1"
+                 aria-labelledby="judulModalUbah" aria-hidden="true">
 
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
 
-        <div class="modal-content">
+                    <div class="modal-content">
 
-            <form method="POST">
+                        <form method="POST">
 
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold" id="judulModalUbah">
-                        Ubah Data Siswa
-                    </h5>
+                            <div class="modal-header">
+                                <h5 class="modal-title fw-bold" id="judulModalUbah">
+                                    Ubah Data Siswa
+                                </h5>
 
-                    <a href="data_siswa.php"
-                        class="btn-close"
-                        aria-label="Tutup">
-                    </a>
-                </div>
+                                <a href="data_siswa.php"
+                                   class="btn-close"
+                                   aria-label="Tutup">
+                                </a>
+                            </div>
 
-                <div class="modal-body p-4">
+                            <div class="modal-body p-4">
 
-                    <input type="hidden" name="id"
-                           value="<?= e($data_edit['id']); ?>">
+                                <input type="hidden" name="id"
+                                       value="<?= e($data_edit['id']); ?>">
 
-                    <div class="row">
+                                <div class="row">
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">NIS</label>
-                            <input type="text" name="nis"
-                                   class="form-control"
-                                   value="<?= e($data_edit['nis']); ?>"
-                                   required>
-                        </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">NIS</label>
+                                        <input type="text" name="nis"
+                                               class="form-control"
+                                               maxlength="10"
+                                               value="<?= e($data_edit['nis']); ?>"
+                                               required>
+                                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">NISN</label>
-                            <input type="text" name="nisn"
-                                   class="form-control"
-                                   value="<?= e($data_edit['nisn']); ?>"
-                                   required>
-                        </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">NISN</label>
+                                        <input type="text" name="nisn"
+                                               class="form-control"
+                                               maxlength="10"
+                                               value="<?= e($data_edit['nisn']); ?>"
+                                               required>
+                                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Nama Siswa</label>
-                            <input type="text" name="nama"
-                                   class="form-control"
-                                   value="<?= e($data_edit['nama']); ?>"
-                                   required>
-                        </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Nama Siswa</label>
+                                        <input type="text" name="nama"
+                                               class="form-control"
+                                               value="<?= e($data_edit['nama']); ?>"
+                                               required>
+                                    </div>
 
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Jenis Kelamin</label>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Jenis Kelamin</label>
+                                        <select name="jenis_kelamin"
+                                                class="form-select" required>
 
-                            <select name="jenis_kelamin"
-                                    class="form-select" required>
+                                            <option value="L"
+                                                <?= $data_edit['jenis_kelamin'] == "L" ? "selected" : ""; ?>>
+                                                Laki-laki
+                                            </option>
 
-                                <option value="L"
-                                    <?= $data_edit['jenis_kelamin'] == "L" ? "selected" : ""; ?>>
-                                    Laki-laki
-                                </option>
+                                            <option value="P"
+                                                <?= $data_edit['jenis_kelamin'] == "P" ? "selected" : ""; ?>>
+                                                Perempuan
+                                            </option>
 
-                                <option value="P"
-                                    <?= $data_edit['jenis_kelamin'] == "P" ? "selected" : ""; ?>>
-                                    Perempuan
-                                </option>
+                                        </select>
+                                    </div>
 
-                            </select>
-                        </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tanggal Lahir</label>
+                                        <input type="date" name="tanggal_lahir"
+                                               class="form-control"
+                                               value="<?= e($data_edit['tanggal_lahir']); ?>"
+                                               required>
+                                    </div>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Tanggal Lahir</label>
-                            <input type="date" name="tanggal_lahir"
-                                   class="form-control"
-                                   value="<?= e($data_edit['tanggal_lahir']); ?>"
-                                   required>
-                        </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Status Aktif</label>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Status Aktif</label>
+                                        <select name="status_aktif"
+                                                class="form-select" required>
 
-                            <select name="status_aktif"
-                                    class="form-select" required>
+                                            <option value="1"
+                                                <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>
+                                                Aktif
+                                            </option>
 
-                                <option value="1"
-                                    <?= $data_edit['status_aktif'] == 1 ? "selected" : ""; ?>>
-                                    Aktif
-                                </option>
+                                            <option value="0"
+                                                <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>
+                                                Tidak Aktif
+                                            </option>
 
-                                <option value="0"
-                                    <?= $data_edit['status_aktif'] == 0 ? "selected" : ""; ?>>
-                                    Tidak Aktif
-                                </option>
+                                        </select>
+                                    </div>
 
-                            </select>
-                        </div>
+                                    <div class="col-12 mb-3">
+                                        <label class="form-label">Alamat</label>
 
-                        <div class="col-12 mb-3">
-                            <label class="form-label">Alamat</label>
+                                        <textarea name="alamat"
+                                                  class="form-control"
+                                                  rows="3"
+                                                  required><?= e($data_edit['alamat']); ?></textarea>
+                                    </div>
 
-                            <textarea name="alamat"
-                                      class="form-control"
-                                      rows="3"
-                                      required><?= e($data_edit['alamat']); ?></textarea>
-                        </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <a href="data_siswa.php" class="btn btn-secondary">
+                                    Batal
+                                </a>
+
+                                <button type="submit" name="ubah"
+                                        class="btn btn-primary">
+                                    Simpan Perubahan
+                                </button>
+
+                            </div>
+
+                        </form>
 
                     </div>
                 </div>
+            </div>
 
-                <div class="modal-footer">
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var modalUbah = new bootstrap.Modal(
+                    document.getElementById('modalUbah')
+                );
 
-                    <a href="data_siswa.php"
-                       class="btn btn-secondary">
-                        Batal
-                    </a>
+                modalUbah.show();
+            });
+            </script>
 
-                    <button type="submit" name="ubah"
-                            class="btn btn-primary">
-                        Simpan Perubahan
-                    </button>
-
-                </div>
-
-            </form>
-
-        </div>
-    </div>
-</div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var modalUbah = new bootstrap.Modal(
-        document.getElementById('modalUbah')
-    );
-
-    modalUbah.show();
-});
-</script>
-
-<?php } ?>
+            <?php } ?>
 
             <!-- TABEL DATA SISWA -->
             <div class="card border-0 shadow-sm">
@@ -678,53 +657,53 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     <div class="table-responsive">
 
-                        <!-- ID EXAMPLE UNTUK DATATABLES -->
                         <table id="example"
                                class="table table-bordered table-striped table-hover align-middle mb-0">
 
                             <thead class="table-primary">
-    <tr>
-        <th>No</th>
-        <th>NIS</th>
-        <th>NISN</th>
-        <th>Nama</th>
-        <th>Kelas</th>
-        <th>Jenis Kelamin</th>
-        <th>Tanggal Lahir</th>
-        <th>Alamat</th>
-        <th>Status</th>
+                                <tr>
+                                    <th>No</th>
+                                    <th>NIS</th>
+                                    <th>NISN</th>
+                                    <th>Nama</th>
+                                    <th>Kelas</th>
+                                    <th>Jenis Kelamin</th>
+                                    <th>Tanggal Lahir</th>
+                                    <th>Alamat</th>
+                                    <th>Status</th>
 
-        <?php if ($role == "admin") { ?>
-            <th>Aksi</th>
-        <?php } ?>
-    </tr>
-</thead>
+                                    <?php if ($role == "admin") { ?>
+                                        <th>Aksi</th>
+                                    <?php } ?>
+                                </tr>
+                            </thead>
 
                             <tbody>
 
                                 <?php
                                 $query_siswa = mysqli_query($koneksi, "
-    SELECT
-        s.*,
-        k.nama AS nama_kelas
-    FROM t_siswa s
+                                    SELECT
+                                        s.*,
+                                        k.nama AS nama_kelas
+                                    FROM t_siswa s
 
-    LEFT JOIN (
-        SELECT ks1.*
-        FROM t_kelas_siswa ks1
-        INNER JOIN (
-            SELECT siswa_id, MAX(id) AS id_terbaru
-            FROM t_kelas_siswa
-            WHERE status_aktif = 1
-            GROUP BY siswa_id
-        ) ks2 ON ks1.id = ks2.id_terbaru
-    ) ks ON s.id = ks.siswa_id
+                                    LEFT JOIN (
+                                        SELECT ks1.*
+                                        FROM t_kelas_siswa ks1
+                                        INNER JOIN (
+                                            SELECT siswa_id, MAX(id) AS id_terbaru
+                                            FROM t_kelas_siswa
+                                            WHERE status_aktif = 1
+                                            GROUP BY siswa_id
+                                        ) ks2 ON ks1.id = ks2.id_terbaru
+                                    ) ks ON s.id = ks.siswa_id
 
-    LEFT JOIN t_kelas k
-        ON ks.kelas_id = k.id
+                                    LEFT JOIN t_kelas k
+                                        ON ks.kelas_id = k.id
 
-    ORDER BY s.id ASC
-");
+                                    ORDER BY s.id ASC
+                                ");
+
                                 $no = 1;
 
                                 if (mysqli_num_rows($query_siswa) > 0) {
@@ -740,11 +719,12 @@ document.addEventListener('DOMContentLoaded', function () {
                                         <td><?= e($siswa['nisn']); ?></td>
 
                                         <td><?= e($siswa['nama']); ?></td>
+
                                         <td>
-    <?= !empty($siswa['nama_kelas'])
-        ? e($siswa['nama_kelas'])
-        : '-'; ?>
-</td>
+                                            <?= !empty($siswa['nama_kelas'])
+                                                ? e($siswa['nama_kelas'])
+                                                : '-'; ?>
+                                        </td>
 
                                         <td>
                                             <?php

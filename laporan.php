@@ -610,85 +610,274 @@ $json_cetak = json_encode(
 
 function cetakLaporan() {
 
-    let data = <?= $json_cetak ?: '[]'; ?>;
+    // Ambil data dari baris tabel yang sedang terlihat.
+    // Jadi hasil cetak mengikuti pencarian nama dan filter tanggal.
+    const tabel = document.getElementById('tabelLaporan');
 
-    if (data.length === 0) {
-        alert("Belum ada data untuk dicetak.");
+    if (!tabel) {
+        alert("Tabel laporan tidak ditemukan.");
         return;
     }
 
-    let halaman = window.open("", "_blank", "width=900,height=800");
+    const semuaBaris = tabel.querySelectorAll('tbody tr');
+    const data = [];
+
+    semuaBaris.forEach(function(row) {
+
+        // Abaikan baris yang disembunyikan atau baris pesan.
+        if (row.style.display === 'none' || row.cells.length !== 8) {
+            return;
+        }
+
+        data.push({
+            tanggal: row.cells[1].textContent.trim(),
+            nama_siswa: row.cells[2].textContent.trim(),
+            nama_kelas: row.cells[3].textContent.trim(),
+            nama_pelanggaran: row.cells[4].textContent.trim(),
+            poin_jenis: row.cells[5].textContent.trim(),
+            nama_guru: row.cells[6].textContent.trim(),
+            status: row.cells[7].textContent.trim()
+        });
+    });
+
+    if (data.length === 0) {
+        alert("Tidak ada data yang bisa dicetak.");
+        return;
+    }
+
+    let halaman = window.open("", "_blank", "width=1100,height=800");
 
     if (!halaman) {
         alert("Izinkan pop-up pada browser untuk mencetak.");
         return;
     }
 
+    // Mengamankan teks sebelum dimasukkan ke dokumen cetak.
+    function escapeHTML(value) {
+        return String(value ?? '').replace(/[&<>"']/g, function(char) {
+            return {
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;'
+            }[char];
+        });
+    }
+
     let totalPoin = 0;
+    let daftarSiswa = new Set();
     let isiTabel = "";
 
     data.forEach(function(row, index) {
 
         let poin = parseInt(row.poin_jenis) || 0;
         totalPoin += poin;
+        daftarSiswa.add(row.nama_siswa);
 
         isiTabel += `
             <tr>
                 <td>${index + 1}</td>
-                <td>${row.tanggal ?? ''}</td>
-                <td>${row.nama_siswa ?? ''}</td>
-                <td>${row.nama_kelas ?? ''}</td>
-                <td>${row.nama_pelanggaran ?? ''}</td>
+                <td>${escapeHTML(row.tanggal)}</td>
+                <td class="nama">${escapeHTML(row.nama_siswa)}</td>
+                <td>${escapeHTML(row.nama_kelas)}</td>
+                <td class="pelanggaran">${escapeHTML(row.nama_pelanggaran)}</td>
                 <td>${poin}</td>
-                <td>${row.nama_guru ?? ''}</td>
-                <td>${row.status ?? ''}</td>
+                <td>${escapeHTML(row.nama_guru)}</td>
+                <td>${escapeHTML(row.status)}</td>
             </tr>
         `;
     });
 
+    const logoUrl = new URL('logo-muhammadiyah.png', window.location.href).href;
+
+    const tanggalCetak = new Date().toLocaleDateString('id-ID', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+    });
+
+    const tanggalAwal = <?= json_encode($tanggal_awal); ?>;
+    const tanggalAkhir = <?= json_encode($tanggal_akhir); ?>;
+
+    let periode = "Seluruh Periode";
+
+    if (tanggalAwal && tanggalAkhir) {
+        periode = tanggalAwal + " s.d. " + tanggalAkhir;
+    } else if (tanggalAwal) {
+        periode = "Mulai " + tanggalAwal;
+    } else if (tanggalAkhir) {
+        periode = "Sampai " + tanggalAkhir;
+    }
+
     halaman.document.write(`
         <!DOCTYPE html>
-        <html>
+        <html lang="id">
         <head>
+            <meta charset="UTF-8">
             <title>Laporan Pelanggaran Siswa</title>
 
             <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 25px;
-                    color: #26374a;
+                @page {
+                    size: A4 landscape;
+                    margin: 12mm 13mm;
                 }
 
-                h2, p {
+                * {
+                    box-sizing: border-box;
+                }
+
+                body {
+                    font-family: "Times New Roman", serif;
+                    font-size: 11pt;
+                    color: #000;
+                    background: #fff;
+                    margin: 0;
+                }
+
+                .kop {
+                    display: flex;
+                    align-items: center;
+                    width: 100%;
+                    padding-bottom: 9px;
+                    border-bottom: 3px double #000;
+                    margin-bottom: 20px;
+                }
+
+                .logo {
+                    width: 105px;
+                    height: 105px;
+                    object-fit: contain;
+                    margin-right: 15px;
+                }
+
+                .identitas {
+                    flex: 1;
                     text-align: center;
+                    padding-right: 90px;
+                }
+
+                .identitas h3 {
+                    font-size: 14px;
+                    font-weight: normal;
+                    margin: 2px 0;
+                }
+
+                .identitas h2 {
+                    font-size: 16px;
+                    font-weight: bold;
+                    margin: 3px 0;
+                }
+
+                .identitas p {
+                    font-size: 10px;
+                    margin: 3px 0;
+                }
+
+                .judul {
+                    text-align: center;
+                    margin: 22px 0 18px;
+                }
+
+                .judul h2 {
+                    font-size: 16px;
+                    font-weight: bold;
+                    text-decoration: underline;
+                    margin-bottom: 5px;
+                }
+
+                .judul p {
+                    margin: 4px 0;
+                    font-size: 11px;
+                }
+
+                .informasi {
+                    margin-bottom: 15px;
+                    line-height: 1.7;
                 }
 
                 table {
                     width: 100%;
                     border-collapse: collapse;
-                    margin-top: 20px;
-                    font-size: 11px;
+                    font-size: 10px;
                 }
 
                 th, td {
-                    border: 1px solid #999;
-                    padding: 8px 5px;
+                    border: 1px solid #000;
+                    padding: 7px 5px;
                     text-align: center;
+                    vertical-align: middle;
                 }
 
                 th {
-                    background: #eaf1f8;
+                    font-weight: bold;
+                    background: #eaeaea;
                 }
 
-                .total {
-                    text-align: right;
-                    font-weight: bold;
+                td.nama,
+                td.pelanggaran {
+                    text-align: left;
+                }
+
+                thead {
+                    display: table-header-group;
+                }
+
+                tr {
+                    page-break-inside: avoid;
+                }
+
+                .ringkasan {
                     margin-top: 15px;
+                    width: 45%;
+                    margin-left: auto;
+                    font-size: 11px;
+                }
+
+                .ringkasan td {
+                    text-align: left;
+                    padding: 6px 8px;
+                }
+
+                .ringkasan td:last-child {
+                    text-align: center;
+                    font-weight: bold;
+                    width: 35%;
+                }
+
+                .ttd {
+                    width: 100%;
+                    display: flex;
+                    justify-content: space-between;
+                    margin-top: 35px;
+                    text-align: center;
+                    font-size: 11px;
+                    page-break-inside: avoid;
+                }
+
+                .ttd div {
+                    width: 230px;
+                }
+
+                .ruang-ttd {
+                    height: 65px;
+                }
+
+                .nama-ttd {
+                    font-weight: bold;
+                    text-decoration: underline;
+                }
+
+                .footer {
+                    margin-top: 20px;
+                    font-size: 9px;
+                    text-align: center;
                 }
 
                 @media print {
                     body {
-                        margin: 10mm;
+                        -webkit-print-color-adjust: exact;
+                        print-color-adjust: exact;
                     }
                 }
             </style>
@@ -696,33 +885,111 @@ function cetakLaporan() {
 
         <body>
 
-            <h2>LAPORAN PELANGGARAN SISWA</h2>
-            <p>SISTEM INFORMASI MANAJEMEN PELANGGARAN SISWA MUHAMMADIYAH</p>
+            <div class="kop">
+                <img src="${logoUrl}" class="logo" alt="Logo SMK Muhammadiyah">
+
+                <div class="identitas">
+                    <h3>MAJELIS PENDIDIKAN DASAR MENENGAH</h3>
+                    <h3>DAN PENDIDIKAN NONFORMAL</h3>
+                    <h3>PIMPINAN DAERAH MUHAMMADIYAH KOTA TASIKMALAYA</h3>
+                    <h2>SMK MUHAMMADIYAH TASIKMALAYA</h2>
+                    <p>Jl. Rumah Sakit Umum No. 29 Kota Tasikmalaya 46113</p>
+                    <p>Telp. (0265) 327 380</p>
+                    <p>Website: http://www.smkmuh.sch.id</p>
+                </div>
+            </div>
+
+            <div class="judul">
+                <h2>LAPORAN PELANGGARAN SISWA</h2>
+                <p>SISTEM INFORMASI MANAJEMEN PELANGGARAN SISWA</p>
+                <p>SMK MUHAMMADIYAH TASIKMALAYA</p>
+            </div>
+
+            <div class="informasi">
+                <table style="width: auto; border: none; font-size: 11px;">
+                    <tr>
+                        <td style="border: none; text-align: left; padding: 2px;">Periode Laporan</td>
+                        <td style="border: none; text-align: left; padding: 2px;">: ${escapeHTML(periode)}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; text-align: left; padding: 2px;">Tanggal Cetak</td>
+                        <td style="border: none; text-align: left; padding: 2px;">: ${tanggalCetak}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; text-align: left; padding: 2px;">Jumlah Data Dicetak</td>
+                        <td style="border: none; text-align: left; padding: 2px;">: ${data.length} laporan</td>
+                    </tr>
+                </table>
+            </div>
 
             <table>
                 <thead>
                     <tr>
-                        <th>No</th>
-                        <th>Tanggal</th>
-                        <th>Nama Siswa</th>
-                        <th>Kelas</th>
-                        <th>Pelanggaran</th>
-                        <th>Poin</th>
-                        <th>Guru</th>
-                        <th>Status</th>
+                        <th width="4%">No</th>
+                        <th width="11%">Tanggal</th>
+                        <th width="16%">Nama Siswa</th>
+                        <th width="10%">Kelas</th>
+                        <th width="22%">Jenis Pelanggaran</th>
+                        <th width="7%">Poin</th>
+                        <th width="15%">Guru</th>
+                        <th width="15%">Status</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     ${isiTabel}
                 </tbody>
             </table>
 
-            <p class="total">TOTAL POIN: ${totalPoin}</p>
+            <table class="ringkasan">
+                <tr>
+                    <td>Jumlah Pelanggaran</td>
+                    <td>${data.length}</td>
+                </tr>
+                <tr>
+                    <td>Jumlah Siswa Terlibat</td>
+                    <td>${daftarSiswa.size}</td>
+                </tr>
+                <tr>
+                    <td>Total Poin Pelanggaran</td>
+                    <td>${totalPoin}</td>
+                </tr>
+            </table>
+
+            <div class="ttd">
+                <div>
+                    <p>Mengetahui,</p>
+                    <p>Kepala Sekolah</p>
+                    <div class="ruang-ttd"></div>
+                    <p class="nama-ttd">........................................</p>
+                    <p>NIP/NBM. ................................</p>
+                </div>
+
+                <div>
+                    <p>Tasikmalaya, ${tanggalCetak}</p>
+                    <p>Petugas,</p>
+                    <div class="ruang-ttd"></div>
+                    <p class="nama-ttd">........................................</p>
+                    <p>NIP/NBM. ................................</p>
+                </div>
+            </div>
+
+            <div class="footer">
+                Dokumen Laporan Pelanggaran Siswa - SMK Muhammadiyah Tasikmalaya
+            </div>
 
             <script>
                 window.onload = function() {
-                    window.print();
+                    const gambarLogo = document.querySelector('.logo');
+                    if (gambarLogo.complete) {
+                        window.print();
+                    } else {
+                        gambarLogo.onload = function() {
+                            window.print();
+                        };
+                        gambarLogo.onerror = function() {
+                            alert('Logo tidak ditemukan. Periksa file logo-muhammadiyah.png.');
+                        };
+                    }
                 };
             <\/script>
 

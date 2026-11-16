@@ -1,12 +1,21 @@
+
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>SIMPESMA | Login</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
     rel="stylesheet">
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -21,7 +30,8 @@
             <div class="card-body p-4 p-md-5">
 
                 <div class="simpesma-logo mb-3">
-                    <img src="logo-muhammadiyah.png" alt="Logo SMK Muhammadiyah Tasikmalaya">
+                    <img src="logo-muhammadiyah.png"
+                    alt="Logo SMK Muhammadiyah Tasikmalaya">
                 </div>
 
                 <p class="simpesma-label text-center mb-2">
@@ -47,7 +57,9 @@
                 <form action="proses_login.php" method="POST">
 
                     <div class="mb-3">
+
                         <label class="form-label">Email</label>
+
                         <input
                             type="email"
                             name="email"
@@ -55,10 +67,13 @@
                             placeholder="Masukkan email"
                             required
                         >
+
                     </div>
 
                     <div class="mb-4">
+
                         <label class="form-label">Password</label>
+
                         <input
                             type="password"
                             name="password"
@@ -66,6 +81,7 @@
                             placeholder="Masukkan password"
                             required
                         >
+
                     </div>
 
                     <button
@@ -84,13 +100,48 @@
     </div>
 
     <footer class="simpesma-footer text-center py-3">
+
         <p class="mb-1">
             SIMPESMA &middot; SMK Muhammadiyah
         </p>
+
         <small>&copy; Sofinurjanah</small>
+
     </footer>
 
 </div>
+
+<!-- SWEETALERT2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<?php
+if (isset($_SESSION['login_alert'])):
+    $alert = $_SESSION['login_alert'];
+    unset($_SESSION['login_alert']);
+?>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    if (typeof Swal !== 'undefined') {
+
+        Swal.fire({
+            icon: <?= json_encode($alert['icon']) ?>,
+            title: <?= json_encode($alert['title']) ?>,
+            text: <?= json_encode($alert['text']) ?>,
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#3085d6',
+            allowOutsideClick: false
+        });
+
+    } else {
+        alert(<?= json_encode($alert['text']) ?>);
+    }
+
+});
+</script>
+
+<?php endif; ?>
 
 </body>
 </html>
