@@ -7,6 +7,12 @@ if (!isset($_SESSION['role'])) {
     exit;
 }
 
+$role_akses = strtolower(trim($_SESSION['role'] ?? ''));
+if (in_array($role_akses, ['guru', 'wali_kelas', 'wali kelas'], true)) {
+    header("Location: dashboard.php");
+    exit;
+}
+
 $nama = 'Sofi Nurjanah';
 $role = strtolower($_SESSION['role'] ?? 'pengguna');
 
@@ -185,11 +191,13 @@ $nama_role = ($role === 'wali_kelas')
                 <hr class="text-secondary">
 
                 <!-- ABOUT ME -->
+                <?php if (!in_array(strtolower(trim($_SESSION['role'] ?? '')), ['guru', 'wali_kelas', 'wali kelas'], true)) { ?>
                 <li class="nav-item mb-2">
                     <a href="about_me.php" class="nav-link active">
                         About Me
                     </a>
                 </li>
+                <?php } ?>
 
                 <!-- LOGOUT -->
                 <li class="nav-item">

@@ -390,6 +390,7 @@ if ($tahun_aktif) {
 
                 <hr class="text-white-50">
 
+                <?php if (!in_array(strtolower(trim($_SESSION['role'] ?? '')), ['guru', 'wali_kelas', 'wali kelas'], true)) { ?>
                 <li class="nav-item mb-2">
 
                     <a href="about_me.php"
@@ -400,6 +401,7 @@ if ($tahun_aktif) {
                     </a>
 
                 </li>
+                <?php } ?>
 
                 <li class="nav-item">
 

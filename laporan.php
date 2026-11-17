@@ -316,12 +316,14 @@ $json_cetak = json_encode(
 
                 <hr class="text-secondary">
 
+                <?php if (!in_array(strtolower(trim($_SESSION['role'] ?? '')), ['guru', 'wali_kelas', 'wali kelas'], true)) { ?>
                 <li class="nav-item mb-2">
                     <a href="about_me.php"
                        class="nav-link text-white">
                         About Me
                     </a>
                 </li>
+                <?php } ?>
 
                 <li class="nav-item">
                     <a href="logout.php"
