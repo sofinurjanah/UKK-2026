@@ -308,6 +308,7 @@ if (isset($_GET['edit'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelola Wali Kelas</title>
 
+    <!-- Bootstrap CSS -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
         rel="stylesheet"
@@ -318,6 +319,13 @@ if (isset($_GET['edit'])) {
         href="https://cdn.datatables.net/3.1.4/css/dataTables.dataTables.min.css"
         rel="stylesheet"
     >
+
+    <!-- Tom Select CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css"
+        rel="stylesheet"
+    >
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -472,267 +480,270 @@ if (isset($_GET['edit'])) {
             </div>
 
             <!-- PESAN -->
-        <?php if ($pesan !== '') { ?>
+            <?php if ($pesan !== '') { ?>
 
-            <div class="alert alert-<?php echo htmlspecialchars($tipe_pesan); ?> alert-dismissible fade show"
-                role="alert">
+                <div class="alert alert-<?php echo htmlspecialchars($tipe_pesan); ?> alert-dismissible fade show"
+                     role="alert">
 
-                <?php echo htmlspecialchars($pesan); ?>
+                    <?php echo htmlspecialchars($pesan); ?>
 
-                <button type="button"
-                        class="btn-close"
-                        data-bs-dismiss="alert"
-                        aria-label="Tutup">
-                </button>
-
-            </div>
-
-        <?php } ?>
-
-            <!-- MODAL TAMBAH / UBAH WALI KELAS -->
-<?php
-if ($role == 'admin' &&
-    ($data_edit != null || isset($_GET['tambah']))) {
-?>
-
-<div class="modal fade" id="modalWaliKelas"
-     tabindex="-1" aria-hidden="true">
-
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-
-        <div class="modal-content">
-
-            <form method="POST"
-                  action="wali_kelas.php<?php
-                  echo $data_edit != null
-                      ? '?edit=' . (int)$data_edit['id']
-                      : '';
-                  ?>">
-
-                <div class="modal-header">
-                    <h5 class="modal-title fw-bold">
-                        <?php
-                        echo $data_edit != null
-                            ? 'Ubah Data Wali Kelas'
-                            : 'Tambah Wali Kelas';
-                        ?>
-                    </h5>
-
-                    <a href="wali_kelas.php"
-   class="btn-close"
-   aria-label="Tutup">
-</a>
-                </div>
-
-                <div class="modal-body p-4">
-
-                    <?php if ($data_edit != null) { ?>
-                        <input type="hidden"
-                               name="id"
-                               value="<?php echo (int)$data_edit['id']; ?>">
-                    <?php } ?>
-
-                    <div class="row g-3">
-
-                        <div class="col-md-6 mb-3">
-    <label class="form-label">Tahun Ajaran</label>
-
-    <?php if ($tahun_aktif) { ?>
-
-        <input type="text"
-               class="form-control"
-               value="<?= htmlspecialchars($tahun_aktif['nama']); ?>"
-               readonly>
-
-        <input type="hidden"
-               name="tahun_ajaran_id"
-               value="<?= (int)$tahun_aktif['id']; ?>">
-
-    <?php } else { ?>
-
-        <input type="text"
-               class="form-control"
-               value="Belum ada tahun ajaran aktif"
-               readonly>
-
-    <?php } ?>
-</div>
-
-                            <!-- KELAS -->
-                            <div class="col-md-6">
-                                <label class="form-label">Kelas</label>
-
-                                <select name="kelas_id"
-                                        class="form-select"
-                                        required>
-
-                                    <option value="">-- Pilih Kelas --</option>
-
-                                    <?php
-                                    $kelas = mysqli_query(
-                                        $koneksi,
-                                        "SELECT * FROM t_kelas
-                                         WHERE status_aktif = 1
-                                         ORDER BY nama ASC"
-                                    );
-
-                                    if ($kelas) {
-                                        while ($row = mysqli_fetch_assoc($kelas)) {
-                                            $selected = (
-                                                $data_edit != null &&
-                                                $data_edit['kelas_id'] == $row['id']
-                                            ) ? 'selected' : '';
-
-                                            echo '<option value="' .
-                                                (int)$row['id'] . '" ' .
-                                                $selected . '>' .
-                                                htmlspecialchars($row['nama']) .
-                                                '</option>';
-                                        }
-                                    }
-                                    ?>
-
-                                </select>
-                            </div>
-
-                            <!-- GURU -->
-                            <div class="col-md-6">
-                                <label class="form-label">Guru</label>
-
-                                <select name="guru_id"
-                                        class="form-select"
-                                        required>
-
-                                    <option value="">-- Pilih Guru --</option>
-
-                                    <?php
-                                    $guru = mysqli_query(
-                                        $koneksi,
-                                        "SELECT * FROM t_guru
-                                         WHERE status_aktif = 1
-                                         ORDER BY nama ASC"
-                                    );
-
-                                    if ($guru) {
-                                        while ($row = mysqli_fetch_assoc($guru)) {
-                                            $selected = (
-                                                $data_edit != null &&
-                                                $data_edit['guru_id'] == $row['id']
-                                            ) ? 'selected' : '';
-
-                                            echo '<option value="' .
-                                                (int)$row['id'] . '" ' .
-                                                $selected . '>' .
-                                                htmlspecialchars(
-                                                    $row['nip'] . ' - ' . $row['nama']
-                                                ) .
-                                                '</option>';
-                                        }
-                                    }
-                                    ?>
-
-                                </select>
-                            </div>
-
-                            <!-- STATUS -->
-                            <div class="col-md-6">
-                                <label class="form-label">Status</label>
-
-                                <select name="status_aktif"
-                                        class="form-select"
-                                        required>
-
-                                    <option value="1" <?php
-                                        echo (
-                                            $data_edit != null &&
-                                            $data_edit['status_aktif'] == 1
-                                        ) ? 'selected' : '';
-                                    ?>>
-                                        Aktif
-                                    </option>
-
-                                    <option value="0" <?php
-                                        echo (
-                                            $data_edit != null &&
-                                            $data_edit['status_aktif'] == 0
-                                        ) ? 'selected' : '';
-                                    ?>>
-                                        Tidak Aktif
-                                    </option>
-
-                                </select>
-                            </div>
-
-                            <!-- TANGGAL MULAI -->
-                            <div class="col-md-6">
-                                <label class="form-label">Tanggal Mulai</label>
-
-                                <input type="date"
-                                       name="tanggal_mulai"
-                                       class="form-control"
-                                       value="<?php
-                                       echo $data_edit != null
-                                           ? htmlspecialchars($data_edit['tanggal_mulai'])
-                                           : '';
-                                       ?>"
-                                       required>
-                            </div>
-
-                            <!-- TANGGAL SELESAI -->
-                            <div class="col-md-6">
-                                <label class="form-label">Tanggal Selesai</label>
-
-                                <input type="date"
-                                       name="tanggal_selesai"
-                                       class="form-control"
-                                       value="<?php
-                                       echo $data_edit != null
-                                           ? htmlspecialchars($data_edit['tanggal_selesai'])
-                                           : '';
-                                       ?>"
-                                       required>
-                            </div>
-
-                    </div>
-
-                </div>
-
-                <div class="modal-footer">
-
-                    <a href="wali_kelas.php"
-                       class="btn btn-secondary">
-                        Batal
-                    </a>
-
-                    <button type="submit"
-                            name="<?php echo $data_edit != null ? 'ubah' : 'tambah'; ?>"
-                            class="btn btn-primary">
-
-                        <?php
-                        echo $data_edit != null
-                            ? 'Simpan Perubahan'
-                            : 'Simpan Wali Kelas';
-                        ?>
-
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="alert"
+                            aria-label="Tutup">
                     </button>
 
                 </div>
 
-            </form>
+            <?php } ?>
 
-        </div>
-    </div>
-</div>
+            <!-- MODAL TAMBAH / UBAH WALI KELAS -->
+            <?php
+            if ($role == 'admin' &&
+                ($data_edit != null || isset($_GET['tambah']))) {
+            ?>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    new bootstrap.Modal(
-        document.getElementById('modalWaliKelas')
-    ).show();
-});
-</script>
+            <div class="modal fade" id="modalWaliKelas"
+                 tabindex="-1" aria-hidden="true">
 
-<?php } ?>
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+
+                    <div class="modal-content">
+
+                        <form method="POST"
+                              action="wali_kelas.php<?php
+                              echo $data_edit != null
+                                  ? '?edit=' . (int)$data_edit['id']
+                                  : '';
+                              ?>">
+
+                            <div class="modal-header">
+                                <h5 class="modal-title fw-bold">
+                                    <?php
+                                    echo $data_edit != null
+                                        ? 'Ubah Data Wali Kelas'
+                                        : 'Tambah Wali Kelas';
+                                    ?>
+                                </h5>
+
+                                <a href="wali_kelas.php"
+                                   class="btn-close"
+                                   aria-label="Tutup">
+                                </a>
+                            </div>
+
+                            <div class="modal-body p-4">
+
+                                <?php if ($data_edit != null) { ?>
+                                    <input type="hidden"
+                                           name="id"
+                                           value="<?php echo (int)$data_edit['id']; ?>">
+                                <?php } ?>
+
+                                <div class="row g-3">
+
+                                    <!-- TAHUN AJARAN -->
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Tahun Ajaran</label>
+
+                                        <?php if ($tahun_aktif) { ?>
+
+                                            <input type="text"
+                                                   class="form-control"
+                                                   value="<?= htmlspecialchars($tahun_aktif['nama']); ?>"
+                                                   readonly>
+
+                                            <input type="hidden"
+                                                   name="tahun_ajaran_id"
+                                                   value="<?= (int)$tahun_aktif['id']; ?>">
+
+                                        <?php } else { ?>
+
+                                            <input type="text"
+                                                   class="form-control"
+                                                   value="Belum ada tahun ajaran aktif"
+                                                   readonly>
+
+                                        <?php } ?>
+                                    </div>
+
+                                    <!-- KELAS -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Kelas</label>
+
+                                        <select name="kelas_id"
+                                                id="kelas_id"
+                                                class="form-select searchable-select"
+                                                required>
+
+                                            <option value="">-- Pilih Kelas --</option>
+
+                                            <?php
+                                            $kelas = mysqli_query(
+                                                $koneksi,
+                                                "SELECT * FROM t_kelas
+                                                 WHERE status_aktif = 1
+                                                 ORDER BY nama ASC"
+                                            );
+
+                                            if ($kelas) {
+                                                while ($row = mysqli_fetch_assoc($kelas)) {
+                                                    $selected = (
+                                                        $data_edit != null &&
+                                                        $data_edit['kelas_id'] == $row['id']
+                                                    ) ? 'selected' : '';
+
+                                                    echo '<option value="' .
+                                                        (int)$row['id'] . '" ' .
+                                                        $selected . '>' .
+                                                        htmlspecialchars($row['nama']) .
+                                                        '</option>';
+                                                }
+                                            }
+                                            ?>
+
+                                        </select>
+                                    </div>
+
+                                    <!-- GURU -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Guru</label>
+
+                                        <select name="guru_id"
+                                                id="guru_id"
+                                                class="form-select searchable-select"
+                                                required>
+
+                                            <option value="">-- Pilih Guru --</option>
+
+                                            <?php
+                                            $guru = mysqli_query(
+                                                $koneksi,
+                                                "SELECT * FROM t_guru
+                                                 WHERE status_aktif = 1
+                                                 ORDER BY nama ASC"
+                                            );
+
+                                            if ($guru) {
+                                                while ($row = mysqli_fetch_assoc($guru)) {
+                                                    $selected = (
+                                                        $data_edit != null &&
+                                                        $data_edit['guru_id'] == $row['id']
+                                                    ) ? 'selected' : '';
+
+                                                    echo '<option value="' .
+                                                        (int)$row['id'] . '" ' .
+                                                        $selected . '>' .
+                                                        htmlspecialchars(
+                                                            $row['nip'] . ' - ' . $row['nama']
+                                                        ) .
+                                                        '</option>';
+                                                }
+                                            }
+                                            ?>
+
+                                        </select>
+                                    </div>
+
+                                    <!-- STATUS -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Status</label>
+
+                                        <select name="status_aktif"
+                                                class="form-select"
+                                                required>
+
+                                            <option value="1" <?php
+                                                echo (
+                                                    $data_edit != null &&
+                                                    $data_edit['status_aktif'] == 1
+                                                ) ? 'selected' : '';
+                                            ?>>
+                                                Aktif
+                                            </option>
+
+                                            <option value="0" <?php
+                                                echo (
+                                                    $data_edit != null &&
+                                                    $data_edit['status_aktif'] == 0
+                                                ) ? 'selected' : '';
+                                            ?>>
+                                                Tidak Aktif
+                                            </option>
+
+                                        </select>
+                                    </div>
+
+                                    <!-- TANGGAL MULAI -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tanggal Mulai</label>
+
+                                        <input type="date"
+                                               name="tanggal_mulai"
+                                               class="form-control"
+                                               value="<?php
+                                               echo $data_edit != null
+                                                   ? htmlspecialchars($data_edit['tanggal_mulai'])
+                                                   : '';
+                                               ?>"
+                                               required>
+                                    </div>
+
+                                    <!-- TANGGAL SELESAI -->
+                                    <div class="col-md-6">
+                                        <label class="form-label">Tanggal Selesai</label>
+
+                                        <input type="date"
+                                               name="tanggal_selesai"
+                                               class="form-control"
+                                               value="<?php
+                                               echo $data_edit != null
+                                                   ? htmlspecialchars($data_edit['tanggal_selesai'])
+                                                   : '';
+                                               ?>"
+                                               required>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="modal-footer">
+
+                                <a href="wali_kelas.php"
+                                   class="btn btn-secondary">
+                                    Batal
+                                </a>
+
+                                <button type="submit"
+                                        name="<?php echo $data_edit != null ? 'ubah' : 'tambah'; ?>"
+                                        class="btn btn-primary">
+
+                                    <?php
+                                    echo $data_edit != null
+                                        ? 'Simpan Perubahan'
+                                        : 'Simpan Wali Kelas';
+                                    ?>
+
+                                </button>
+
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+
+            <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                new bootstrap.Modal(
+                    document.getElementById('modalWaliKelas')
+                ).show();
+            });
+            </script>
+
+            <?php } ?>
 
             <!-- TABEL DATA WALI KELAS -->
             <div class="card border-0 shadow-sm">
@@ -745,7 +756,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     <div class="table-responsive">
 
-                        <!-- ID EXAMPLE UNTUK DATATABLES -->
+                        <!-- TABEL DATATABLES -->
                         <table id="example"
                                class="table table-bordered table-striped table-hover align-middle mb-0">
 
@@ -891,10 +902,32 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- Bootstrap JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
+<!-- Tom Select JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+
 <!-- DataTables JavaScript -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- Pengaturan DataTables -->
+<!-- PENCARIAN KELAS DAN GURU -->
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    document.querySelectorAll('.searchable-select').forEach(function (select) {
+
+        new TomSelect(select, {
+            create: false,
+            searchField: ['text'],
+            maxOptions: 1000,
+            placeholder: 'Cari dan pilih...',
+            allowEmptyOption: true
+        });
+
+    });
+
+});
+</script>
+
+<!-- PENGATURAN DATATABLES -->
 <script>
     new DataTable('#example', {
         pageLength: 10,

@@ -1,3 +1,4 @@
+
 <?php
 include "config/koneksi.php";
 include "includes/cek_session.php";
@@ -5,7 +6,7 @@ include "includes/cek_session.php";
 $role = $_SESSION['role'] ?? '';
 $pesan = '';
 
-// MENGAMBIL TAHUN AJARAN YANG AKTIF
+/* MENGAMBIL TAHUN AJARAN AKTIF */
 $query_tahun_aktif = mysqli_query(
     $koneksi,
     "SELECT id, nama
@@ -17,7 +18,7 @@ $query_tahun_aktif = mysqli_query(
 
 $tahun_aktif = mysqli_fetch_assoc($query_tahun_aktif);
 
-// MENGAMBIL NOTIFIKASI DARI SESSION
+/* MENGAMBIL NOTIFIKASI SESSION */
 if (isset($_SESSION['pesan'])) {
     $pesan = $_SESSION['pesan'];
     $tipe_pesan = $_SESSION['tipe_pesan'] ?? '';
@@ -25,11 +26,12 @@ if (isset($_SESSION['pesan'])) {
     unset($_SESSION['pesan'], $_SESSION['tipe_pesan']);
 }
 
-/* TAMBAH PENEMPATAN SISWA */
+/* =========================
+   TAMBAH PENEMPATAN SISWA
+   ========================= */
 if (isset($_POST['tambah']) && $role == "admin") {
 
     $siswa_id = (int)($_POST['siswa_id'] ?? 0);
-    // TAHUN AJARAN OTOMATIS MENGAMBIL YANG AKTIF
     $tahun_ajaran_id = (int)($tahun_aktif['id'] ?? 0);
     $kelas_id = (int)($_POST['kelas_id'] ?? 0);
     $tanggal_mulai = trim($_POST['tanggal_mulai'] ?? '');
@@ -48,6 +50,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
         $pesan = "Semua data penempatan wajib diisi dengan benar.";
     } else {
         try {
+
             $cek = mysqli_prepare(
                 $koneksi,
                 "SELECT id FROM t_kelas_siswa
@@ -58,6 +61,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
             if (!$cek) {
                 $pesan = "Penempatan siswa gagal diperiksa.";
             } else {
+
                 mysqli_stmt_bind_param(
                     $cek,
                     "ii",
@@ -69,8 +73,11 @@ if (isset($_POST['tambah']) && $role == "admin") {
                 mysqli_stmt_store_result($cek);
 
                 if (mysqli_stmt_num_rows($cek) > 0) {
+
                     $pesan = "Siswa tersebut sudah memiliki penempatan pada tahun ajaran yang dipilih.";
+
                 } else {
+
                     $stmt = mysqli_prepare(
                         $koneksi,
                         "INSERT INTO t_kelas_siswa
@@ -80,6 +87,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
                     );
 
                     if ($stmt) {
+
                         mysqli_stmt_bind_param(
                             $stmt,
                             "iiissi",
@@ -96,6 +104,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
                             : "Penempatan siswa gagal ditambahkan.";
 
                         mysqli_stmt_close($stmt);
+
                     } else {
                         $pesan = "Penempatan siswa gagal disiapkan.";
                     }
@@ -103,6 +112,7 @@ if (isset($_POST['tambah']) && $role == "admin") {
 
                 mysqli_stmt_close($cek);
             }
+
         } catch (mysqli_sql_exception $e) {
             $pesan = "Penempatan siswa gagal ditambahkan. Data yang dipilih tidak valid.";
         }
@@ -110,7 +120,9 @@ if (isset($_POST['tambah']) && $role == "admin") {
 }
 
 
-/* UBAH PENEMPATAN SISWA */
+/* =========================
+   UBAH PENEMPATAN SISWA
+   ========================= */
 if (isset($_POST['ubah']) && $role == "admin") {
 
     $id = (int)($_POST['id'] ?? 0);
@@ -131,11 +143,14 @@ if (isset($_POST['ubah']) && $role == "admin") {
         $tanggal_selesai === '' ||
         !in_array($status_aktif, [0, 1], true)
     ) {
+
         $pesan = "Data penempatan yang diubah belum lengkap atau tidak valid.";
+
     } else {
+
         try {
 
-            // MENGAMBIL DATA LAMA
+            /* MENGAMBIL DATA LAMA */
             $stmt_lama = mysqli_prepare(
                 $koneksi,
                 "SELECT siswa_id, tahun_ajaran_id, kelas_id,
@@ -145,7 +160,9 @@ if (isset($_POST['ubah']) && $role == "admin") {
             );
 
             if (!$stmt_lama) {
+
                 $pesan = "Data penempatan gagal diperiksa.";
+
             } else {
 
                 mysqli_stmt_bind_param($stmt_lama, "i", $id);
@@ -156,7 +173,7 @@ if (isset($_POST['ubah']) && $role == "admin") {
 
                 mysqli_stmt_close($stmt_lama);
 
-                // MEMERIKSA APAKAH ADA PERUBAHAN
+                /* MEMERIKSA APAKAH ADA PERUBAHAN */
                 if (
                     $data_lama &&
                     (int)$data_lama['siswa_id'] === $siswa_id &&
@@ -167,14 +184,12 @@ if (isset($_POST['ubah']) && $role == "admin") {
                     (int)$data_lama['status_aktif'] === $status_aktif
                 ) {
 
-                    // TIDAK ADA PERUBAHAN
-                    // KEMBALI TANPA NOTIFIKASI
                     header("Location: penempatan_siswa.php");
                     exit;
 
                 } else {
 
-                    // CEK PENEMPATAN GANDA
+                    /* CEK PENEMPATAN GANDA */
                     $cek = mysqli_prepare(
                         $koneksi,
                         "SELECT id FROM t_kelas_siswa
@@ -185,7 +200,9 @@ if (isset($_POST['ubah']) && $role == "admin") {
                     );
 
                     if (!$cek) {
+
                         $pesan = "Perubahan penempatan gagal diperiksa.";
+
                     } else {
 
                         mysqli_stmt_bind_param(
@@ -205,7 +222,7 @@ if (isset($_POST['ubah']) && $role == "admin") {
 
                         } else {
 
-                            // UPDATE DATA
+                            /* UPDATE DATA */
                             $stmt = mysqli_prepare(
                                 $koneksi,
                                 "UPDATE t_kelas_siswa SET
@@ -240,7 +257,6 @@ if (isset($_POST['ubah']) && $role == "admin") {
                                     mysqli_stmt_close($stmt);
                                     mysqli_stmt_close($cek);
 
-                                    // KEMBALI KE TABEL
                                     header("Location: penempatan_siswa.php");
                                     exit;
 
@@ -252,6 +268,7 @@ if (isset($_POST['ubah']) && $role == "admin") {
                                 mysqli_stmt_close($stmt);
 
                             } else {
+
                                 $pesan = "Perubahan penempatan gagal disiapkan.";
                             }
                         }
@@ -262,13 +279,16 @@ if (isset($_POST['ubah']) && $role == "admin") {
             }
 
         } catch (mysqli_sql_exception $e) {
+
             $pesan = "Penempatan siswa gagal diubah. Data yang dipilih tidak valid.";
         }
     }
 }
 
 
-/* HAPUS PENEMPATAN SISWA */
+/* =========================
+   HAPUS PENEMPATAN SISWA
+   ========================= */
 if (isset($_GET['hapus']) && $role == "admin") {
 
     $id = (int)$_GET['hapus'];
@@ -284,7 +304,9 @@ if (isset($_GET['hapus']) && $role == "admin") {
 }
 
 
-/* AMBIL DATA UNTUK EDIT */
+/* =========================
+   AMBIL DATA UNTUK EDIT
+   ========================= */
 $data_edit = null;
 
 if (isset($_GET['edit']) && $role == "admin") {
@@ -309,14 +331,19 @@ if (isset($_GET['edit']) && $role == "admin") {
 
     <meta charset="UTF-8">
 
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Penempatan Siswa</title>
 
     <!-- Bootstrap CSS -->
     <link
         href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
+
+    <!-- Tom Select CSS -->
+    <link
+        href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css"
         rel="stylesheet"
     >
 
@@ -327,6 +354,43 @@ if (isset($_GET['edit']) && $role == "admin") {
     >
 
     <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* MENYAMAKAN TAMPILAN PILIH SISWA DAN KELAS */
+
+        .ts-control {
+            min-height: 38px !important;
+            border: 1px solid #dee2e6 !important;
+            border-radius: 6px !important;
+            padding: 6px 12px !important;
+            font-size: 1rem !important;
+            box-shadow: none !important;
+        }
+
+        .ts-control input {
+            font-size: 1rem !important;
+        }
+
+        .ts-wrapper.focus .ts-control {
+            border-color: #86b7fe !important;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .15) !important;
+        }
+
+        .ts-dropdown {
+            border-radius: 6px !important;
+            font-size: 14px;
+            z-index: 1060 !important;
+        }
+
+        .ts-dropdown .option {
+            padding: 9px 12px;
+        }
+
+        .ts-dropdown .active {
+            background-color: #e9ecef;
+            color: #212529;
+        }
+    </style>
 
 </head>
 
@@ -348,12 +412,12 @@ if (isset($_GET['edit']) && $role == "admin") {
                     SIMPESMA
                 </h3>
 
-                <p class="text-white mb-0"
-                   style="font-size: 10px; line-height: 1.7; opacity: 0.8;">
-
+                <p
+                    class="text-white mb-0"
+                    style="font-size: 10px; line-height: 1.7; opacity: 0.8;"
+                >
                     Sistem Informasi Manajemen
                     Pelanggaran Siswa Muhammadiyah
-
                 </p>
 
             </div>
@@ -476,8 +540,7 @@ if (isset($_GET['edit']) && $role == "admin") {
         <!-- KONTEN UTAMA -->
         <main class="col-md-9 col-lg-10 p-4" style="min-width: 0;">
 
-            <div class="d-flex justify-content-between
-                        align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
 
                 <h3 class="fw-bold mb-0">
                     Penempatan Siswa
@@ -526,10 +589,12 @@ if (isset($_GET['edit']) && $role == "admin") {
             <!-- MODAL TAMBAH / UBAH PENEMPATAN -->
             <?php if ($role == "admin" && ($data_edit != null || isset($_GET['tambah']))) { ?>
 
-                <div class="modal fade"
-                     id="modalPenempatan"
-                     tabindex="-1"
-                     aria-hidden="true">
+                <div
+                    class="modal fade"
+                    id="modalPenempatan"
+                    tabindex="-1"
+                    aria-hidden="true"
+                >
 
                     <div class="modal-dialog modal-lg modal-dialog-centered">
 
@@ -552,10 +617,11 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                                     </h5>
 
-                                    <a href="penempatan_siswa.php"
-                                       class="btn-close"
-                                       aria-label="Tutup">
-                                    </a>
+                                    <a
+                                        href="penempatan_siswa.php"
+                                        class="btn-close"
+                                        aria-label="Tutup"
+                                    ></a>
 
                                 </div>
 
@@ -582,9 +648,12 @@ if (isset($_GET['edit']) && $role == "admin") {
                                                 Siswa
                                             </label>
 
-                                            <select name="siswa_id"
-                                                    class="form-select"
-                                                    required>
+                                            <select
+                                                name="siswa_id"
+                                                id="siswa_id"
+                                                class="form-select searchable-select"
+                                                required
+                                            >
 
                                                 <option value="">
                                                     -- Pilih Siswa --
@@ -625,7 +694,7 @@ if (isset($_GET['edit']) && $role == "admin") {
                                         </div>
 
 
-                                       <!-- TAHUN AJARAN -->
+                                        <!-- TAHUN AJARAN -->
                                         <div class="col-md-6">
 
                                             <label class="form-label">
@@ -634,16 +703,18 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                                             <?php if ($data_edit != null) { ?>
 
-                                                <!-- TAHUN AJARAN SAAT UBAH DATA -->
-                                                <select name="tahun_ajaran_id"
-                                                        class="form-select"
-                                                        required>
+                                                <select
+                                                    name="tahun_ajaran_id"
+                                                    class="form-select"
+                                                    required
+                                                >
 
                                                     <?php
+
                                                     $tahun = mysqli_query(
                                                         $koneksi,
                                                         "SELECT * FROM t_tahun_ajaran
-                                                        ORDER BY tanggal_mulai DESC"
+                                                         ORDER BY tanggal_mulai DESC"
                                                     );
 
                                                     while ($row_tahun = mysqli_fetch_assoc($tahun)) {
@@ -658,17 +729,19 @@ if (isset($_GET['edit']) && $role == "admin") {
                                                             htmlspecialchars($row_tahun['nama']) .
                                                             '</option>';
                                                     }
+
                                                     ?>
 
                                                 </select>
 
                                             <?php } else { ?>
 
-                                                <!-- TAHUN AJARAN OTOMATIS SAAT TAMBAH DATA -->
-                                                <input type="text"
+                                                <input
+                                                    type="text"
                                                     class="form-control"
                                                     value="<?= htmlspecialchars($tahun_aktif['nama'] ?? 'Belum ada tahun ajaran aktif'); ?>"
-                                                    readonly>
+                                                    readonly
+                                                >
 
                                             <?php } ?>
 
@@ -682,9 +755,12 @@ if (isset($_GET['edit']) && $role == "admin") {
                                                 Kelas
                                             </label>
 
-                                            <select name="kelas_id"
-                                                    class="form-select"
-                                                    required>
+                                            <select
+                                                name="kelas_id"
+                                                id="kelas_id"
+                                                class="form-select searchable-select"
+                                                required
+                                            >
 
                                                 <option value="">
                                                     -- Pilih Kelas --
@@ -730,9 +806,11 @@ if (isset($_GET['edit']) && $role == "admin") {
                                                 Status
                                             </label>
 
-                                            <select name="status_aktif"
-                                                    class="form-select"
-                                                    required>
+                                            <select
+                                                name="status_aktif"
+                                                class="form-select"
+                                                required
+                                            >
 
                                                 <option
                                                     value="1"
@@ -795,8 +873,10 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                                 <div class="modal-footer">
 
-                                    <a href="penempatan_siswa.php"
-                                       class="btn btn-secondary">
+                                    <a
+                                        href="penempatan_siswa.php"
+                                        class="btn btn-secondary"
+                                    >
                                         Batal
                                     </a>
 
@@ -854,8 +934,10 @@ if (isset($_GET['edit']) && $role == "admin") {
 
                     <div class="table-responsive">
 
-                        <table id="example"
-                               class="table table-bordered table-striped table-hover align-middle mb-0">
+                        <table
+                            id="example"
+                            class="table table-bordered table-striped table-hover align-middle mb-0"
+                        >
 
                             <thead class="table-primary">
 
@@ -1009,56 +1091,96 @@ if (isset($_GET['edit']) && $role == "admin") {
 </div>
 
 
-<!-- Bootstrap JavaScript -->
+<!-- BOOTSTRAP JAVASCRIPT -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- DataTables JavaScript -->
+<!-- TOM SELECT JAVASCRIPT -->
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
+
+<!-- DATATABLES JAVASCRIPT -->
 <script src="https://cdn.datatables.net/3.1.4/js/dataTables.min.js"></script>
 
-<!-- Pengaturan DataTables -->
+
+<!-- PENGATURAN PENCARIAN SISWA DAN KELAS -->
 <script>
 
-    new DataTable('#example', {
+document.addEventListener('DOMContentLoaded', function () {
 
-        pageLength: 10,
+    document.querySelectorAll('.searchable-select').forEach(function (element) {
 
-        lengthMenu: [5, 10, 25, 50],
+        new TomSelect(element, {
 
-        order: [],
+            create: false,
 
-        layout: {
-            topStart: 'info',
-            topEnd: 'search',
-            bottomStart: 'paging',
-            bottomEnd: 'pageLength'
-        },
+            allowEmptyOption: true,
 
-        language: {
+            searchField: ['text'],
 
-            search: 'Cari:',
+            maxOptions: 1000,
 
-            info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+            placeholder: element.id === 'siswa_id'
+                ? 'Cari nama atau NIS siswa...'
+                : 'Cari nama kelas...',
 
-            infoEmpty: 'Tidak ada data',
-
-            infoFiltered: '(difilter dari _MAX_ seluruh data)',
-
-            zeroRecords: 'Data tidak ditemukan',
-
-            emptyTable: 'Belum ada data siswa',
-
-            lengthMenu: 'Tampilkan _MENU_ data',
-
-            paginate: {
-                first: 'Pertama',
-                last: 'Terakhir',
-                next: '›',
-                previous: '‹'
+            render: {
+                no_results: function () {
+                    return '<div class="no-results p-2">Data tidak ditemukan</div>';
+                }
             }
 
-        }
+        });
 
     });
+
+});
+
+</script>
+
+
+<!-- PENGATURAN DATATABLES -->
+<script>
+
+new DataTable('#example', {
+
+    pageLength: 10,
+
+    lengthMenu: [5, 10, 25, 50],
+
+    order: [],
+
+    layout: {
+        topStart: 'info',
+        topEnd: 'search',
+        bottomStart: 'paging',
+        bottomEnd: 'pageLength'
+    },
+
+    language: {
+
+        search: 'Cari:',
+
+        info: 'Menampilkan _START_ sampai _END_ dari _TOTAL_ data',
+
+        infoEmpty: 'Tidak ada data',
+
+        infoFiltered: '(difilter dari _MAX_ seluruh data)',
+
+        zeroRecords: 'Data tidak ditemukan',
+
+        emptyTable: 'Belum ada data siswa',
+
+        lengthMenu: 'Tampilkan _MENU_ data',
+
+        paginate: {
+            first: 'Pertama',
+            last: 'Terakhir',
+            next: '›',
+            previous: '‹'
+        }
+
+    }
+
+});
 
 </script>
 

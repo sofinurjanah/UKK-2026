@@ -498,7 +498,7 @@ if (isset($_GET['edit'])) {
 
                                 $query = mysqli_query(
                                     $koneksi,
-                                    "SELECT * FROM t_pelanggaran_kategori ORDER BY nama ASC"
+                                    "SELECT * FROM t_pelanggaran_kategori ORDER BY id DESC"
                                 );
 
                                 $no = 1;
